@@ -80,4 +80,9 @@ dependencies {
     //hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+
+    //naverMap
+    implementation(libs.naver.map.compose)
+    /*implementation(libs.play.services.location)
+    implementation(libs.naver.map.location)*/
 }
