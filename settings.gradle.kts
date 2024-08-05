@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "SharingMap"
 include(":app")
- 
+include(":data")
+include(":domain")
