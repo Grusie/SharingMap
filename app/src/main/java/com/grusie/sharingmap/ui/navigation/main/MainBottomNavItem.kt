@@ -8,14 +8,17 @@ import com.grusie.sharingmap.data.MYPAGE
 import com.grusie.sharingmap.data.SEARCH
 
 sealed class MainBottomNavItem(
-    val title: Int, val selectedIcon: Int, val unselectedIcon: Int, val screenRoute: String
+    val title: Int,
+    val selectedIcon: Int,
+    val unselectedIcon: Int,
+    val screenRoute: String,
 ) {
     data object Home :
         MainBottomNavItem(
             R.string.main_bottom_nav_home,
             R.drawable.ic_home_fill,
             R.drawable.ic_home,
-            HOME
+            HOME,
         )
 
     data object Map :
@@ -23,7 +26,7 @@ sealed class MainBottomNavItem(
             R.string.main_bottom_nav_map,
             R.drawable.ic_map_fill,
             R.drawable.ic_map,
-            MAP
+            MAP,
         )
 
     data object Edit :
@@ -31,7 +34,7 @@ sealed class MainBottomNavItem(
             R.string.main_bottom_nav_edit,
             R.drawable.ic_feed_add,
             R.drawable.ic_feed_add,
-            EDIT
+            EDIT,
         )
 
     data object Search :
@@ -39,14 +42,14 @@ sealed class MainBottomNavItem(
             R.string.main_bottom_nav_search,
             R.drawable.ic_search,
             R.drawable.ic_search,
-            SEARCH
+            SEARCH,
         )
 
     data object MyPage :
         MainBottomNavItem(
             R.string.main_bottom_nav_mypage,
+            R.drawable.ic_my_fill,
             R.drawable.ic_my,
-            R.drawable.ic_my,
-            MYPAGE
+            MYPAGE,
         )
 }
