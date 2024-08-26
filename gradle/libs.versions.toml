@@ -14,6 +14,7 @@ appcompat = "1.7.0"
 materialVersion = "1.12.0"
 hiltVersion = "2.48"
 jetbrainsKotlinJvm = "1.9.0"
+coil = "2.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -36,6 +37,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
 hilt-android = {group = "com.google.dagger", name ="hilt-android", version.ref = "hiltVersion"}
 hilt-compiler = {group = "com.google.dagger", name="hilt-compiler", version.ref = "hiltVersion"}
+coil-compose = {group = "io.coil-kt", name = "coil-compose", version.ref = "coil"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
