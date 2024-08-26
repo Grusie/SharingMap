@@ -8,28 +8,48 @@ import com.grusie.sharingmap.data.MYPAGE
 import com.grusie.sharingmap.data.SEARCH
 
 sealed class MainBottomNavItem(
-    val title: Int, val icon: Int, val screenRoute: String
+    val title: Int,
+    val selectedIcon: Int,
+    val unselectedIcon: Int,
+    val screenRoute: String,
 ) {
     data object Home :
-        MainBottomNavItem(R.string.main_bottom_nav_home, R.drawable.ic_launcher_foreground, HOME)
+        MainBottomNavItem(
+            R.string.main_bottom_nav_home,
+            R.drawable.ic_home_fill,
+            R.drawable.ic_home,
+            HOME,
+        )
 
     data object Map :
-        MainBottomNavItem(R.string.main_bottom_nav_map, R.drawable.ic_launcher_foreground, MAP)
+        MainBottomNavItem(
+            R.string.main_bottom_nav_map,
+            R.drawable.ic_map_fill,
+            R.drawable.ic_map,
+            MAP,
+        )
 
     data object Edit :
-        MainBottomNavItem(R.string.main_bottom_nav_edit, R.drawable.ic_launcher_foreground, EDIT)
+        MainBottomNavItem(
+            R.string.main_bottom_nav_edit,
+            R.drawable.ic_feed_add,
+            R.drawable.ic_feed_add,
+            EDIT,
+        )
 
     data object Search :
         MainBottomNavItem(
             R.string.main_bottom_nav_search,
-            R.drawable.ic_launcher_foreground,
-            SEARCH
+            R.drawable.ic_search,
+            R.drawable.ic_search,
+            SEARCH,
         )
 
     data object MyPage :
         MainBottomNavItem(
             R.string.main_bottom_nav_mypage,
-            R.drawable.ic_launcher_foreground,
-            MYPAGE
+            R.drawable.ic_my_fill,
+            R.drawable.ic_my,
+            MYPAGE,
         )
 }
