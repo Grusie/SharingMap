@@ -87,7 +87,7 @@ val Typography = Typography(
     titleSmall = TextStyle(
         fontFamily = pretendard,
         fontSize = 14.sp,
-        fontWeight = FontWeight.Medium, // Regular
+        fontWeight = FontWeight.Medium,
         platformStyle = PlatformTextStyle(
             includeFontPadding = false,
         ),
