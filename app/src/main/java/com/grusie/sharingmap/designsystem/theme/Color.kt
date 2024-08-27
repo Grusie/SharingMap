@@ -13,3 +13,6 @@ val Gray300 = Color(0xFFBABBBC)
 val Gray400 = Color(0xFF9A9C9F)
 
 val Gray200_30 = Color(0x40E8EAEB)
+
+val GrayA8AAAB = Color(0xFFA8AAAB)
+val GrayE6E6E6 = Color(0xFFE6E6E6)

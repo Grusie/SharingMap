@@ -13,5 +13,6 @@
     <string name="feed_modal_unfollow_title">팔로우 취소</string>
     <string name="feed_modal_declaration_title">신고</string>
     <string name="feed_modal_declaration_description">해당 유저 게시물 노출이 제한됩니다.</string>
+    <string name="feed_bottom_sheet_comment_hint_title">입력...</string>
 
 </resources>
