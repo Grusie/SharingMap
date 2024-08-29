@@ -1,20 +1,42 @@
 package com.grusie.sharingmap.ui.main.home
 
-import androidx.compose.foundation.layout.Box
+import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.grusie.sharingmap.R
+import com.grusie.sharingmap.designsystem.component.CommentContent
+import com.grusie.sharingmap.designsystem.component.CustomBottomSheet
 import com.grusie.sharingmap.designsystem.component.Feed
+import com.grusie.sharingmap.designsystem.component.UserLazyColumn
 import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.ui.model.FeedType
@@ -24,6 +46,13 @@ import com.grusie.sharingmap.ui.model.FeedType
 @Composable
 fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    var isModalDialogOpen by rememberSaveable { mutableStateOf(false) }
+    var isArchivingBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
+    val archiveBottomSheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+        )
+    var isCommentBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
@@ -55,16 +84,27 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                             onProfileClick = { /*TODO*/ },
                             onImageClick = {},
                             onLocationClick = { /*TODO*/ },
-                            onArchivingClick = { /*TODO*/ },
-                            onMeatBallClick = { /*TODO*/ },
+                            onArchivingClick = {
+                                isArchivingBottomSheetOpen = !isArchivingBottomSheetOpen
+                                viewModel.updateSelectedFeed(it)
+                            },
+                            onMeatBallClick = { isModalDialogOpen = !isModalDialogOpen },
                             onLikeClick = { /*TODO*/ },
-                            onChatClick = { /*TODO*/ },
+                            onChatClick = {
+                                isCommentBottomSheetOpen = !isCommentBottomSheetOpen
+                                viewModel.updateSelectedFeed(it)
+                            },
                             onShareClick = { /*TODO*/ },
                         )
                     }
                 }
             } else {
-                Column(modifier = Modifier.fillMaxSize().padding(top = it.calculateTopPadding())) {
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(top = it.calculateTopPadding()),
+                ) {
                     FeedRadioGroup(
                         options = FeedType.entries,
                         selectedType = uiState.selectedFeedType,
@@ -75,9 +115,38 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                         textAlign = TextAlign.Center,
                         style = Typography.headlineSmall,
                         color = Gray9A9C9F,
-                        modifier = Modifier.fillMaxSize().wrapContentHeight(Alignment.CenterVertically),
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .wrapContentHeight(Alignment.CenterVertically),
                     )
                 }
+            }
+
+            if (isModalDialogOpen) {
+                FeedModal(onDismiss = { isModalDialogOpen = false })
+            }
+
+            if (isArchivingBottomSheetOpen) {
+                CustomBottomSheet(
+                    title = "아카이빙 리스트",
+                    isEmpty = uiState.selectedFeed?.archivings?.isEmpty() ?: true,
+                    emptyTitle = "위치를 저장한 사용자가 없습니다.",
+                    content = { UserLazyColumn(users = uiState.selectedFeed?.archivings ?: emptyList()) },
+                    sheetState = archiveBottomSheetState,
+                    onDismiss = { isArchivingBottomSheetOpen = false },
+                )
+            }
+
+            if (isCommentBottomSheetOpen) {
+                CustomBottomSheet(
+                    title = "댓글",
+                    isEmpty = uiState.selectedFeed?.comments?.isEmpty() ?: true,
+                    emptyTitle = "댓글이 없습니다.",
+                    content = { CommentContent(comments = uiState.selectedFeed?.comments ?: emptyList()) },
+                    sheetState = archiveBottomSheetState,
+                    onDismiss = { isCommentBottomSheetOpen = false },
+                )
             }
         },
     )
@@ -108,7 +177,10 @@ fun FeedTopAppbar(
                         )
                     },
                 contentDescription = null,
-                modifier = Modifier.clickable { }.padding(end = 14.dp, top = 6.dp, bottom = 6.dp),
+                modifier =
+                    Modifier
+                        .clickable { }
+                        .padding(end = 14.dp, top = 6.dp, bottom = 6.dp),
             )
         },
         colors =
@@ -118,4 +190,10 @@ fun FeedTopAppbar(
             ),
         scrollBehavior = scrollBehavior,
     )
+}
+
+@Preview
+@Composable
+private fun HomeScreenPreview() {
+    HomeScreen()
 }

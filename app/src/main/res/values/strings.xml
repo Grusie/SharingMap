@@ -14,5 +14,6 @@
     <string name="feed_modal_declaration_title">신고</string>
     <string name="feed_modal_declaration_description">해당 유저 게시물 노출이 제한됩니다.</string>
     <string name="feed_bottom_sheet_comment_hint_title">입력...</string>
+    <string name="feed_empty_text">등록된 장소가 없습니다.\n가장 먼저 장소를 등록해 보세요</string>
 
 </resources>

@@ -31,10 +31,10 @@ import com.grusie.sharingmap.designsystem.theme.SharingMapTheme
 import com.grusie.sharingmap.designsystem.theme.White
 
 @Composable
-fun FeedModal(modifier: Modifier = Modifier) {
+fun FeedModal(onDismiss: () -> Unit = {}, modifier: Modifier = Modifier) {
     var isChecked by remember { mutableStateOf(true) }
 
-    Dialog(onDismissRequest = { /*TODO*/ }) {
+    Dialog(onDismissRequest = onDismiss) {
         val dialogWindowProvider = LocalView.current.parent as DialogWindowProvider
         dialogWindowProvider.window.setGravity(Gravity.BOTTOM or Gravity.CENTER)
 
