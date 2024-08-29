@@ -47,10 +47,12 @@ import com.grusie.sharingmap.designsystem.util.singleClickable
 import com.grusie.sharingmap.ui.model.FeedInfoUiModel
 import com.grusie.sharingmap.ui.model.FeedUiModel
 import com.grusie.sharingmap.ui.model.LocationUiModel
+import com.grusie.sharingmap.ui.model.UserUiModel
 
 @Composable
 fun Feed(
     feed: FeedUiModel,
+    isFollow: Boolean,
     onProfileClick: () -> Unit,
     onImageClick: (String) -> Unit,
     onLocationClick: () -> Unit,
@@ -68,7 +70,7 @@ fun Feed(
                     .fillMaxWidth()
                     .padding(14.dp),
         ) {
-            ProfileImage(feed.profileImage, onProfileClick)
+            ProfileImage(feed.user.profileImage, isFollow, onProfileClick)
             Spacer(modifier = Modifier.width(9.dp))
             Column(
                 modifier =
@@ -78,7 +80,7 @@ fun Feed(
                         .padding(vertical = 1.dp),
             ) {
                 Text(
-                    text = feed.title,
+                    text = feed.user.name,
                     style = Typography.bodySmall,
                     color = Black,
                     modifier = Modifier.fillMaxWidth(),
@@ -114,6 +116,7 @@ fun Feed(
 @Composable
 fun ProfileImage(
     profileImage: String,
+    isFollow: Boolean,
     onAddClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -127,15 +130,17 @@ fun ProfileImage(
                     .clip(RoundedCornerShape(8.dp)),
             contentScale = ContentScale.Crop,
         )
-        Image(
-            painter = painterResource(id = R.drawable.btn_add_small),
-            contentDescription = null,
-            modifier =
-                Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(x = 0.5.dp, y = 0.5.dp)
-                    .singleClickable { onAddClick() },
-        )
+        if (!isFollow) {
+            Image(
+                painter = painterResource(id = R.drawable.btn_add_small),
+                contentDescription = null,
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = 0.5.dp, y = 0.5.dp)
+                        .singleClickable { onAddClick() },
+            )
+        }
     }
 }
 
@@ -388,8 +393,12 @@ fun ArchivingList(
 private fun FeedPreview() {
     Feed(
         FeedUiModel(
-            profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-            title = "vocent",
+            user =
+                UserUiModel(
+                    id = 1,
+                    profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    name = "김민수",
+                ),
             date = "2024.04.17",
             content = "honestatis",
             contentImages =
@@ -410,6 +419,7 @@ private fun FeedPreview() {
                     shareCount = 8829,
                 ),
         ),
+        isFollow = false,
         onProfileClick = {},
         onImageClick = {},
         onArchivingClick = {},
