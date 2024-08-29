@@ -65,10 +65,10 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
             if (uiState.feeds.isNotEmpty()) {
                 LazyColumn(
                     modifier =
-                        Modifier
-                            .padding(top = it.calculateTopPadding())
-                            .fillMaxSize()
-                            .nestedScroll(scrollBehavior.nestedScrollConnection),
+                    Modifier
+                        .padding(top = it.calculateTopPadding())
+                        .fillMaxSize()
+                        .nestedScroll(scrollBehavior.nestedScrollConnection),
                 ) {
                     item {
                         FeedRadioGroup(
@@ -101,9 +101,9 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
             } else {
                 Column(
                     modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .padding(top = it.calculateTopPadding()),
+                    Modifier
+                        .fillMaxSize()
+                        .padding(top = it.calculateTopPadding()),
                 ) {
                     FeedRadioGroup(
                         options = FeedType.entries,
@@ -116,9 +116,9 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
                         style = Typography.headlineSmall,
                         color = Gray9A9C9F,
                         modifier =
-                            Modifier
-                                .fillMaxSize()
-                                .wrapContentHeight(Alignment.CenterVertically),
+                        Modifier
+                            .fillMaxSize()
+                            .wrapContentHeight(Alignment.CenterVertically),
                     )
                 }
             }
@@ -129,9 +129,9 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
 
             if (isArchivingBottomSheetOpen) {
                 CustomBottomSheet(
-                    title = "아카이빙 리스트",
+                    title = stringResource(id = R.string.feed_bottom_sheet_archivings_title),
                     isEmpty = uiState.selectedFeed?.archivings?.isEmpty() ?: true,
-                    emptyTitle = "위치를 저장한 사용자가 없습니다.",
+                    emptyTitle = stringResource(id = R.string.feed_bottom_sheet_archivings_empty_title),
                     content = { UserLazyColumn(users = uiState.selectedFeed?.archivings ?: emptyList()) },
                     sheetState = archiveBottomSheetState,
                     onDismiss = { isArchivingBottomSheetOpen = false },
@@ -140,9 +140,9 @@ fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
 
             if (isCommentBottomSheetOpen) {
                 CustomBottomSheet(
-                    title = "댓글",
+                    title = stringResource(id = R.string.feed_bottom_sheet_comments_title),
                     isEmpty = uiState.selectedFeed?.comments?.isEmpty() ?: true,
-                    emptyTitle = "댓글이 없습니다.",
+                    emptyTitle = stringResource(id = R.string.feed_bottom_sheet_comments_empty_title),
                     content = { CommentContent(comments = uiState.selectedFeed?.comments ?: emptyList()) },
                     sheetState = archiveBottomSheetState,
                     onDismiss = { isCommentBottomSheetOpen = false },
@@ -178,9 +178,9 @@ fun FeedTopAppbar(
                     },
                 contentDescription = null,
                 modifier =
-                    Modifier
-                        .clickable { }
-                        .padding(end = 14.dp, top = 6.dp, bottom = 6.dp),
+                Modifier
+                    .clickable { }
+                    .padding(end = 14.dp, top = 6.dp, bottom = 6.dp),
             )
         },
         colors =
