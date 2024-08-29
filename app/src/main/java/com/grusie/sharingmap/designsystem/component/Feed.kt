@@ -56,10 +56,10 @@ fun Feed(
     onProfileClick: () -> Unit,
     onImageClick: (String) -> Unit,
     onLocationClick: () -> Unit,
-    onArchivingClick: () -> Unit,
+    onArchivingClick: (FeedUiModel) -> Unit,
     onMeatBallClick: () -> Unit,
     onLikeClick: () -> Unit,
-    onChatClick: () -> Unit,
+    onChatClick: (FeedUiModel) -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -149,16 +149,16 @@ fun FeedRow(
     feed: FeedUiModel,
     onImageClick: (String) -> Unit,
     onLocationClick: () -> Unit,
-    onArchivingClick: () -> Unit,
+    onArchivingClick: (FeedUiModel) -> Unit,
     onLikeClick: () -> Unit,
-    onChatClick: () -> Unit,
+    onChatClick: (FeedUiModel) -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SubcomposeLayout { constraints ->
         val dividerMeasurable =
             subcompose("divider") {
-                ArchivingList(onArchivingClick = onArchivingClick)
+                ArchivingList(onArchivingClick = { onArchivingClick(feed) })
             }.map { it.measure(constraints) }
 
         val dividerWidth = dividerMeasurable.maxOf { it.width }
@@ -179,12 +179,14 @@ fun FeedRow(
         val adjustedDividerConstraints = constraints.copy(maxHeight = columnHeight - 160)
         val adjustedDividerMeasurable =
             subcompose("adjustedDivider") {
-                ArchivingList(onArchivingClick = onArchivingClick)
+                ArchivingList(onArchivingClick = { onArchivingClick(feed) })
             }.map { it.measure(adjustedDividerConstraints) }
 
         layout(constraints.maxWidth, columnHeight) {
-            adjustedDividerMeasurable.forEach {
-                it.placeRelative(0, 0)
+            if (feed.archivings.isNotEmpty()) {
+                adjustedDividerMeasurable.forEach {
+                    it.placeRelative(0, 0)
+                }
             }
 
             columnMeasurable.forEach {
@@ -200,7 +202,7 @@ fun FeedContent(
     onImageClick: (String) -> Unit,
     onLocationClick: () -> Unit,
     onLikeClick: () -> Unit,
-    onChatClick: () -> Unit,
+    onChatClick: (FeedUiModel) -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -230,15 +232,15 @@ fun FeedContent(
         }
         Spacer(modifier = Modifier.height(12.dp))
         Location(
-            location = feed.locationUiModel,
+            location = feed.location,
             onLocationClick = onLocationClick,
             modifier = Modifier.padding(end = 14.dp),
         )
         Spacer(modifier = Modifier.height(8.dp))
         FeedInfo(
-            feedInfo = feed.feedInfoUiModel,
+            feedInfo = feed.feedInfo,
             onLikeClick = onLikeClick,
-            onChatClick = onChatClick,
+            onChatClick = { onChatClick(feed) },
             onShareClick = onShareClick,
         )
         Spacer(modifier = Modifier.height(24.dp))
@@ -319,10 +321,10 @@ fun FeedInfo(
             onClick = onLikeClick,
         )
         FeedInfoItem(
-            selectIcon = R.drawable.btn_chat_fill,
+            selectIcon = R.drawable.btn_chat,
             unselectIcon = R.drawable.btn_chat,
             count = feedInfo.chatCount,
-            onClick = onChatClick,
+            onClick = { onChatClick() },
         )
         FeedInfoItem(
             selectIcon = R.drawable.btn_share,
@@ -408,12 +410,12 @@ private fun FeedPreview() {
                     "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
                     "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
                 ),
-            locationUiModel =
+            location =
                 LocationUiModel(
                     name = "Lilian Douglas",
                     address = "taciti",
                 ),
-            feedInfoUiModel =
+            feedInfo =
                 FeedInfoUiModel(
                     likeCount = 2617,
                     chatCount = 1606,
