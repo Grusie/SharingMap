@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.theme.Black
-import com.grusie.sharingmap.designsystem.theme.Gray100
+import com.grusie.sharingmap.designsystem.theme.GrayF1F4F7
 import com.grusie.sharingmap.designsystem.theme.Red
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.util.singleClickable
@@ -44,7 +44,7 @@ fun ModalStateItem(
         modifier =
             modifier
                 .clip(RoundedCornerShape(12.dp))
-                .background(color = Gray100)
+                .background(color = GrayF1F4F7)
                 .singleClickable { onCheckChanged() }
                 .padding(vertical = 16.dp, horizontal = 20.dp),
     ) {
@@ -75,7 +75,7 @@ fun ModalTwoLinesItem(
         modifier =
             modifier
                 .clip(RoundedCornerShape(12.dp))
-                .background(color = Gray100)
+                .background(color = GrayF1F4F7)
                 .singleClickable { onClick() },
     ) {
         Image(
@@ -96,7 +96,6 @@ fun ModalTwoLinesItem(
                 style = Typography.bodyMedium,
                 color = descriptionColor,
             )
-
         }
     }
 }

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text2.input.rememberTextFieldState
@@ -24,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.theme.Black
-import com.grusie.sharingmap.designsystem.theme.Gray400
+import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
 import com.grusie.sharingmap.designsystem.theme.GrayA8AAAB
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.util.singleClickable
@@ -53,7 +52,12 @@ fun CommentLazyColumn(
 ) {
     LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f)) {
         itemsIndexed(comments) { _, comment ->
-            CommentItem(comment = comment, isFollow = true, onMeatBallClick = {}, onFollowClick = {})
+            CommentItem(
+                comment = comment,
+                isFollow = true,
+                onMeatBallClick = {},
+                onFollowClick = {},
+            )
         }
     }
 }
@@ -73,7 +77,11 @@ fun CommentItem(
                     .fillMaxWidth()
                     .padding(horizontal = 14.dp),
         ) {
-            ProfileImage(profileImage = comment.user.profileImage, isFollow = isFollow, onAddClick = { onFollowClick() })
+            ProfileImage(
+                profileImage = comment.user.profileImage,
+                isFollow = isFollow,
+                onAddClick = { onFollowClick() },
+            )
             Spacer(modifier = Modifier.width(9.dp))
             Column(
                 modifier =
@@ -92,7 +100,7 @@ fun CommentItem(
                 Text(
                     text = comment.date.toString(),
                     style = Typography.labelSmall,
-                    color = Gray400,
+                    color = Gray9A9C9F,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -112,7 +120,12 @@ fun CommentItem(
                     .padding(start = 57.dp, end = 14.dp),
         )
         Spacer(modifier = Modifier.height(2.dp))
-        Text(text = "댓글달기", style = Typography.bodyMedium, color = GrayA8AAAB, modifier = modifier.padding(start = 57.dp, end = 14.dp))
+        Text(
+            text = "댓글달기",
+            style = Typography.bodyMedium,
+            color = GrayA8AAAB,
+            modifier = modifier.padding(start = 57.dp, end = 14.dp),
+        )
         Spacer(modifier = Modifier.height(16.dp))
     }
 }

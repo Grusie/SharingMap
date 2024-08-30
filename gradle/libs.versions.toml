@@ -15,6 +15,8 @@ materialVersion = "1.12.0"
 hiltVersion = "2.48"
 jetbrainsKotlinJvm = "1.9.0"
 coil = "2.7.0"
+lifecylceRuntileCompose = "2.8.4"
+hiltNavigationCompose = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -35,14 +37,16 @@ androidx-navigation = { group = "androidx.navigation", name = "navigation-compos
 androidx-compose-material = { group = "androidx.compose.material", name = "material", version.ref = "material" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "materialVersion" }
-hilt-android = {group = "com.google.dagger", name ="hilt-android", version.ref = "hiltVersion"}
-hilt-compiler = {group = "com.google.dagger", name="hilt-compiler", version.ref = "hiltVersion"}
-coil-compose = {group = "io.coil-kt", name = "coil-compose", version.ref = "coil"}
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hiltVersion" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hiltVersion" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecylceRuntileCompose" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-hilt = {id="com.google.dagger.hilt.android", version.ref = "hiltVersion"}
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltVersion" }
 jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 

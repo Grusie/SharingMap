@@ -39,9 +39,9 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.theme.Black
-import com.grusie.sharingmap.designsystem.theme.Gray200
-import com.grusie.sharingmap.designsystem.theme.Gray200_30
-import com.grusie.sharingmap.designsystem.theme.Gray400
+import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
+import com.grusie.sharingmap.designsystem.theme.GrayE8EAEB
+import com.grusie.sharingmap.designsystem.theme.GrayE8EAEB_30
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.util.singleClickable
 import com.grusie.sharingmap.ui.model.FeedInfoUiModel
@@ -56,10 +56,10 @@ fun Feed(
     onProfileClick: () -> Unit,
     onImageClick: (String) -> Unit,
     onLocationClick: () -> Unit,
-    onArchivingClick: () -> Unit,
+    onArchivingClick: (FeedUiModel) -> Unit,
     onMeatBallClick: () -> Unit,
     onLikeClick: () -> Unit,
-    onChatClick: () -> Unit,
+    onChatClick: (FeedUiModel) -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -89,7 +89,7 @@ fun Feed(
                 Text(
                     text = feed.date,
                     style = Typography.labelSmall,
-                    color = Gray400,
+                    color = Gray9A9C9F,
                     modifier = Modifier.fillMaxWidth(),
                 )
             }
@@ -149,16 +149,16 @@ fun FeedRow(
     feed: FeedUiModel,
     onImageClick: (String) -> Unit,
     onLocationClick: () -> Unit,
-    onArchivingClick: () -> Unit,
+    onArchivingClick: (FeedUiModel) -> Unit,
     onLikeClick: () -> Unit,
-    onChatClick: () -> Unit,
+    onChatClick: (FeedUiModel) -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     SubcomposeLayout { constraints ->
         val dividerMeasurable =
             subcompose("divider") {
-                ArchivingList(onArchivingClick = onArchivingClick)
+                ArchivingList(onArchivingClick = { onArchivingClick(feed) })
             }.map { it.measure(constraints) }
 
         val dividerWidth = dividerMeasurable.maxOf { it.width }
@@ -179,12 +179,14 @@ fun FeedRow(
         val adjustedDividerConstraints = constraints.copy(maxHeight = columnHeight - 160)
         val adjustedDividerMeasurable =
             subcompose("adjustedDivider") {
-                ArchivingList(onArchivingClick = onArchivingClick)
+                ArchivingList(onArchivingClick = { onArchivingClick(feed) })
             }.map { it.measure(adjustedDividerConstraints) }
 
         layout(constraints.maxWidth, columnHeight) {
-            adjustedDividerMeasurable.forEach {
-                it.placeRelative(0, 0)
+            if (feed.archivings.isNotEmpty()) {
+                adjustedDividerMeasurable.forEach {
+                    it.placeRelative(0, 0)
+                }
             }
 
             columnMeasurable.forEach {
@@ -200,7 +202,7 @@ fun FeedContent(
     onImageClick: (String) -> Unit,
     onLocationClick: () -> Unit,
     onLikeClick: () -> Unit,
-    onChatClick: () -> Unit,
+    onChatClick: (FeedUiModel) -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -230,15 +232,15 @@ fun FeedContent(
         }
         Spacer(modifier = Modifier.height(12.dp))
         Location(
-            location = feed.locationUiModel,
+            location = feed.location,
             onLocationClick = onLocationClick,
             modifier = Modifier.padding(end = 14.dp),
         )
         Spacer(modifier = Modifier.height(8.dp))
         FeedInfo(
-            feedInfo = feed.feedInfoUiModel,
+            feedInfo = feed.feedInfo,
             onLikeClick = onLikeClick,
-            onChatClick = onChatClick,
+            onChatClick = { onChatClick(feed) },
             onShareClick = onShareClick,
         )
         Spacer(modifier = Modifier.height(24.dp))
@@ -291,15 +293,15 @@ fun Location(
         modifier =
             modifier
                 .fillMaxWidth()
-                .border(1.dp, color = Gray200, shape = RoundedCornerShape(8.dp))
+                .border(1.dp, color = GrayE8EAEB, shape = RoundedCornerShape(8.dp))
                 .clip(RoundedCornerShape(8.dp))
-                .background(color = Gray200_30)
+                .background(color = GrayE8EAEB_30)
                 .padding(horizontal = 10.dp, vertical = 16.dp)
                 .singleClickable { onLocationClick() },
     ) {
         Text(text = location.name, style = Typography.titleMedium, color = Black)
         Spacer(modifier = Modifier.height(6.dp))
-        Text(text = location.address, style = Typography.labelMedium, color = Gray400)
+        Text(text = location.address, style = Typography.labelMedium, color = Gray9A9C9F)
     }
 }
 
@@ -319,10 +321,10 @@ fun FeedInfo(
             onClick = onLikeClick,
         )
         FeedInfoItem(
-            selectIcon = R.drawable.btn_chat_fill,
+            selectIcon = R.drawable.btn_chat,
             unselectIcon = R.drawable.btn_chat,
             count = feedInfo.chatCount,
-            onClick = onChatClick,
+            onClick = { onChatClick() },
         )
         FeedInfoItem(
             selectIcon = R.drawable.btn_share,
@@ -357,7 +359,7 @@ fun FeedInfoItem(
         Text(
             text = if (isClicked) (count + 1).toString() else count.toString(),
             style = Typography.bodySmall,
-            color = Gray400,
+            color = Gray9A9C9F,
             modifier = Modifier.align(Alignment.CenterVertically),
         )
     }
@@ -375,7 +377,7 @@ fun ArchivingList(
                     .padding(start = 16.dp, end = 14.dp)
                     .fillMaxHeight(0.9f),
             thickness = 2.dp,
-            color = Gray200,
+            color = GrayE8EAEB,
         )
         Image(
             painter = painterResource(id = R.drawable.btn_default_sharelist_image),
@@ -393,6 +395,7 @@ fun ArchivingList(
 private fun FeedPreview() {
     Feed(
         FeedUiModel(
+            id = 1,
             user =
                 UserUiModel(
                     id = 1,
@@ -407,12 +410,12 @@ private fun FeedPreview() {
                     "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
                     "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
                 ),
-            locationUiModel =
+            location =
                 LocationUiModel(
                     name = "Lilian Douglas",
                     address = "taciti",
                 ),
-            feedInfoUiModel =
+            feedInfo =
                 FeedInfoUiModel(
                     likeCount = 2617,
                     chatCount = 1606,

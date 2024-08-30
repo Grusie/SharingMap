@@ -17,13 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.grusie.sharingmap.R
-import com.grusie.sharingmap.designsystem.theme.Gray100
-import com.grusie.sharingmap.designsystem.theme.Gray400
+import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
+import com.grusie.sharingmap.designsystem.theme.GrayF1F4F7
 import com.grusie.sharingmap.designsystem.theme.Typography
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -32,21 +31,21 @@ fun CustomTextField(
     textFieldState: TextFieldState,
     modifier: Modifier = Modifier.fillMaxWidth(),
     cornerShape: RoundedCornerShape = RoundedCornerShape(12.dp),
-    backgroundColor: Color = Gray100,
+    backgroundColor: Color = GrayF1F4F7,
 ) {
     BasicTextField2(
         state = textFieldState,
         modifier = modifier.padding(horizontal = 20.dp, vertical = 8.dp),
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-        textStyle = Typography.headlineSmall.copy(color = Gray400),
+        textStyle = Typography.headlineSmall.copy(color = Gray9A9C9F),
         decorator = { innerTextField ->
             Row(
                 modifier =
-                modifier
-                    .clip(shape = cornerShape)
-                    .background(color = backgroundColor)
-                    .padding(vertical = 15.dp)
-                    .padding(end = 16.dp),
+                    modifier
+                        .clip(shape = cornerShape)
+                        .background(color = backgroundColor)
+                        .padding(vertical = 15.dp)
+                        .padding(end = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Spacer(modifier = Modifier.padding(start = 16.dp))
@@ -54,7 +53,7 @@ fun CustomTextField(
                     Text(
                         text = stringResource(id = R.string.feed_bottom_sheet_comment_hint_title),
                         style = Typography.headlineSmall,
-                        color = Gray400,
+                        color = Gray9A9C9F,
                     )
                 }
                 innerTextField()
@@ -68,5 +67,4 @@ fun CustomTextField(
 @Composable
 private fun CustomTextFieldPreview() {
     CustomTextField(textFieldState = TextFieldState(initialText = ""))
-    
 }
