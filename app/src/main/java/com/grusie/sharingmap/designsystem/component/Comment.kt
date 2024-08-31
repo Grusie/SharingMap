@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.grusie.sharingmap.R
@@ -40,7 +41,10 @@ fun CommentContent(
     val comment = rememberTextFieldState()
     Column(modifier = modifier.fillMaxWidth()) {
         CommentLazyColumn(comments = comments)
-        CustomTextField(textFieldState = comment)
+        CustomTextField(
+            textFieldState = comment,
+            hintText = stringResource(id = R.string.feed_bottom_sheet_comment_hint_title)
+        )
         Spacer(modifier = Modifier.height(34.dp))
     }
 }
@@ -50,7 +54,9 @@ fun CommentLazyColumn(
     comments: List<CommentUiModel>,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f)) {
+    LazyColumn(modifier = Modifier
+        .fillMaxWidth()
+        .fillMaxHeight(0.5f)) {
         itemsIndexed(comments) { _, comment ->
             CommentItem(
                 comment = comment,
@@ -73,9 +79,9 @@ fun CommentItem(
     Column {
         Row(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 14.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp),
         ) {
             ProfileImage(
                 profileImage = comment.user.profileImage,
@@ -85,10 +91,10 @@ fun CommentItem(
             Spacer(modifier = Modifier.width(9.dp))
             Column(
                 modifier =
-                    modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .padding(vertical = 1.dp),
+                modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(vertical = 1.dp),
             ) {
                 Text(
                     text = comment.user.name,
@@ -115,9 +121,9 @@ fun CommentItem(
             text = comment.content,
             style = Typography.bodyMedium,
             modifier =
-                modifier
-                    .fillMaxWidth()
-                    .padding(start = 57.dp, end = 14.dp),
+            modifier
+                .fillMaxWidth()
+                .padding(start = 57.dp, end = 14.dp),
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
@@ -136,18 +142,18 @@ fun CommentItem(
 private fun CommentPreview() {
     CommentLazyColumn(
         comments =
-            listOf(
-                CommentUiModel(
+        listOf(
+            CommentUiModel(
+                id = 1,
+                user =
+                UserUiModel(
                     id = 1,
-                    user =
-                        UserUiModel(
-                            id = 1,
-                            profileImage = "",
-                            name = "김민수",
-                        ),
-                    content = "안녕하세요",
-                    date = LocalDate.now(),
+                    profileImage = "",
+                    name = "김민수",
                 ),
+                content = "안녕하세요",
+                date = LocalDate.now(),
             ),
+        ),
     )
 }

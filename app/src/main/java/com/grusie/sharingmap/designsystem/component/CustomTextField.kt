@@ -29,6 +29,7 @@ import com.grusie.sharingmap.designsystem.theme.Typography
 @Composable
 fun CustomTextField(
     textFieldState: TextFieldState,
+    hintText: String,
     modifier: Modifier = Modifier.fillMaxWidth(),
     cornerShape: RoundedCornerShape = RoundedCornerShape(12.dp),
     backgroundColor: Color = GrayF1F4F7,
@@ -51,7 +52,7 @@ fun CustomTextField(
                 Spacer(modifier = Modifier.padding(start = 16.dp))
                 if (textFieldState.text.isEmpty()) {
                     Text(
-                        text = stringResource(id = R.string.feed_bottom_sheet_comment_hint_title),
+                        text = hintText,
                         style = Typography.headlineSmall,
                         color = Gray9A9C9F,
                     )
@@ -66,5 +67,5 @@ fun CustomTextField(
 @Preview
 @Composable
 private fun CustomTextFieldPreview() {
-    CustomTextField(textFieldState = TextFieldState(initialText = ""))
+    CustomTextField(textFieldState = TextFieldState(initialText = ""), hintText = "")
 }
