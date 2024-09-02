@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -81,6 +82,14 @@ dependencies {
     // hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+
+    //naverMap
+    implementation(libs.naver.map.compose)
+    /*implementation(libs.play.services.location)
+    implementation(libs.naver.map.location)*/
+
+    //TedClustering
+    implementation(libs.ted.clustering)
     implementation(libs.hilt.navigation.compose)
 
     // coil

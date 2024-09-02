@@ -12,7 +12,9 @@ import com.grusie.sharingmap.ui.navigation.main.MainBottomNavGraph
 import com.grusie.sharingmap.ui.navigation.main.MainBottomNavItem
 import com.grusie.sharingmap.ui.navigation.main.MainBottomNavigationBar
 import com.grusie.sharingmap.designsystem.theme.SharingMapTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -8,6 +8,9 @@
     <string name="main_bottom_nav_search">search</string>
     <string name="main_bottom_nav_mypage">myPage</string>
 
+    <!-- naver client id -->
+    <string name="naver_client_id">bhgelaoqda</string>
+
     <!-- Feed -->
     <string name="feed_modal_follow_title">팔로우</string>
     <string name="feed_modal_unfollow_title">팔로우 취소</string>
