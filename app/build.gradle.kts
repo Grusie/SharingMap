@@ -26,7 +26,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -70,14 +70,15 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
-    //네비게이션
+    // 네비게이션
     implementation(libs.androidx.navigation)
 
-    //Material
+    // Material
     implementation(libs.androidx.compose.material)
 
-    //hilt
+    // hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
 
@@ -88,4 +89,8 @@ dependencies {
 
     //TedClustering
     implementation(libs.ted.clustering)
+    implementation(libs.hilt.navigation.compose)
+
+    // coil
+    implementation(libs.coil.compose)
 }

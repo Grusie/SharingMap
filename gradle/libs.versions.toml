@@ -16,6 +16,10 @@ hiltVersion = "2.48"
 locationVersion = "21.3.0"
 naverMapComposeVersion = "1.5.7"
 tedClusteringVersion = "1.0.2"
+jetbrainsKotlinJvm = "1.9.0"
+coil = "2.7.0"
+lifecylceRuntileCompose = "2.8.4"
+hiltNavigationCompose = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -42,10 +46,14 @@ naver-map-compose = { group = "io.github.fornewid", name = "naver-map-compose", 
 #play-services-location = {group = "com.google.android.gms", name = "play-services-location", version.ref = "locationVersion"}
 #naver-map-location = {group = "io.github.fornewid", name = "naver-map-location", version.ref = "locationVersion"}
 ted-clustering = { group = "io.github.ParkSangGwon", name = "tedclustering-naver", version.ref = "tedClusteringVersion" }
+coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecylceRuntileCompose" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltVersion" }
+jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 
