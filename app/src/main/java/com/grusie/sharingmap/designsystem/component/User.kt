@@ -3,6 +3,7 @@ package com.grusie.sharingmap.designsystem.component
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,10 +27,15 @@ import com.grusie.sharingmap.ui.model.UserUiModel
 @Composable
 fun UserLazyColumn(
     users: List<UserUiModel>,
+    isBottomSheet: Boolean = true,
     modifier: Modifier = Modifier,
 ) {
-    LazyColumn(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.6f)) {
-        itemsIndexed(users) { index, user ->
+    LazyColumn(
+        modifier = if (isBottomSheet) modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.6f) else modifier.fillMaxSize()
+    ) {
+        itemsIndexed(users) { _, user ->
             UserItem(user)
         }
     }
@@ -46,9 +52,9 @@ fun UserItem(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier =
-                Modifier
-                    .size(32.dp)
-                    .clip(RoundedCornerShape(8.dp)),
+            Modifier
+                .size(32.dp)
+                .clip(RoundedCornerShape(8.dp)),
         )
         Spacer(modifier = Modifier.width(10.dp))
         Text(
@@ -56,9 +62,9 @@ fun UserItem(
             style = Typography.bodySmall,
             color = Black,
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.CenterVertically),
+            Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterVertically),
         )
     }
 }
