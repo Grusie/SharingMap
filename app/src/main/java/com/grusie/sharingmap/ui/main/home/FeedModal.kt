@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.DialogWindowProvider
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.component.ModalStateItem
@@ -29,12 +30,11 @@ import com.grusie.sharingmap.designsystem.component.ModalTwoLinesItem
 import com.grusie.sharingmap.designsystem.theme.Red
 import com.grusie.sharingmap.designsystem.theme.SharingMapTheme
 import com.grusie.sharingmap.designsystem.theme.White
-
 @Composable
 fun FeedModal(onDismiss: () -> Unit = {}, modifier: Modifier = Modifier) {
     var isChecked by remember { mutableStateOf(true) }
 
-    Dialog(onDismissRequest = onDismiss) {
+    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
         val dialogWindowProvider = LocalView.current.parent as DialogWindowProvider
         dialogWindowProvider.window.setGravity(Gravity.BOTTOM or Gravity.CENTER)
 
@@ -42,7 +42,7 @@ fun FeedModal(onDismiss: () -> Unit = {}, modifier: Modifier = Modifier) {
             isChecked = isChecked,
             onCheckChanged = { isChecked = !isChecked },
             onClick = { /*TODO*/ },
-            modifier = Modifier.padding(bottom = 34.dp),
+            modifier = modifier.padding(bottom = 34.dp).padding(horizontal = 20.dp),
         )
     }
 }
