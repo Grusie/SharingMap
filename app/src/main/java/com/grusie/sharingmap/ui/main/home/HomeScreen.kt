@@ -44,7 +44,7 @@ import com.grusie.sharingmap.ui.model.FeedType
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(viewModel: HomeScreenViewModel = hiltViewModel()) {
+fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var isModalDialogOpen by rememberSaveable { mutableStateOf(false) }
     var isArchivingBottomSheetOpen by rememberSaveable { mutableStateOf(false) }

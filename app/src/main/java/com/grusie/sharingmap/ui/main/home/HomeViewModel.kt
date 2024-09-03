@@ -10,11 +10,11 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeScreenViewModel
+class HomeViewModel
     @Inject
     constructor() : ViewModel() {
-        private val _uiState = MutableStateFlow(HomeScreenUiState())
-        val uiState: StateFlow<HomeScreenUiState> = _uiState
+        private val _uiState = MutableStateFlow(HomeUiState())
+        val uiState: StateFlow<HomeUiState> = _uiState
 
         init {
             getFeeds()
