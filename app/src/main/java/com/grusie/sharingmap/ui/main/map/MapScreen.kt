@@ -1,43 +1,81 @@
 package com.grusie.sharingmap.ui.main.map
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.grusie.sharingmap.R
 import com.grusie.sharingmap.data.MarkerItem
+import com.grusie.sharingmap.designsystem.theme.White
 import com.naver.maps.map.compose.DisposableMapEffect
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.LocationTrackingMode
 import com.naver.maps.map.compose.MapProperties
 import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.NaverMap
+import com.naver.maps.map.compose.rememberCameraPositionState
+import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.util.MapConstants
 import ted.gun0912.clustering.naver.TedNaverClustering
 
 @OptIn(ExperimentalNaverMapApi::class)
 @Composable
 fun MapScreen() {
-    var mapProperties by remember {
+    var isFollowMode by remember { mutableStateOf(true) }
+    val locationTrackingMode =
+        if (isFollowMode) LocationTrackingMode.Follow else LocationTrackingMode.NoFollow
+    val mapProperties by remember {
         mutableStateOf(
-            MapProperties(maxZoom = 10.0, minZoom = 5.0)
+            MapProperties(
+                maxZoom = 20.0,
+                minZoom = 5.0,
+                locationTrackingMode = locationTrackingMode
+            ),
         )
     }
+
     var mapUiSettings by remember {
         mutableStateOf(
             MapUiSettings(isLocationButtonEnabled = false)
         )
     }
+
+    val cameraPositionState = rememberCameraPositionState()
+
+    val isCompassEnabled = locationTrackingMode == LocationTrackingMode.Follow
+
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         NaverMap(
             modifier = Modifier.fillMaxSize(),
-            properties = mapProperties,
-            uiSettings = mapUiSettings
+            properties = mapProperties.copy(locationTrackingMode = locationTrackingMode),
+            uiSettings = mapUiSettings,
+            cameraPositionState = cameraPositionState,
+            locationSource = rememberFusedLocationSource(
+                isCompassEnabled = isCompassEnabled,
+            ),
+            onOptionChange = {
+                cameraPositionState.locationTrackingMode?.let {
+                    isFollowMode = it == LocationTrackingMode.Follow
+                }
+            }
         ) {
             val items = mutableListOf<MarkerItem>()
 
@@ -68,5 +106,39 @@ fun MapScreen() {
                 }
             }
         }
+
+        CustomLocationButtonView(
+            modifier = Modifier.align(Alignment.BottomEnd),
+            onClick = {
+                isFollowMode = true
+            }
+        )
     }
+}
+
+@Composable
+fun CustomLocationButtonView(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier
+            .size(40.dp)
+            .padding(end = 8.dp, bottom = 8.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = White),
+        shape = RoundedCornerShape(12.dp),
+        contentPadding = PaddingValues(6.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_my_location),
+            contentDescription = "my location button"
+        )
+    }
+}
+
+@Composable
+@Preview
+fun CustomLocationButtonPreview() {
+    CustomLocationButtonView()
 }
