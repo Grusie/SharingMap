@@ -50,9 +50,13 @@ fun MapScreen() {
         )
     }
 
-    var mapUiSettings by remember {
+    val mapUiSettings by remember {
         mutableStateOf(
-            MapUiSettings(isLocationButtonEnabled = false)
+            MapUiSettings(
+                isZoomControlEnabled = false,
+                isTiltGesturesEnabled = false,
+                isRotateGesturesEnabled = false
+            )
         )
     }
 
