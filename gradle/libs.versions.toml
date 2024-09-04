@@ -20,6 +20,9 @@ jetbrainsKotlinJvm = "1.9.0"
 coil = "2.7.0"
 lifecylceRuntileCompose = "2.8.4"
 hiltNavigationCompose = "1.0.0"
+room = "2.6.1"
+coroutines = "1.8.1"
+inject = "1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -49,6 +52,10 @@ ted-clustering = { group = "io.github.ParkSangGwon", name = "tedclustering-naver
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecylceRuntileCompose" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose"}
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room"}
+coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines"}
+javax-inject = {group = "javax.inject", name ="javax.inject", version.ref = "inject"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

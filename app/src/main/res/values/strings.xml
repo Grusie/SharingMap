@@ -23,4 +23,10 @@
     <string name="feed_bottom_sheet_comments_title">댓글</string>
     <string name="feed_bottom_sheet_comments_empty_title">댓글이 없습니다.</string>
 
+    <!-- Search -->
+    <string name= "search_title">검색</string>
+    <string name= "search_history_title">검색 기록</string>
+    <string name= "search_result_title">검색 결과</string>
+    <string name= "search_history_remove_title">기록 삭제</string>
+
 </resources>

@@ -18,6 +18,12 @@ val pretendard =
         Font(R.font.pretendard_semibold, FontWeight.SemiBold, FontStyle.Normal),
     )
 
+/**
+ *  400 - Normal
+ *  500 - Medium
+ *  600 - SemiBold
+ *  700 - Bold
+ * **/
 // Set of Material typography styles to start with
 val Typography =
     Typography(
