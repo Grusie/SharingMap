@@ -15,4 +15,7 @@ val GrayA8AAAB = Color(0xFFA8AAAB)
 val GrayE6E6E6 = Color(0xFFE6E6E6)
 val GrayE8E9EA = Color(0xFFE8E9EA)
 
+val RedFF3D00 = Color(0xFFFF3D00)
+val Blue458FFF = Color(0xFF458FFF)
+
 val GrayE8EAEB_30 = Color(0x40E8EAEB)

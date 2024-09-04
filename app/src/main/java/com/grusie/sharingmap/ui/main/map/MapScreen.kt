@@ -1,5 +1,9 @@
 package com.grusie.sharingmap.ui.main.map
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,13 +20,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.data.MarkerItem
+import com.grusie.sharingmap.designsystem.theme.Blue458FFF
+import com.grusie.sharingmap.designsystem.theme.RedFF3D00
 import com.grusie.sharingmap.designsystem.theme.White
+import com.grusie.sharingmap.ui.model.MarkerType
+import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.DisposableMapEffect
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
@@ -31,6 +40,8 @@ import com.naver.maps.map.compose.MapUiSettings
 import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.MapConstants
 import ted.gun0912.clustering.naver.TedNaverClustering
 
@@ -92,8 +103,8 @@ fun MapScreen() {
                 items.add(
                     MarkerItem(
                         it.toLong(),
-                        height * Math.random() + south,
-                        width * Math.random() + west
+                        LatLng(height * Math.random() + south, width * Math.random() + west),
+                        if (it % 2 == 0) MarkerType.Mine else MarkerType.Follower
                     )
                 )
             }
@@ -102,7 +113,12 @@ fun MapScreen() {
             var clusterManager by remember { mutableStateOf<TedNaverClustering<MarkerItem>?>(null) }
             DisposableMapEffect(items) { map ->
                 if (clusterManager == null) {
-                    clusterManager = TedNaverClustering.with<MarkerItem>(context, map).make()
+                    clusterManager = TedNaverClustering
+                        .with<MarkerItem>(context, map)
+                        .customMarker { clusterItem ->
+                            createCustomMarker(context, clusterItem)
+                        }
+                        .make()
                 }
                 clusterManager?.addItems(items)
                 onDispose {
@@ -138,6 +154,40 @@ fun CustomLocationButtonView(
             painter = painterResource(id = R.drawable.ic_my_location),
             contentDescription = "my location button"
         )
+    }
+}
+
+fun createCustomMarker(context: Context, markerItem: MarkerItem): Marker {
+    // dp를 px로 변환
+
+    val (markerColor, markerSize) = when (markerItem.markerType) {
+        MarkerType.Mine -> {
+            Pair(RedFF3D00, 21.dp)
+        }
+
+        MarkerType.Follower -> {
+            Pair(Blue458FFF, 21.dp)
+        }
+    }
+
+    val density = context.resources.displayMetrics.density
+    val diameterPx = (markerSize.value * density).toInt()
+
+    val bitmap = Bitmap.createBitmap(diameterPx, diameterPx, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    val paint = Paint().apply {
+        this.color = markerColor.toArgb()
+        this.isAntiAlias = true
+    }
+
+    val radius = diameterPx / 2f
+    canvas.drawCircle(radius, radius, radius, paint)
+
+    return Marker().apply {
+        this.position = markerItem.position
+        this.icon = OverlayImage.fromBitmap(bitmap)
+        this.width = diameterPx
+        this.height = diameterPx
     }
 }
 
