@@ -7,8 +7,8 @@ import javax.inject.Inject
 class InsertTagSearchUseCase @Inject constructor(
     private val searchRepository: SearchRepository
 ) {
-    suspend operator fun invoke(tagSearch: TagSearch) {
-        searchRepository.insertTagSearch(tagSearch)
+    suspend operator fun invoke(tagSearch: TagSearch): Result<Unit> {
+        return searchRepository.insertTagSearch(tagSearch)
     }
 
 }

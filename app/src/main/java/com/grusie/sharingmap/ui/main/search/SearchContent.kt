@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text2.input.TextFieldState
-import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +27,7 @@ import com.grusie.sharingmap.designsystem.component.UserLazyColumn
 import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.GrayE6E6E6
 import com.grusie.sharingmap.designsystem.theme.Typography
+import com.grusie.sharingmap.ui.model.TagUiModel
 import com.grusie.sharingmap.ui.model.UserUiModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -38,9 +38,12 @@ fun SearchContent(
     searchText: TextFieldState,
     onUserItemClick: (UserUiModel) -> Unit,
     onUserHistoryDelete: () -> Unit,
+    onTagItemClick: (TagUiModel) -> Unit,
+    onTagHistoryDelete: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     SearchContentItem(
+        selectedTabIndex = selectedTabIndex,
         lazyColumn = {
             if (selectedTabIndex == 0) UserLazyColumn(
                 users = if (searchText.text.isEmpty()) uiState.userSearchHistory else uiState.userSearch,
@@ -49,13 +52,14 @@ fun SearchContent(
                 onClick = onUserItemClick,
             ) else {
                 TagLazyColumn(
-                    tags =
-                    listOf(),
-                    modifier = Modifier.fillMaxHeight()
+                    tags = if (searchText.text.isEmpty()) uiState.tagSearchHistory else uiState.tagSearch,
+                    modifier = Modifier.fillMaxHeight(),
+                    onClick = onTagItemClick
                 )
             }
         },
         onUserHistoryDelete = onUserHistoryDelete,
+        onTagHistoryDelete = onTagHistoryDelete,
         search = searchText
     )
 }
@@ -63,8 +67,10 @@ fun SearchContent(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SearchContentItem(
+    selectedTabIndex: Int,
     lazyColumn: @Composable () -> Unit,
     onUserHistoryDelete: () -> Unit,
+    onTagHistoryDelete: () -> Unit,
     search: TextFieldState,
     modifier: Modifier = Modifier
 ) {
@@ -91,7 +97,7 @@ fun SearchContentItem(
                 Text(
                     text = stringResource(id = R.string.search_history_remove_title),
                     style = Typography.titleSmall,
-                    modifier = Modifier.clickable { onUserHistoryDelete() }
+                    modifier = Modifier.clickable { if (selectedTabIndex == 0) onUserHistoryDelete() else onTagHistoryDelete() }
                 )
             }
         }
@@ -107,16 +113,24 @@ fun SearchContentItem(
 }
 
 @Composable
-fun TagLazyColumn(tags: List<String>, modifier: Modifier = Modifier) {
+fun TagLazyColumn(
+    tags: List<TagUiModel>,
+    onClick: (TagUiModel) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
         itemsIndexed(tags) { _, tag ->
             Text(
-                text = tag,
+                text = "${tag.name} +${tag.count}",
                 style = Typography.titleSmall,
                 color = Black,
-                modifier = modifier.padding(vertical = 17.dp, horizontal = 20.dp)
+                modifier = modifier
+                    .padding(vertical = 17.dp, horizontal = 20.dp)
+                    .clickable {
+                        onClick(tag)
+                    }
             )
         }
     }

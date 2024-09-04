@@ -10,9 +10,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -28,10 +25,6 @@ import com.grusie.sharingmap.ui.model.SearchTab
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
-    var selectedTabIndex by rememberSaveable {
-        mutableIntStateOf(0)
-    }
-
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
@@ -47,17 +40,21 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
         content = {
             Column(modifier = Modifier.padding(top = it.calculateTopPadding())) {
                 CustomTab(
-                    selectedTabIndex = selectedTabIndex,
-                    onClick = { selectedTabIndex = it },
+                    selectedTabIndex = uiState.selectedTabIndex,
+                    onClick = { viewModel.setSelectedTabIndex(it) },
                     tabs = SearchTab.entries.map { it.title })
                 SearchContent(
-                    selectedTabIndex = selectedTabIndex,
+                    selectedTabIndex = uiState.selectedTabIndex,
                     uiState = uiState,
                     searchText = viewModel.searchTextField,
                     onUserItemClick = {
                         viewModel.insertUserSearchHistory(it)
                     },
-                    onUserHistoryDelete = viewModel::deleteAllUserSearchHistory
+                    onUserHistoryDelete = viewModel::deleteAllUserSearchHistory,
+                    onTagItemClick = {
+                        viewModel.insertTagSearchHistory(it)
+                    },
+                    onTagHistoryDelete = viewModel::deleteAllTagSearchHistory
                 )
             }
         }

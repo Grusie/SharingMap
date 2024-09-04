@@ -6,9 +6,11 @@ import androidx.compose.foundation.text2.input.textAsFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gruise.domain.usecase.search.SearchUseCase
+import com.grusie.sharingmap.data.fakeTagSearch
 import com.grusie.sharingmap.data.fakeUserSearch
 import com.grusie.sharingmap.ui.mapper.toDomain
 import com.grusie.sharingmap.ui.mapper.toUiModel
+import com.grusie.sharingmap.ui.model.TagUiModel
 import com.grusie.sharingmap.ui.model.UserUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,19 +30,24 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
 
     val searchTextField = TextFieldState()
-
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     init {
         searchTextField.textAsFlow().debounce(500).mapLatest {
-            getUserSearch()
+            if (uiState.value.selectedTabIndex == 0) getUserSearch() else getTagSearch()
         }.onEach {
             it.onSuccess {
-                _uiState.value = _uiState.value.copy(it)
+                if(uiState.value.selectedTabIndex == 0) _uiState.value = _uiState.value.copy(userSearch = it.map { it as UserUiModel})
+                else _uiState.value = _uiState.value.copy(tagSearch = it.map { it as TagUiModel })
             }
         }.launchIn(viewModelScope)
         getUserSearchHistory()
+        getTagSearchHistory()
+    }
+
+    fun setSelectedTabIndex(index: Int) {
+        _uiState.value = _uiState.value.copy(selectedTabIndex = index)
     }
 
     private fun getUserSearch(): Result<List<UserUiModel>> {
@@ -71,6 +78,39 @@ class SearchViewModel @Inject constructor(
     fun deleteAllUserSearchHistory() {
         viewModelScope.launch {
             searchUseCase.deleteAllUserSearchUseCase().onFailure {
+                //TODO 에러 처리
+            }
+        }
+    }
+
+    private fun getTagSearch(): Result<List<TagUiModel>> {
+        return Result.success(fakeTagSearch)
+    }
+
+    private fun getTagSearchHistory(){
+        viewModelScope.launch {
+            searchUseCase.getAllTagSearchUseCase().collect { result ->
+                result.onSuccess { tagSearchList ->
+                    _uiState.value = _uiState.value.copy(
+                        tagSearchHistory = tagSearchList.map { it.toUiModel() }
+                    )
+                }.onFailure {
+                }
+            }
+        }
+    }
+
+    fun insertTagSearchHistory(tagSearch: TagUiModel) {
+        viewModelScope.launch {
+            searchUseCase.insertTagSearchUseCase(tagSearch.toDomain()).onFailure {
+                //TODO 에러 처리
+            }
+        }
+    }
+
+    fun deleteAllTagSearchHistory() {
+        viewModelScope.launch {
+            searchUseCase.deleteAllTagSearchUseCase().onFailure {
                 //TODO 에러 처리
             }
         }
