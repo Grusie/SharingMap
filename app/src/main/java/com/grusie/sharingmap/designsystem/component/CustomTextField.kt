@@ -2,6 +2,7 @@ package com.grusie.sharingmap.designsystem.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,6 +30,7 @@ import com.grusie.sharingmap.designsystem.theme.Typography
 @Composable
 fun CustomTextField(
     textFieldState: TextFieldState,
+    hintText: String,
     modifier: Modifier = Modifier.fillMaxWidth(),
     cornerShape: RoundedCornerShape = RoundedCornerShape(12.dp),
     backgroundColor: Color = GrayF1F4F7,
@@ -49,14 +51,16 @@ fun CustomTextField(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Spacer(modifier = Modifier.padding(start = 16.dp))
-                if (textFieldState.text.isEmpty()) {
-                    Text(
-                        text = stringResource(id = R.string.feed_bottom_sheet_comment_hint_title),
-                        style = Typography.headlineSmall,
-                        color = Gray9A9C9F,
-                    )
+                Box {
+                    if (textFieldState.text.isEmpty()) {
+                        Text(
+                            text = hintText,
+                            style = Typography.headlineSmall,
+                            color = Gray9A9C9F,
+                        )
+                    }
+                    innerTextField()
                 }
-                innerTextField()
             }
         },
     )
@@ -66,5 +70,5 @@ fun CustomTextField(
 @Preview
 @Composable
 private fun CustomTextFieldPreview() {
-    CustomTextField(textFieldState = TextFieldState(initialText = ""))
+    CustomTextField(textFieldState = TextFieldState(initialText = ""), hintText = "")
 }
