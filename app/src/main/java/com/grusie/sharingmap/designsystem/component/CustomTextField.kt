@@ -2,6 +2,7 @@ package com.grusie.sharingmap.designsystem.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -50,14 +51,16 @@ fun CustomTextField(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Spacer(modifier = Modifier.padding(start = 16.dp))
-                if (textFieldState.text.isEmpty()) {
-                    Text(
-                        text = hintText,
-                        style = Typography.headlineSmall,
-                        color = Gray9A9C9F,
-                    )
+                Box {
+                    if (textFieldState.text.isEmpty()) {
+                        Text(
+                            text = hintText,
+                            style = Typography.headlineSmall,
+                            color = Gray9A9C9F,
+                        )
+                    }
+                    innerTextField()
                 }
-                innerTextField()
             }
         },
     )
