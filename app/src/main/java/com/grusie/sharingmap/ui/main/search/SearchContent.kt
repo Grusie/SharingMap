@@ -1,6 +1,7 @@
 package com.grusie.sharingmap.ui.main.search
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -26,29 +28,46 @@ import com.grusie.sharingmap.designsystem.component.UserLazyColumn
 import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.GrayE6E6E6
 import com.grusie.sharingmap.designsystem.theme.Typography
+import com.grusie.sharingmap.ui.model.UserUiModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SearchContent(selectedTabIndex: Int, modifier: Modifier = Modifier) {
-    SearchContentItem(lazyColumn = {
-        if (selectedTabIndex == 0) UserLazyColumn(
-            users = listOf(),
-            isBottomSheet = true,
-            modifier = Modifier.fillMaxHeight()
-        ) else {
-            TagLazyColumn(
-                tags =
-                listOf(),
-                modifier = Modifier.fillMaxHeight()
-            )
-        }
-    })
+fun SearchContent(
+    selectedTabIndex: Int,
+    uiState: SearchUiState,
+    searchText: TextFieldState,
+    onUserItemClick: (UserUiModel) -> Unit,
+    onUserHistoryDelete: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    SearchContentItem(
+        lazyColumn = {
+            if (selectedTabIndex == 0) UserLazyColumn(
+                users = if (searchText.text.isEmpty()) uiState.userSearchHistory else uiState.userSearch,
+                isBottomSheet = true,
+                modifier = Modifier.fillMaxHeight(),
+                onClick = onUserItemClick,
+            ) else {
+                TagLazyColumn(
+                    tags =
+                    listOf(),
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
+        },
+        onUserHistoryDelete = onUserHistoryDelete,
+        search = searchText
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SearchContentItem(lazyColumn: @Composable () -> Unit, modifier: Modifier = Modifier) {
-    val search = rememberTextFieldState()
+fun SearchContentItem(
+    lazyColumn: @Composable () -> Unit,
+    onUserHistoryDelete: () -> Unit,
+    search: TextFieldState,
+    modifier: Modifier = Modifier
+) {
     Column {
         Spacer(modifier = modifier.height(16.dp))
         CustomTextField(
@@ -72,6 +91,7 @@ fun SearchContentItem(lazyColumn: @Composable () -> Unit, modifier: Modifier = M
                 Text(
                     text = stringResource(id = R.string.search_history_remove_title),
                     style = Typography.titleSmall,
+                    modifier = Modifier.clickable { onUserHistoryDelete() }
                 )
             }
         }

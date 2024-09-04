@@ -1,5 +1,6 @@
 package com.grusie.sharingmap.designsystem.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.grusie.sharingmap.designsystem.theme.Black
@@ -28,6 +28,7 @@ import com.grusie.sharingmap.ui.model.UserUiModel
 fun UserLazyColumn(
     users: List<UserUiModel>,
     isBottomSheet: Boolean = true,
+    onClick: (UserUiModel) -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -36,7 +37,7 @@ fun UserLazyColumn(
             .fillMaxHeight(0.6f) else modifier.fillMaxSize()
     ) {
         itemsIndexed(users) { _, user ->
-            UserItem(user)
+            UserItem(user, onClick = onClick)
         }
     }
 }
@@ -45,8 +46,13 @@ fun UserLazyColumn(
 fun UserItem(
     user: UserUiModel,
     modifier: Modifier = Modifier,
+    onClick: (UserUiModel) -> Unit,
 ) {
-    Row(modifier = modifier.padding(vertical = 8.dp, horizontal = 20.dp)) {
+    Row(modifier = modifier
+        .padding(vertical = 8.dp, horizontal = 20.dp)
+        .clickable {
+            onClick(user)
+        }) {
         AsyncImage(
             model = user.profileImage,
             contentDescription = null,
@@ -67,10 +73,4 @@ fun UserItem(
                 .align(Alignment.CenterVertically),
         )
     }
-}
-
-@Preview
-@Composable
-private fun UserItemPreview() {
-    UserLazyColumn(users = listOf(UserUiModel(1, "", "김민수"), UserUiModel(2, "", "신나라")))
 }

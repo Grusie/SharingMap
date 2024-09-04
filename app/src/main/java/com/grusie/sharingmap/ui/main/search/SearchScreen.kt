@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.component.CustomTab
 import com.grusie.sharingmap.designsystem.theme.Typography
@@ -25,10 +27,12 @@ import com.grusie.sharingmap.ui.model.SearchTab
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun SearchScreen() {
+fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
     var selectedTabIndex by rememberSaveable {
         mutableIntStateOf(0)
     }
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -46,7 +50,15 @@ fun SearchScreen() {
                     selectedTabIndex = selectedTabIndex,
                     onClick = { selectedTabIndex = it },
                     tabs = SearchTab.entries.map { it.title })
-                SearchContent(selectedTabIndex = selectedTabIndex)
+                SearchContent(
+                    selectedTabIndex = selectedTabIndex,
+                    uiState = uiState,
+                    searchText = viewModel.searchTextField,
+                    onUserItemClick = {
+                        viewModel.insertUserSearchHistory(it)
+                    },
+                    onUserHistoryDelete = viewModel::deleteAllUserSearchHistory
+                )
             }
         }
     )
