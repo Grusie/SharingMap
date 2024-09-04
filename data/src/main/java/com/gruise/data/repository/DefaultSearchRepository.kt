@@ -3,6 +3,7 @@ package com.gruise.data.repository
 import com.gruise.data.datasource.SearchDataSource
 import com.gruise.data.mapper.toDomain
 import com.gruise.data.mapper.toLocalData
+import com.gruise.domain.model.TagSearch
 import com.gruise.domain.model.UserSearch
 import com.gruise.domain.repository.SearchRepository
 import kotlinx.coroutines.flow.Flow
@@ -36,6 +37,36 @@ class DefaultSearchRepository @Inject constructor(
     override suspend fun insertUserSearch(userSearch: UserSearch): Result<Unit> {
         return try {
             searchDataSource.insertUserSearch(userSearch.toLocalData())
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun getAllTagSearch(): Flow<Result<List<TagSearch>>> {
+        return flow  {
+            try {
+                searchDataSource.getAllTagSearch().collect {
+                    emit(Result.success(it.map { it.toDomain() }))
+                }
+            } catch (e: Exception) {
+                emit(Result.failure(e))
+            }
+        }
+    }
+
+    override suspend fun deleteAllTagSearch(): Result<Unit> {
+        return try {
+            searchDataSource.deleteAllTagSearch()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun insertTagSearch(tagSearch: TagSearch): Result<Unit> {
+        return try {
+            searchDataSource.insertTagSearch(tagSearch.toLocalData())
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

@@ -2,6 +2,7 @@ package com.gruise.data.di
 
 import android.content.Context
 import androidx.room.Room
+import com.gruise.data.database.TagSearchDatabase
 import com.gruise.data.database.UserSearchDatabase
 import dagger.Module
 import dagger.Provides
@@ -24,5 +25,17 @@ object DatabaseModule {
     @Provides
     fun provideUserSearchDao(userSearchDatabase: UserSearchDatabase) =
         userSearchDatabase.getUserSearchDao()
+
+    @Singleton
+    @Provides
+    fun provideTagSearchDatabase(
+        @ApplicationContext context: Context,
+    ): TagSearchDatabase =
+        Room.databaseBuilder(context, TagSearchDatabase::class.java, "tagSearch.db").build()
+
+    @Singleton
+    @Provides
+    fun provideTagSearchDao(tagSearchDatabase: TagSearchDatabase) =
+        tagSearchDatabase.getTagSearchDao()
 
 }

@@ -1,8 +1,11 @@
 package com.gruise.data.di
 
 import com.gruise.domain.repository.SearchRepository
+import com.gruise.domain.usecase.search.DeleteAllTagSearchUseCase
 import com.gruise.domain.usecase.search.DeleteAllUserSearchUseCase
+import com.gruise.domain.usecase.search.GetAllTagSearchUseCase
 import com.gruise.domain.usecase.search.GetAllUserSearchUseCase
+import com.gruise.domain.usecase.search.InsertTagSearchUseCase
 import com.gruise.domain.usecase.search.InsertUserSearchUseCase
 import com.gruise.domain.usecase.search.SearchUseCase
 import dagger.Module
@@ -23,7 +26,10 @@ object UseCaseModule {
         return SearchUseCase(
             getAllUserSearchUseCase = GetAllUserSearchUseCase(searchRepository),
             deleteAllUserSearchUseCase = DeleteAllUserSearchUseCase(searchRepository),
-            insertUserSearchUseCase = InsertUserSearchUseCase(searchRepository)
+            insertUserSearchUseCase = InsertUserSearchUseCase(searchRepository),
+            getAllTagSearchUseCase = GetAllTagSearchUseCase(searchRepository),
+            insertTagSearchUseCase = InsertTagSearchUseCase(searchRepository),
+            deleteAllTagSearchUseCase = DeleteAllTagSearchUseCase(searchRepository)
         )
     }
 }
