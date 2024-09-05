@@ -29,4 +29,8 @@
     <string name= "search_result_title">검색 결과</string>
     <string name= "search_history_remove_title">기록 삭제</string>
 
+    <!-- MyPage -->
+    <string name="mypage_user_info_follower_count_text">팔로워 %d</string>
+    <string name="mypage_user_info_post_count_text">게시물 %d</string>
+
 </resources>
