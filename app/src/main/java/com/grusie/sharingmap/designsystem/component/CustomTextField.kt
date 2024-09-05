@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text2.BasicTextField2
+import androidx.compose.foundation.text2.input.TextFieldLineLimits
 import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +41,7 @@ fun CustomTextField(
         modifier = modifier.padding(horizontal = 20.dp, vertical = 8.dp),
         keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
         textStyle = Typography.headlineSmall.copy(color = Gray9A9C9F),
+        lineLimits = TextFieldLineLimits.SingleLine,
         decorator = { innerTextField ->
             Row(
                 modifier =
