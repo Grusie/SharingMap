@@ -55,13 +55,17 @@ fun CustomBottomSheet(
         containerColor = White,
         dragHandle = null,
     ) {
-        Column(modifier = Modifier.fillMaxWidth().wrapContentHeight()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
             HorizontalDivider(
                 modifier =
-                    Modifier
-                        .width(39.dp)
-                        .padding(top = 10.dp, bottom = 20.dp)
-                        .align(Alignment.CenterHorizontally),
+                Modifier
+                    .width(39.dp)
+                    .padding(top = 10.dp, bottom = 20.dp)
+                    .align(Alignment.CenterHorizontally),
                 thickness = 5.dp,
                 color = GrayE6E6E6,
             )
@@ -70,9 +74,9 @@ fun CustomBottomSheet(
                 style = Typography.displayMedium,
                 color = Black,
                 modifier =
-                    modifier
-                        .padding(vertical = 4.dp)
-                        .align(Alignment.CenterHorizontally),
+                modifier
+                    .padding(vertical = 4.dp)
+                    .align(Alignment.CenterHorizontally),
             )
             if (isEmpty) {
                 Text(
@@ -81,11 +85,11 @@ fun CustomBottomSheet(
                     color = Gray9A9C9F,
                     textAlign = TextAlign.Center,
                     modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .fillMaxHeight(0.6f)
-                            .padding(bottom = 34.dp)
-                            .wrapContentHeight(align = Alignment.CenterVertically),
+                    Modifier
+                        .fillMaxWidth()
+                        .fillMaxHeight(0.6f)
+                        .padding(bottom = 34.dp)
+                        .wrapContentHeight(align = Alignment.CenterVertically),
                 )
             } else {
                 content()
