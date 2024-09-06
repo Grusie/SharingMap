@@ -2,7 +2,11 @@ package com.grusie.sharingmap.designsystem.component
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,10 +28,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.grusie.sharingmap.designsystem.theme.Black
+import com.grusie.sharingmap.designsystem.theme.Blue
 import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
 import com.grusie.sharingmap.designsystem.theme.GrayE6E6E6
 import com.grusie.sharingmap.designsystem.theme.SharingMapTheme
@@ -36,6 +42,7 @@ import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.model.CommentUiModel
 import com.grusie.sharingmap.ui.model.UserUiModel
 import java.time.LocalDate
+import com.grusie.sharingmap.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -99,6 +106,75 @@ fun CustomBottomSheet(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomCreateCancelBottomSheet(
+    title: String,
+    createText: String,
+    content: @Composable () -> Unit,
+    sheetState: SheetState,
+    onDismiss: () -> Unit,
+    onCreateClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp),
+        containerColor = White,
+        dragHandle = null,
+    ) {
+        Column(modifier = modifier
+            .fillMaxWidth()
+            .fillMaxHeight(0.96f)) {
+            HorizontalDivider(
+                modifier =
+                Modifier
+                    .width(39.dp)
+                    .padding(top = 10.dp, bottom = 20.dp)
+                    .align(Alignment.CenterHorizontally),
+                thickness = 5.dp,
+                color = GrayE6E6E6,
+            )
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Row(modifier = modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(
+                        text = stringResource(id = R.string.custom_bottom_sheet_cancel_text),
+                        style = Typography.titleSmall,
+                        color = Black,
+                        modifier = Modifier
+                            .padding(vertical = 7.dp)
+                            .padding(horizontal = 20.dp)
+                    )
+                    Text(
+                        text = createText,
+                        style = Typography.titleSmall,
+                        color = Blue,
+                        modifier = Modifier
+                            .padding(vertical = 7.dp)
+                            .padding(end = 20.dp)
+                            .clickable {
+                                onCreateClick()
+                            }
+                    )
+                }
+                Text(
+                    text = title,
+                    style = Typography.displayMedium,
+                    color = Black,
+                    modifier = Modifier
+                        .padding(vertical = 4.dp)
+                        .align(Alignment.Center)
+                )
+            }
+            content()
+        }
+
+    }
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
@@ -119,96 +195,96 @@ fun CustomBottomSheetPreview(modifier: Modifier = Modifier) {
                     content = {
                         CommentContent(
                             comments =
-                                listOf(
-                                    CommentUiModel(
+                            listOf(
+                                CommentUiModel(
+                                    id = 1,
+                                    user =
+                                    UserUiModel(
                                         id = 1,
-                                        user =
-                                            UserUiModel(
-                                                id = 1,
-                                                profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                                                name = "김민수",
-                                            ),
-                                        content = "안녕하세요",
-                                        date = LocalDate.now(),
+                                        profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                                        name = "김민수",
                                     ),
-                                    CommentUiModel(
-                                        id = 1,
-                                        user =
-                                            UserUiModel(
-                                                id = 1,
-                                                profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                                                name = "김민수",
-                                            ),
-                                        content = "안녕하세요",
-                                        date = LocalDate.now(),
-                                    ),
-                                    CommentUiModel(
-                                        id = 1,
-                                        user =
-                                            UserUiModel(
-                                                id = 1,
-                                                profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                                                name = "김민수",
-                                            ),
-                                        content = "안녕하세요",
-                                        date = LocalDate.now(),
-                                    ),
-                                    CommentUiModel(
-                                        id = 1,
-                                        user =
-                                            UserUiModel(
-                                                id = 1,
-                                                profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                                                name = "김민수",
-                                            ),
-                                        content = "안녕하세요",
-                                        date = LocalDate.now(),
-                                    ),
-                                    CommentUiModel(
-                                        id = 1,
-                                        user =
-                                            UserUiModel(
-                                                id = 1,
-                                                profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                                                name = "김민수",
-                                            ),
-                                        content = "안녕하세요",
-                                        date = LocalDate.now(),
-                                    ),
-                                    CommentUiModel(
-                                        id = 1,
-                                        user =
-                                            UserUiModel(
-                                                id = 1,
-                                                profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                                                name = "김민수",
-                                            ),
-                                        content = "안녕하세요",
-                                        date = LocalDate.now(),
-                                    ),
-                                    CommentUiModel(
-                                        id = 1,
-                                        user =
-                                            UserUiModel(
-                                                id = 1,
-                                                profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                                                name = "김민수",
-                                            ),
-                                        content = "안녕하세요",
-                                        date = LocalDate.now(),
-                                    ),
-                                    CommentUiModel(
-                                        id = 1,
-                                        user =
-                                            UserUiModel(
-                                                id = 1,
-                                                profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                                                name = "김민수",
-                                            ),
-                                        content = "안녕하세요",
-                                        date = LocalDate.now(),
-                                    ),
+                                    content = "안녕하세요",
+                                    date = LocalDate.now(),
                                 ),
+                                CommentUiModel(
+                                    id = 1,
+                                    user =
+                                    UserUiModel(
+                                        id = 1,
+                                        profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                                        name = "김민수",
+                                    ),
+                                    content = "안녕하세요",
+                                    date = LocalDate.now(),
+                                ),
+                                CommentUiModel(
+                                    id = 1,
+                                    user =
+                                    UserUiModel(
+                                        id = 1,
+                                        profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                                        name = "김민수",
+                                    ),
+                                    content = "안녕하세요",
+                                    date = LocalDate.now(),
+                                ),
+                                CommentUiModel(
+                                    id = 1,
+                                    user =
+                                    UserUiModel(
+                                        id = 1,
+                                        profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                                        name = "김민수",
+                                    ),
+                                    content = "안녕하세요",
+                                    date = LocalDate.now(),
+                                ),
+                                CommentUiModel(
+                                    id = 1,
+                                    user =
+                                    UserUiModel(
+                                        id = 1,
+                                        profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                                        name = "김민수",
+                                    ),
+                                    content = "안녕하세요",
+                                    date = LocalDate.now(),
+                                ),
+                                CommentUiModel(
+                                    id = 1,
+                                    user =
+                                    UserUiModel(
+                                        id = 1,
+                                        profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                                        name = "김민수",
+                                    ),
+                                    content = "안녕하세요",
+                                    date = LocalDate.now(),
+                                ),
+                                CommentUiModel(
+                                    id = 1,
+                                    user =
+                                    UserUiModel(
+                                        id = 1,
+                                        profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                                        name = "김민수",
+                                    ),
+                                    content = "안녕하세요",
+                                    date = LocalDate.now(),
+                                ),
+                                CommentUiModel(
+                                    id = 1,
+                                    user =
+                                    UserUiModel(
+                                        id = 1,
+                                        profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                                        name = "김민수",
+                                    ),
+                                    content = "안녕하세요",
+                                    date = LocalDate.now(),
+                                ),
+                            ),
                         )
                     },
                     sheetState = sheetState,
