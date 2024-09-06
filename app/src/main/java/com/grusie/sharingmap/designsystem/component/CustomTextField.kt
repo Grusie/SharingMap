@@ -29,7 +29,7 @@ import com.grusie.sharingmap.designsystem.theme.Typography
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CustomTextField(
+fun CustomTextFieldWithBackground(
     textFieldState: TextFieldState,
     hintText: String,
     modifier: Modifier = Modifier.fillMaxWidth(),
@@ -45,11 +45,11 @@ fun CustomTextField(
         decorator = { innerTextField ->
             Row(
                 modifier =
-                    modifier
-                        .clip(shape = cornerShape)
-                        .background(color = backgroundColor)
-                        .padding(vertical = 15.dp)
-                        .padding(end = 16.dp),
+                modifier
+                    .clip(shape = cornerShape)
+                    .background(color = backgroundColor)
+                    .padding(vertical = 15.dp)
+                    .padding(end = 16.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Spacer(modifier = Modifier.padding(start = 16.dp))
