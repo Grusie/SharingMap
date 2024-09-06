@@ -1,5 +1,7 @@
 package com.grusie.sharingmap.ui.main.mypage
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import com.grusie.sharingmap.data.fakeFeeds
 import com.grusie.sharingmap.data.fakeStorage
@@ -11,9 +13,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
+@OptIn(ExperimentalFoundationApi::class)
 @HiltViewModel
 class MyPageViewModel @Inject constructor(): ViewModel() {
 
+    val storageTitleTextField = TextFieldState()
     private val _uiState = MutableStateFlow(MyPageUiState())
     val uiState: StateFlow<MyPageUiState> = _uiState.asStateFlow()
 
