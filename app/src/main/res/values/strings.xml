@@ -32,5 +32,6 @@
     <!-- MyPage -->
     <string name="mypage_user_info_follower_count_text">팔로워 %d</string>
     <string name="mypage_user_info_post_count_text">게시물 %d</string>
+    <string name="mypage_storage_description_text">%d개의 장소가 있습니다.</string>
 
 </resources>

@@ -68,6 +68,7 @@ fun ModalTwoLinesItem(
     title: String,
     description: String,
     descriptionColor: Color,
+    backgroundColor: Color = GrayF1F4F7,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -75,7 +76,7 @@ fun ModalTwoLinesItem(
         modifier =
             modifier
                 .clip(RoundedCornerShape(12.dp))
-                .background(color = GrayF1F4F7)
+                .background(color = backgroundColor)
                 .singleClickable { onClick() },
     ) {
         Image(
