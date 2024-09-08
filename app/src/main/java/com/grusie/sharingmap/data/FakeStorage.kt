@@ -6,7 +6,8 @@ val fakeStorage = listOf(
     StorageUiModel(
         id = 1,
         title = "보관함1",
-        count = 10
+        count = 10,
+        feeds = fakeFeeds
     ),
     StorageUiModel(
         id = 2,

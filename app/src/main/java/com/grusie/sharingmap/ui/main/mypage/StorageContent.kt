@@ -36,7 +36,7 @@ fun StorageLazyColumn(
     isOwnUser: Boolean,
     storages: List<StorageUiModel>,
     onAddClick: () -> Unit,
-    onClick: (Long) -> Unit,
+    onClick: (StorageUiModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(modifier = modifier) {
@@ -58,7 +58,7 @@ fun StorageLazyColumn(
         items(storages.size) {
             StorageItem(
                 storage = storages[it],
-                onClick = { onClick(storages[it].id) },
+                onClick = { onClick(storages[it]) },
                 modifier = Modifier.padding(vertical = 8.dp, horizontal = 14.dp)
             )
         }
