@@ -41,7 +41,7 @@ fun CommentContent(
     val comment = rememberTextFieldState()
     Column(modifier = modifier.fillMaxWidth()) {
         CommentLazyColumn(comments = comments)
-        CustomTextField(
+        CustomTextFieldWithBackground(
             textFieldState = comment,
             hintText = stringResource(id = R.string.feed_bottom_sheet_comment_hint_title)
         )

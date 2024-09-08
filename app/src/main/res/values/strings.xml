@@ -32,5 +32,14 @@
     <!-- MyPage -->
     <string name="mypage_user_info_follower_count_text">팔로워 %d</string>
     <string name="mypage_user_info_post_count_text">게시물 %d</string>
+    <string name="mypage_storage_description_text">%d개의 장소가 있습니다.</string>
+    <string name="mypage_storages_add_title">보관함 만들기</string>
+    <string name="mypage_storages_add_text">새로운 보관함을 만듭니다.</string>
+    <string name="mypage_storage_title">보관함 제목</string>
+    <string name="mypage_storage_title_hint_text">제목 입력…</string>
+    <string name="mypage_storage_create_title">생성</string>
+
+    <!-- Custom Bottom Sheet -->
+    <string name="custom_bottom_sheet_cancel_text">취소</string>
 
 </resources>
