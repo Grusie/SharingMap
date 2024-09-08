@@ -22,22 +22,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import com.google.gson.Gson
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.component.CustomCreateCancelBottomSheet
 import com.grusie.sharingmap.designsystem.component.CustomTab
 import com.grusie.sharingmap.designsystem.component.Feed
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.ui.model.MyPageTab
+import com.grusie.sharingmap.ui.navigation.main.NavItem
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel()) {
+fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: NavController) {
 
     val uiState: MyPageUiState by viewModel.uiState.collectAsStateWithLifecycle()
     var isStorageBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
@@ -53,8 +55,11 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel()) {
         content = {
             Column(modifier = Modifier.padding(it)) {
                 MyUserInfo(user = uiState.user)
-                CustomTab(selectedTabIndex = uiState.selectedTabIndex, onClick = viewModel::setSelectedTabIndex, tabs = MyPageTab.entries.map { it.title })
-                if(uiState.selectedTabIndex == 0)  {
+                CustomTab(
+                    selectedTabIndex = uiState.selectedTabIndex,
+                    onClick = viewModel::setSelectedTabIndex,
+                    tabs = MyPageTab.entries.map { it.title })
+                if (uiState.selectedTabIndex == 0) {
                     LazyColumn {
                         items(uiState.feeds) {
                             Feed(
@@ -65,7 +70,7 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel()) {
                                 onLocationClick = { /*TODO*/ },
                                 onArchivingClick = {
                                 },
-                                onMeatBallClick = {  },
+                                onMeatBallClick = { },
                                 onLikeClick = { /*TODO*/ },
                                 onChatClick = {},
                                 onShareClick = { /*TODO*/ },
@@ -77,17 +82,19 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel()) {
                         isOwnUser = true,
                         storages = uiState.storages,
                         onAddClick = { isStorageBottomSheetOpen = true },
-                        onClick = {}
+                        onClick = { navController.navigate(NavItem.Storage.screenRoute + "?storage=${Gson().toJson(it)}") }
                     )
 
-                    if(isStorageBottomSheetOpen) {
+                    if (isStorageBottomSheetOpen) {
                         CustomCreateCancelBottomSheet(
                             title = stringResource(id = R.string.mypage_storages_add_title),
                             createText = stringResource(id = R.string.mypage_storage_create_title),
-                            content = { NewStorageContent(
-                                textFieldState = viewModel.storageTitleTextField,
-                                isLock = isLock,
-                                onLockClick = { isLock = !isLock }) },
+                            content = {
+                                NewStorageContent(
+                                    textFieldState = viewModel.storageTitleTextField,
+                                    isLock = isLock,
+                                    onLockClick = { isLock = !isLock })
+                            },
                             sheetState = storageBottomSheetState,
                             onDismiss = { isStorageBottomSheetOpen = false },
                             onCreateClick = { /*TODO*/ })
@@ -120,13 +127,6 @@ fun MyPageTopAppBar(name: String, onSettingClick: () -> Unit, modifier: Modifier
                     })
         },
     )
-}
-
-
-@Preview
-@Composable
-private fun MyPageScreenPreview() {
-    MyPageScreen()
 }
 
 
