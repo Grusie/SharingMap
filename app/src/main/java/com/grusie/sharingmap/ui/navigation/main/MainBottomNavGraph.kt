@@ -29,7 +29,7 @@ fun MainBottomNavGraph(navController: NavHostController, onBackPressed: () -> Un
             EditScreen()
         }
         composable(MainBottomNavItem.Search.screenRoute) {
-            SearchScreen()
+            SearchScreen(navController = navController)
         }
         composable(MainBottomNavItem.MyPage.screenRoute) {
             MyPageScreen(navController = navController)
