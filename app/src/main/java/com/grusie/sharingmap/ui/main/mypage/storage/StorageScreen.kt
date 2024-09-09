@@ -13,6 +13,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,6 +34,7 @@ import com.grusie.sharingmap.designsystem.component.Feed
 import com.grusie.sharingmap.designsystem.component.UserLazyColumn
 import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.Typography
+import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.main.home.FeedModal
 import com.grusie.sharingmap.ui.model.StorageUiModel
 
@@ -125,5 +127,8 @@ fun StorageTopAppBar(storageName: String, navigateBack: () -> Unit, modifier: Mo
         IconButton(onClick = navigateBack) {
             Icon(painter = painterResource(id = R.drawable.btn_back), contentDescription = null)
         }
-    })
+    }, colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+        containerColor = White,
+    ),
+    )
 }

@@ -8,6 +8,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -19,6 +20,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.component.CustomTab
 import com.grusie.sharingmap.designsystem.theme.Typography
+import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.model.SearchTab
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -29,16 +31,23 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel()) {
 
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(title = {
-                Text(
-                    text = stringResource(id = R.string.search_title),
-                    style = Typography.headlineLarge,
-                    color = Color.Black
-                )
-            })
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = stringResource(id = R.string.search_title),
+                        style = Typography.headlineLarge,
+                        color = Color.Black
+                    )
+                },
+                colors =
+                TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = White,
+                    scrolledContainerColor = White,
+                ),
+            )
         },
         content = {
-            Column(modifier = Modifier.padding(top = it.calculateTopPadding())) {
+            Column(modifier = Modifier.padding(it)) {
                 CustomTab(
                     selectedTabIndex = uiState.selectedTabIndex,
                     onClick = { viewModel.setSelectedTabIndex(it) },

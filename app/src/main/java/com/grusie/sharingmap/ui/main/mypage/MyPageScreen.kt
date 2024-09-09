@@ -12,6 +12,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,6 +33,7 @@ import com.grusie.sharingmap.designsystem.component.CustomCreateCancelBottomShee
 import com.grusie.sharingmap.designsystem.component.CustomTab
 import com.grusie.sharingmap.designsystem.component.Feed
 import com.grusie.sharingmap.designsystem.theme.Typography
+import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.model.MyPageTab
 import com.grusie.sharingmap.ui.navigation.main.NavItem
 
@@ -126,6 +128,11 @@ fun MyPageTopAppBar(name: String, onSettingClick: () -> Unit, modifier: Modifier
                         onSettingClick()
                     })
         },
+        colors =
+        TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = White,
+            scrolledContainerColor = White,
+        ),
     )
 }
 

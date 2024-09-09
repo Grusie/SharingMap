@@ -23,7 +23,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -39,6 +38,7 @@ import com.grusie.sharingmap.designsystem.component.Feed
 import com.grusie.sharingmap.designsystem.component.UserLazyColumn
 import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
 import com.grusie.sharingmap.designsystem.theme.Typography
+import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.model.FeedType
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -64,9 +64,9 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
         content = {
             if (uiState.feeds.isNotEmpty()) {
                 LazyColumn(
+                    contentPadding = it,
                     modifier =
                     Modifier
-                        .padding(top = it.calculateTopPadding())
                         .fillMaxSize()
                         .nestedScroll(scrollBehavior.nestedScrollConnection),
                 ) {
@@ -132,7 +132,11 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     title = stringResource(id = R.string.feed_bottom_sheet_archivings_title),
                     isEmpty = uiState.selectedFeed?.archivings?.isEmpty() ?: true,
                     emptyTitle = stringResource(id = R.string.feed_bottom_sheet_archivings_empty_title),
-                    content = { UserLazyColumn(users = uiState.selectedFeed?.archivings ?: emptyList()) },
+                    content = {
+                        UserLazyColumn(
+                            users = uiState.selectedFeed?.archivings ?: emptyList()
+                        )
+                    },
                     sheetState = archiveBottomSheetState,
                     onDismiss = { isArchivingBottomSheetOpen = false },
                 )
@@ -143,11 +147,16 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                     title = stringResource(id = R.string.feed_bottom_sheet_comments_title),
                     isEmpty = uiState.selectedFeed?.comments?.isEmpty() ?: true,
                     emptyTitle = stringResource(id = R.string.feed_bottom_sheet_comments_empty_title),
-                    content = { CommentContent(comments = uiState.selectedFeed?.comments ?: emptyList()) },
+                    content = {
+                        CommentContent(
+                            comments = uiState.selectedFeed?.comments ?: emptyList()
+                        )
+                    },
                     sheetState = archiveBottomSheetState,
                     onDismiss = { isCommentBottomSheetOpen = false },
                 )
             }
+
         },
     )
 }
@@ -169,13 +178,13 @@ fun FeedTopAppbar(
         actions = {
             Image(
                 painter =
-                    if (hasNotifications) {
-                        painterResource(id = R.drawable.btn_notification_alert)
-                    } else {
-                        painterResource(
-                            id = R.drawable.btn_notification,
-                        )
-                    },
+                if (hasNotifications) {
+                    painterResource(id = R.drawable.btn_notification_alert)
+                } else {
+                    painterResource(
+                        id = R.drawable.btn_notification,
+                    )
+                },
                 contentDescription = null,
                 modifier =
                 Modifier
@@ -184,11 +193,12 @@ fun FeedTopAppbar(
             )
         },
         colors =
-            TopAppBarDefaults.centerAlignedTopAppBarColors(
-                containerColor = Color.Transparent,
-                scrolledContainerColor = Color.Transparent,
-            ),
+        TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = White,
+            scrolledContainerColor = White,
+        ),
         scrollBehavior = scrollBehavior,
+        modifier = modifier
     )
 }
 
