@@ -17,12 +17,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -142,9 +146,15 @@ fun UserItemWithCount(user: UserUiModel, modifier: Modifier = Modifier) {
 
 @Composable
 fun UserInfo(user: UserUiModel, modifier: Modifier = Modifier) {
+    var isExpanded by rememberSaveable { mutableStateOf(false) }
     Column {
         UserItemWithCount(user)
-        LimitedText(text = user.description, onClick = { /*TODO*/ }, modifier = modifier.padding(16.dp))
+        LimitedText(
+            text = user.description,
+            isExpanded = isExpanded,
+            onClick = { isExpanded = !isExpanded },
+            modifier = modifier.padding(16.dp)
+        )
     }
 
 }
