@@ -59,7 +59,8 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     content = {
-                        MainBottomNavGraph(navController = navController) { finish() }
+                        MainBottomNavGraph(navController = navController) {
+                            if(isBottomBarVisible) finish() else navController.popBackStack()}
                     }
                 )
             }
