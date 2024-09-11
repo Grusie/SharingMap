@@ -1,62 +1,59 @@
-package com.grusie.sharingmap.ui.main.mypage
+package com.grusie.sharingmap.ui.main.mypage.user
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.grusie.sharingmap.R
-import com.grusie.sharingmap.designsystem.component.CustomCreateCancelBottomSheet
 import com.grusie.sharingmap.designsystem.component.CustomTab
 import com.grusie.sharingmap.designsystem.component.Feed
+import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
+import com.grusie.sharingmap.ui.main.mypage.OtherUserInfo
+import com.grusie.sharingmap.ui.main.mypage.StorageLazyColumn
 import com.grusie.sharingmap.ui.model.MyPageTab
+import com.grusie.sharingmap.ui.model.UserUiModel
 import com.grusie.sharingmap.ui.navigation.main.NavItem
 
-
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: NavController) {
+fun UserScreen(
+    navController: NavController,
+    viewModel: UserViewModel = hiltViewModel(),
+    user: UserUiModel
+) {
 
-    val uiState: MyPageUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var isStorageBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
-    val storageBottomSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true,
-    )
-    var isLock by rememberSaveable { mutableStateOf(false) }
+    val uiState: UserUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    viewModel.updateUser(user)
 
     Scaffold(
         topBar = {
-            MyPageTopAppBar(name = uiState.user.name, onSettingClick = {})
+            UserTopAppBar(
+                name = uiState.user.name,
+                navigateBack = { navController.popBackStack() },
+                onMeatballClick = { /*TODO*/ })
         },
         content = {
             Column(modifier = Modifier.padding(it)) {
-                MyUserInfo(user = uiState.user)
+                OtherUserInfo(user = user, isFollow = uiState.isFollow, onFollowClick = { viewModel.setIsFollow(!uiState.isFollow)}, onMapClick = {})
                 CustomTab(
                     selectedTabIndex = uiState.selectedTabIndex,
                     onClick = viewModel::setSelectedTabIndex,
@@ -90,26 +87,19 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
                     }
                 } else {
                     StorageLazyColumn(
-                        isOwnUser = true,
+                        isOwnUser = false,
                         storages = uiState.storages,
-                        onAddClick = { isStorageBottomSheetOpen = true },
-                        onClick = { navController.navigate(NavItem.Storage.screenRoute + "?storage=${Gson().toJson(it)}") }
+                        onAddClick = { },
+                        onClick = {
+                            navController.navigate(
+                                NavItem.Storage.screenRoute + "?storage=${
+                                    Gson().toJson(
+                                        it
+                                    )
+                                }"
+                            )
+                        }
                     )
-
-                    if (isStorageBottomSheetOpen) {
-                        CustomCreateCancelBottomSheet(
-                            title = stringResource(id = R.string.mypage_storages_add_title),
-                            createText = stringResource(id = R.string.mypage_storage_create_title),
-                            content = {
-                                NewStorageContent(
-                                    textFieldState = viewModel.storageTitleTextField,
-                                    isLock = isLock,
-                                    onLockClick = { isLock = !isLock })
-                            },
-                            sheetState = storageBottomSheetState,
-                            onDismiss = { isStorageBottomSheetOpen = false },
-                            onCreateClick = { /*TODO*/ })
-                    }
                 }
             }
         }
@@ -119,30 +109,37 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MyPageTopAppBar(name: String, onSettingClick: () -> Unit, modifier: Modifier = Modifier) {
+fun UserTopAppBar(
+    name: String,
+    navigateBack: () -> Unit,
+    onMeatballClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     CenterAlignedTopAppBar(
         title = {
             Text(
                 text = name, style = Typography.headlineLarge,
-                color = Color.Black
+                color = Black
             )
         },
+        navigationIcon = {
+            IconButton(onClick = navigateBack) {
+                Icon(painter = painterResource(id = R.drawable.btn_back), contentDescription = null)
+            }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = White,
+        ),
         actions = {
             Image(
-                painter = painterResource(id = R.drawable.btn_setting),
+                painter = painterResource(id = R.drawable.btn_meatball),
                 contentDescription = null,
                 modifier = Modifier
                     .padding(end = 14.dp)
                     .clickable {
-                        onSettingClick()
+                        onMeatballClick()
                     })
         },
-        colors =
-        TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = White,
-            scrolledContainerColor = White,
-        ),
     )
+
 }
-
-

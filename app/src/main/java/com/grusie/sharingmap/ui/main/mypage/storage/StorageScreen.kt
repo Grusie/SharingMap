@@ -63,6 +63,7 @@ fun StorageScreen(navController: NavController, viewModel: StorageViewModel = hi
                             feed = it,
                             isFollow = true,
                             onProfileClick = { /*TODO*/ },
+                            onUserClick = { /*TODO*/ },
                             onImageClick = {},
                             onLocationClick = { /*TODO*/ },
                             onArchivingClick = {

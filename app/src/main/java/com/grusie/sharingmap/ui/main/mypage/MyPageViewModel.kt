@@ -21,16 +21,12 @@ class MyPageViewModel @Inject constructor(): ViewModel() {
     private val _uiState = MutableStateFlow(MyPageUiState())
     val uiState: StateFlow<MyPageUiState> = _uiState.asStateFlow()
 
-    fun setSelectedTabIndex(index: Int) {
-        _uiState.value = _uiState.value.copy(selectedTabIndex = index)
-    }
-
     init {
         _uiState.value = _uiState.value.copy(
             user = UserUiModel(
                 id = 1,
                 name = "김민수",
-                profileImage = "",
+                profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
                 followerCount = 100,
                 postCount = 100,
                 description = "안녕하세요. 만나서 반갑습니다/안녕하세요. 만나서 반갑습니다/안녕하세요. 만나서 반갑습니다/안녕하세요. 만나서 반갑습니다/",
@@ -38,6 +34,10 @@ class MyPageViewModel @Inject constructor(): ViewModel() {
             feeds = fakeFeeds,
             storages = fakeStorage,
             )
+    }
+
+    fun setSelectedTabIndex(index: Int) {
+        _uiState.value = _uiState.value.copy(selectedTabIndex = index)
     }
 
 }
