@@ -5,8 +5,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.grusie.sharingmap.designsystem.theme.SharingMapTheme
@@ -34,6 +40,11 @@ class MainActivity : ComponentActivity() {
             SharingMapTheme {
                 enableEdgeToEdge()
                 Scaffold(
+                    modifier = Modifier.windowInsetsPadding(
+                        WindowInsets.systemBars.only(
+                            WindowInsetsSides.Bottom
+                        )
+                    ),
                     bottomBar = {
                         if (isBottomBarVisible) {
                             MainBottomNavigationBar(
@@ -48,7 +59,8 @@ class MainActivity : ComponentActivity() {
                         }
                     },
                     content = {
-                        MainBottomNavGraph(navController = navController) { finish() }
+                        MainBottomNavGraph(navController = navController) {
+                            if(isBottomBarVisible) finish() else navController.popBackStack()}
                     }
                 )
             }
