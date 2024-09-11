@@ -22,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.grusie.sharingmap.R
-import com.grusie.sharingmap.designsystem.component.CustomTextField
+import com.grusie.sharingmap.designsystem.component.CustomTextFieldWithBackground
 import com.grusie.sharingmap.designsystem.component.UserLazyColumn
 import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.GrayE6E6E6
@@ -76,7 +76,7 @@ fun SearchContentItem(
 ) {
     Column {
         Spacer(modifier = modifier.height(16.dp))
-        CustomTextField(
+        CustomTextFieldWithBackground(
             textFieldState = search,
             hintText = stringResource(id = R.string.search_title)
         )

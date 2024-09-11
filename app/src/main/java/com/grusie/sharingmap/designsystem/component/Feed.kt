@@ -3,6 +3,7 @@ package com.grusie.sharingmap.designsystem.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,7 @@ import com.grusie.sharingmap.ui.model.UserUiModel
 fun Feed(
     feed: FeedUiModel,
     isFollow: Boolean,
+    onUserClick: (UserUiModel) -> Unit,
     onProfileClick: () -> Unit,
     onImageClick: (String) -> Unit,
     onLocationClick: () -> Unit,
@@ -68,7 +70,9 @@ fun Feed(
             modifier =
                 Modifier
                     .fillMaxWidth()
-                    .padding(14.dp),
+                    .padding(14.dp).clickable {
+                        onUserClick(feed.user)
+                    },
         ) {
             ProfileImage(feed.user.profileImage, isFollow, onProfileClick)
             Spacer(modifier = Modifier.width(9.dp))
@@ -423,6 +427,7 @@ private fun FeedPreview() {
                 ),
         ),
         isFollow = false,
+        onUserClick = {},
         onProfileClick = {},
         onImageClick = {},
         onArchivingClick = {},

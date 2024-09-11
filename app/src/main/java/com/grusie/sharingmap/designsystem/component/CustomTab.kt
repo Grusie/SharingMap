@@ -15,9 +15,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.Typography
+import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.model.SearchTab
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CustomTab(
     selectedTabIndex: Int,
@@ -33,7 +33,8 @@ fun CustomTab(
                 color = Black,
                 height = 1.dp
             )
-        }
+        },
+        containerColor = White
     ) {
         tabs.forEachIndexed { index, value ->
             Tab(
