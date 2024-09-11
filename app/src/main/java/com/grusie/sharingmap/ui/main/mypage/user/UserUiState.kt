@@ -7,6 +7,7 @@ import com.grusie.sharingmap.ui.model.UserUiModel
 data class UserUiState(
     val user: UserUiModel = UserUiModel(),
     val selectedTabIndex: Int = 0,
+    val isFollow: Boolean = false,
     val feeds: List<FeedUiModel> = emptyList(),
     val storages: List<StorageUiModel> = emptyList()
 )

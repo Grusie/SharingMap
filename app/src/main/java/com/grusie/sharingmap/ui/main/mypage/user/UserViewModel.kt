@@ -21,4 +21,9 @@ class UserViewModel @Inject constructor(): ViewModel() {
         _uiState.value = _uiState.value.copy(user = user)
     }
 
+
+    fun setIsFollow(isFollow: Boolean) {
+        _uiState.value = _uiState.value.copy(isFollow = isFollow)
+    }
+
 }

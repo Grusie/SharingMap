@@ -53,7 +53,7 @@ fun UserScreen(
         },
         content = {
             Column(modifier = Modifier.padding(it)) {
-                OtherUserInfo(user = user, isFollow = true, onFollowClick = {}, onMapClick = {})
+                OtherUserInfo(user = user, isFollow = uiState.isFollow, onFollowClick = { viewModel.setIsFollow(!uiState.isFollow)}, onMapClick = {})
                 CustomTab(
                     selectedTabIndex = uiState.selectedTabIndex,
                     onClick = viewModel::setSelectedTabIndex,
