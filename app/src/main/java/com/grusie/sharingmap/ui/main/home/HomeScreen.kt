@@ -82,6 +82,7 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                             feed = it,
                             isFollow = true,
                             onProfileClick = { /*TODO*/ },
+                            onUserClick = { /*TODO*/ },
                             onImageClick = {},
                             onLocationClick = { /*TODO*/ },
                             onArchivingClick = {

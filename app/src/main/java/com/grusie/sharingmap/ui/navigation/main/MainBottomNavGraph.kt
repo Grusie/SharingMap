@@ -13,8 +13,10 @@ import com.grusie.sharingmap.ui.main.home.HomeScreen
 import com.grusie.sharingmap.ui.main.map.MapScreen
 import com.grusie.sharingmap.ui.main.mypage.MyPageScreen
 import com.grusie.sharingmap.ui.main.mypage.storage.StorageScreen
+import com.grusie.sharingmap.ui.main.mypage.user.UserScreen
 import com.grusie.sharingmap.ui.main.search.SearchScreen
 import com.grusie.sharingmap.ui.model.StorageUiModel
+import com.grusie.sharingmap.ui.model.UserUiModel
 
 @Composable
 fun MainBottomNavGraph(navController: NavHostController, onBackPressed: () -> Unit) {
@@ -39,6 +41,12 @@ fun MainBottomNavGraph(navController: NavHostController, onBackPressed: () -> Un
             val storageJsonString = it.arguments?.getString("storage")
             val storage = Gson().fromJson(storageJsonString, StorageUiModel::class.java)
             StorageScreen(navController = navController, storage = storage)
+        }
+
+        composable(NavItem.User.screenRoute + "?user={user}", arguments = listOf(navArgument("user") { type = NavType.StringType })) {
+            val userJsonString = it.arguments?.getString("user")
+            val user = Gson().fromJson(userJsonString, UserUiModel::class.java)
+            UserScreen(navController = navController, user = user)
         }
     }
 

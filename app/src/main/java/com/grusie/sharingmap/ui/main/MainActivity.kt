@@ -28,6 +28,7 @@ class MainActivity : ComponentActivity() {
             val isBottomBarVisible = when {
                 currentDestination?.startsWith(NavItem.Storage.screenRoute) == true -> false
                 currentDestination?.equals(MainBottomNavItem.Search.screenRoute) == true -> false
+                currentDestination?.startsWith(NavItem.User.screenRoute) == true -> false
                 else -> true
             }
             SharingMapTheme {

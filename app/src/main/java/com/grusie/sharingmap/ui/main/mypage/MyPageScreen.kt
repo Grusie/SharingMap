@@ -68,6 +68,15 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
                                 feed = it,
                                 isFollow = true,
                                 onProfileClick = { /*TODO*/ },
+                                onUserClick = {
+                                    navController.navigate(
+                                        NavItem.User.screenRoute + "?user=${
+                                            Gson().toJson(
+                                                it
+                                            )
+                                        }"
+                                    )
+                                },
                                 onImageClick = {},
                                 onLocationClick = { /*TODO*/ },
                                 onArchivingClick = {
