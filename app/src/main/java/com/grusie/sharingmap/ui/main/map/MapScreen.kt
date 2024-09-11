@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -70,7 +71,6 @@ fun MapScreen() {
             ),
         )
     }
-
     val mapUiSettings by remember {
         mutableStateOf(
             MapUiSettings(
@@ -80,15 +80,11 @@ fun MapScreen() {
             )
         )
     }
-
     val cameraPositionState = rememberCameraPositionState()
-
     val isCompassEnabled = locationTrackingMode == LocationTrackingMode.Follow
     val locationSource = rememberFusedLocationSource(
         isCompassEnabled = isCompassEnabled,
     )
-
-
     val items: MutableList<MarkerItem> = remember {
         mutableListOf()
     }
@@ -108,14 +104,16 @@ fun MapScreen() {
         )
     }
 
-
     var currentPosition by remember {
         mutableStateOf(cameraPositionState.position.target)
     }
 
     Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 70.dp)
+    )
+    {
         NaverMap(
             modifier = Modifier.fillMaxSize(),
             properties = mapProperties.copy(locationTrackingMode = locationTrackingMode),
@@ -197,6 +195,7 @@ fun MapScreen() {
             }
         )
     }
+
 }
 
 @Composable
