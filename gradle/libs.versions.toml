@@ -23,6 +23,10 @@ hiltNavigationCompose = "1.0.0"
 room = "2.6.1"
 coroutines = "1.8.1"
 inject = "1"
+serializationJson = "1.7.1"
+serializationConverter = "1.0.0"
+retrofit2 = "2.9.0"
+okhttp3 = "4.12.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -56,6 +60,11 @@ room-compiler = { group = "androidx.room", name = "room-compiler", version.ref =
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room"}
 coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines"}
 javax-inject = {group = "javax.inject", name ="javax.inject", version.ref = "inject"}
+serialization-json = {group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serializationJson"}
+serialization-converter = {group = "com.jakewharton.retrofit", name = "retrofit2-kotlinx-serialization-converter", version.ref = "serializationConverter"}
+retrofit2 = {group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit2" }
+okhttp3 = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp3"}
+okhttp3-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp3"}
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -63,4 +72,5 @@ jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "k
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hiltVersion" }
 jetbrainsKotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin"}
 
