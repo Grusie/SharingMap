@@ -13,10 +13,10 @@ import javax.inject.Inject
 class DefaultSearchRepository @Inject constructor(
     private val searchDataSource: SearchDataSource
 ) : SearchRepository {
-    override suspend fun getAllUserSearch(): Flow<Result<List<UserSearch>>> {
+    override suspend fun getAllLocalUserSearch(): Flow<Result<List<UserSearch>>> {
         return flow {
             try {
-                searchDataSource.getAllUserSearch().collect {
+                searchDataSource.getAllLocalUserSearch().collect {
                     emit(Result.success(it.map { it.toDomain() }))
                 }
             } catch (e: Exception) {
@@ -25,28 +25,28 @@ class DefaultSearchRepository @Inject constructor(
         }
     }
 
-    override suspend fun deleteAllUserSearch(): Result<Unit> {
+    override suspend fun deleteAllLocalUserSearch(): Result<Unit> {
         return try {
-            searchDataSource.deleteAllUserSearch()
+            searchDataSource.deleteAllLocalUserSearch()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    override suspend fun insertUserSearch(userSearch: UserSearch): Result<Unit> {
+    override suspend fun insertLocalUserSearch(userSearch: UserSearch): Result<Unit> {
         return try {
-            searchDataSource.insertUserSearch(userSearch.toLocalData())
+            searchDataSource.insertLocalUserSearch(userSearch.toLocalData())
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    override suspend fun getAllTagSearch(): Flow<Result<List<TagSearch>>> {
+    override suspend fun getAllLocalTagSearch(): Flow<Result<List<TagSearch>>> {
         return flow  {
             try {
-                searchDataSource.getAllTagSearch().collect {
+                searchDataSource.getAllLocalTagSearch().collect {
                     emit(Result.success(it.map { it.toDomain() }))
                 }
             } catch (e: Exception) {
@@ -55,18 +55,18 @@ class DefaultSearchRepository @Inject constructor(
         }
     }
 
-    override suspend fun deleteAllTagSearch(): Result<Unit> {
+    override suspend fun deleteAllLocalTagSearch(): Result<Unit> {
         return try {
-            searchDataSource.deleteAllTagSearch()
+            searchDataSource.deleteAllLocalTagSearch()
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    override suspend fun insertTagSearch(tagSearch: TagSearch): Result<Unit> {
+    override suspend fun insertLocalTagSearch(tagSearch: TagSearch): Result<Unit> {
         return try {
-            searchDataSource.insertTagSearch(tagSearch.toLocalData())
+            searchDataSource.insertLocalTagSearch(tagSearch.toLocalData())
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)

@@ -3,8 +3,8 @@ package com.gruise.domain.usecase.search
 import com.gruise.domain.repository.SearchRepository
 import javax.inject.Inject
 
-class GetAllTagSearchUseCase @Inject constructor(
+class GetAllLocalTagSearchUseCase @Inject constructor(
     private val searchRepository: SearchRepository
 ) {
-    suspend operator fun invoke() = searchRepository.getAllTagSearch()
+    suspend operator fun invoke() = searchRepository.getAllLocalTagSearch()
 }

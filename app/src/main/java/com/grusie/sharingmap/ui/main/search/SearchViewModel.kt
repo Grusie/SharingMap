@@ -56,7 +56,7 @@ class SearchViewModel @Inject constructor(
 
     private fun getUserSearchHistory() {
         viewModelScope.launch {
-            searchUseCase.getAllUserSearchUseCase().collect { result ->
+            searchUseCase.getAllLocalUserSearchUseCase().collect { result ->
                 result.onSuccess { userSearchList ->
                     _uiState.value = _uiState.value.copy(
                         userSearchHistory = userSearchList.map { it.toUiModel() }
@@ -69,7 +69,7 @@ class SearchViewModel @Inject constructor(
 
     fun insertUserSearchHistory(userSearch: UserUiModel) {
         viewModelScope.launch {
-            searchUseCase.insertUserSearchUseCase(userSearch.toDomain()).onFailure {
+            searchUseCase.insertLocalUserSearchUseCase(userSearch.toDomain()).onFailure {
                 //TODO 에러 처리
             }
         }
@@ -77,7 +77,7 @@ class SearchViewModel @Inject constructor(
 
     fun deleteAllUserSearchHistory() {
         viewModelScope.launch {
-            searchUseCase.deleteAllUserSearchUseCase().onFailure {
+            searchUseCase.deleteAllLocalUserSearchUseCase().onFailure {
                 //TODO 에러 처리
             }
         }
@@ -89,7 +89,7 @@ class SearchViewModel @Inject constructor(
 
     private fun getTagSearchHistory(){
         viewModelScope.launch {
-            searchUseCase.getAllTagSearchUseCase().collect { result ->
+            searchUseCase.getAllLocalTagSearchUseCase().collect { result ->
                 result.onSuccess { tagSearchList ->
                     _uiState.value = _uiState.value.copy(
                         tagSearchHistory = tagSearchList.map { it.toUiModel() }
@@ -102,7 +102,7 @@ class SearchViewModel @Inject constructor(
 
     fun insertTagSearchHistory(tagSearch: TagUiModel) {
         viewModelScope.launch {
-            searchUseCase.insertTagSearchUseCase(tagSearch.toDomain()).onFailure {
+            searchUseCase.insertLocalTagSearchUseCase(tagSearch.toDomain()).onFailure {
                 //TODO 에러 처리
             }
         }
@@ -110,7 +110,7 @@ class SearchViewModel @Inject constructor(
 
     fun deleteAllTagSearchHistory() {
         viewModelScope.launch {
-            searchUseCase.deleteAllTagSearchUseCase().onFailure {
+            searchUseCase.deleteAllLocalTagSearchUseCase().onFailure {
                 //TODO 에러 처리
             }
         }

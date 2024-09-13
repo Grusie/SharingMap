@@ -11,27 +11,27 @@ class SearchRemoteDataSource @Inject constructor(
     private val userSearchDao: UserSearchDao,
     private val tagSearchDao: TagSearchDao,
 ): SearchDataSource {
-    override suspend fun getAllUserSearch(): Flow<List<LocalUserSearch>> {
+    override suspend fun getAllLocalUserSearch(): Flow<List<LocalUserSearch>> {
         return userSearchDao.getAll()
     }
 
-    override suspend fun deleteAllUserSearch() {
+    override suspend fun deleteAllLocalUserSearch() {
         return userSearchDao.deleteAll()
     }
 
-    override suspend fun insertUserSearch(userSearch: LocalUserSearch) {
+    override suspend fun insertLocalUserSearch(userSearch: LocalUserSearch) {
         return userSearchDao.insertUserSearch(userSearch)
     }
 
-    override suspend fun getAllTagSearch(): Flow<List<LocalTagSearch>> {
+    override suspend fun getAllLocalTagSearch(): Flow<List<LocalTagSearch>> {
         return tagSearchDao.getAll()
     }
 
-    override suspend fun deleteAllTagSearch() {
+    override suspend fun deleteAllLocalTagSearch() {
         return tagSearchDao.deleteAll()
     }
 
-    override suspend fun insertTagSearch(tagSearch: LocalTagSearch) {
+    override suspend fun insertLocalTagSearch(tagSearch: LocalTagSearch) {
         return tagSearchDao.insertTagSearch(tagSearch)
     }
 }

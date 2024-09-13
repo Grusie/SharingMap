@@ -3,10 +3,10 @@ package com.gruise.domain.usecase.search
 import com.gruise.domain.repository.SearchRepository
 import javax.inject.Inject
 
-class DeleteAllTagSearchUseCase @Inject constructor(
+class DeleteAllLocalUserSearchUseCase @Inject constructor(
     private val searchRepository: SearchRepository
 ){
     suspend operator fun invoke(): Result<Unit> {
-        return searchRepository.deleteAllTagSearch()
+        return searchRepository.deleteAllLocalUserSearch()
     }
 }
