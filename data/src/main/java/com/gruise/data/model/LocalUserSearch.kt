@@ -15,7 +15,7 @@ data class LocalUserSearch(
     @ColumnInfo(name = "description")
     val description: String,
     @ColumnInfo(name = "email")
-    val email: String,
+    val email: String?,
 ) {
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0
