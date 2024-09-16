@@ -7,5 +7,6 @@ data class SearchUseCase(
     val getAllLocalTagSearchUseCase: GetAllLocalTagSearchUseCase,
     val deleteAllLocalTagSearchUseCase: DeleteAllLocalTagSearchUseCase,
     val insertLocalTagSearchUseCase: InsertLocalTagSearchUseCase,
-    val getUserSearchUseCase: GetUserSearchUseCase
+    val getUserSearchUseCase: GetUserSearchUseCase,
+    val getTagSearchUseCase: GetTagSearchUseCase
 )

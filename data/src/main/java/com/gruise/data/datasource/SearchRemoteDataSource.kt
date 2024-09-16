@@ -4,6 +4,7 @@ import com.gruise.data.dao.TagSearchDao
 import com.gruise.data.dao.UserSearchDao
 import com.gruise.data.model.LocalTagSearch
 import com.gruise.data.model.LocalUserSearch
+import com.gruise.data.model.TagDto
 import com.gruise.data.model.UserDto
 import com.gruise.data.service.SearchService
 import kotlinx.coroutines.flow.Flow
@@ -40,5 +41,9 @@ class SearchRemoteDataSource @Inject constructor(
 
     override suspend fun getUserSearch(query: String, limit: Int): Result<List<UserDto>> {
         return searchService.getUserSearch(query, limit).map { it.users }
+    }
+
+    override suspend fun getTagSearch(query: String, limit: Int): Result<List<TagDto>> {
+        return searchService.getTagSearch(query, limit).map { it.tags }
     }
 }

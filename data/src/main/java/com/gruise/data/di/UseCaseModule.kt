@@ -5,6 +5,7 @@ import com.gruise.domain.usecase.search.DeleteAllLocalTagSearchUseCase
 import com.gruise.domain.usecase.search.DeleteAllLocalUserSearchUseCase
 import com.gruise.domain.usecase.search.GetAllLocalTagSearchUseCase
 import com.gruise.domain.usecase.search.GetAllLocalUserSearchUseCase
+import com.gruise.domain.usecase.search.GetTagSearchUseCase
 import com.gruise.domain.usecase.search.GetUserSearchUseCase
 import com.gruise.domain.usecase.search.InsertLocalTagSearchUseCase
 import com.gruise.domain.usecase.search.InsertLocalUserSearchUseCase
@@ -31,7 +32,8 @@ object UseCaseModule {
             getAllLocalTagSearchUseCase = GetAllLocalTagSearchUseCase(searchRepository),
             insertLocalTagSearchUseCase = InsertLocalTagSearchUseCase(searchRepository),
             deleteAllLocalTagSearchUseCase = DeleteAllLocalTagSearchUseCase(searchRepository),
-            getUserSearchUseCase = GetUserSearchUseCase(searchRepository)
+            getUserSearchUseCase = GetUserSearchUseCase(searchRepository),
+            getTagSearchUseCase = GetTagSearchUseCase(searchRepository)
         )
     }
 }

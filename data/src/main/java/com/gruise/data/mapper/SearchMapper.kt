@@ -2,8 +2,9 @@ package com.gruise.data.mapper
 
 import com.gruise.data.model.LocalTagSearch
 import com.gruise.data.model.LocalUserSearch
+import com.gruise.data.model.TagDto
 import com.gruise.data.model.UserDto
-import com.gruise.domain.model.TagSearch
+import com.gruise.domain.model.Tag
 import com.gruise.domain.model.User
 
 fun LocalUserSearch.toDomain(): User {
@@ -26,11 +27,11 @@ fun User.toLocalData(): LocalUserSearch {
     )
 }
 
-fun LocalTagSearch.toDomain(): TagSearch {
-    return TagSearch(tagId = tagId, tagName = tagName, tagCount = tagCount)
+fun LocalTagSearch.toDomain(): Tag {
+    return Tag(tagId = tagId, tagName = tagName, tagCount = tagCount)
 }
 
-fun TagSearch.toLocalData(): LocalTagSearch {
+fun Tag.toLocalData(): LocalTagSearch {
     return LocalTagSearch(tagId = tagId, tagName = tagName, tagCount = tagCount)
 }
 
@@ -42,4 +43,8 @@ fun UserDto.toDomain(): User {
         description = description,
         email = email
     )
+}
+
+fun TagDto.toDomain(): Tag {
+    return Tag(tagId = tagId, tagName = tagName, tagCount = tagCount)
 }

@@ -85,8 +85,8 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private fun getTagSearch(): Result<List<TagUiModel>> {
-        return Result.success(fakeTagSearch)
+    private suspend fun getTagSearch(): Result<List<TagUiModel>> {
+        return searchUseCase.getTagSearchUseCase(searchTextField.text.toString(), 10).map { it.map { it.toUiModel() } }
     }
 
     private fun getTagSearchHistory(){
