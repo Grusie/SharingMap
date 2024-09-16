@@ -21,11 +21,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.google.gson.Gson
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.component.CustomTab
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.model.SearchTab
+import com.grusie.sharingmap.ui.navigation.main.NavItem
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -67,6 +69,13 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel(), navController: Na
                     searchText = viewModel.searchTextField,
                     onUserItemClick = {
                         viewModel.insertUserSearchHistory(it)
+                        navController.navigate(
+                            NavItem.User.screenRoute + "?user=${
+                                Gson().toJson(
+                                    it
+                                )
+                            }"
+                        )
                     },
                     onUserHistoryDelete = viewModel::deleteAllUserSearchHistory,
                     onTagItemClick = {
