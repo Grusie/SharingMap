@@ -4,12 +4,15 @@ import com.gruise.data.dao.TagSearchDao
 import com.gruise.data.dao.UserSearchDao
 import com.gruise.data.model.LocalTagSearch
 import com.gruise.data.model.LocalUserSearch
+import com.gruise.data.model.UserDto
+import com.gruise.data.service.SearchService
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class SearchRemoteDataSource @Inject constructor(
     private val userSearchDao: UserSearchDao,
     private val tagSearchDao: TagSearchDao,
+    private val searchService: SearchService
 ): SearchDataSource {
     override suspend fun getAllLocalUserSearch(): Flow<List<LocalUserSearch>> {
         return userSearchDao.getAll()
@@ -33,5 +36,9 @@ class SearchRemoteDataSource @Inject constructor(
 
     override suspend fun insertLocalTagSearch(tagSearch: LocalTagSearch) {
         return tagSearchDao.insertTagSearch(tagSearch)
+    }
+
+    override suspend fun getUserSearch(query: String, limit: Int): Result<List<UserDto>> {
+        return searchService.getUserSearch(query, limit).map { it.users }
     }
 }

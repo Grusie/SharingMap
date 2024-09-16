@@ -4,7 +4,7 @@ import com.gruise.data.datasource.SearchDataSource
 import com.gruise.data.mapper.toDomain
 import com.gruise.data.mapper.toLocalData
 import com.gruise.domain.model.TagSearch
-import com.gruise.domain.model.UserSearch
+import com.gruise.domain.model.User
 import com.gruise.domain.repository.SearchRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -13,7 +13,7 @@ import javax.inject.Inject
 class DefaultSearchRepository @Inject constructor(
     private val searchDataSource: SearchDataSource
 ) : SearchRepository {
-    override suspend fun getAllLocalUserSearch(): Flow<Result<List<UserSearch>>> {
+    override suspend fun getAllLocalUserSearch(): Flow<Result<List<User>>> {
         return flow {
             try {
                 searchDataSource.getAllLocalUserSearch().collect {
@@ -34,9 +34,9 @@ class DefaultSearchRepository @Inject constructor(
         }
     }
 
-    override suspend fun insertLocalUserSearch(userSearch: UserSearch): Result<Unit> {
+    override suspend fun insertLocalUserSearch(user: User): Result<Unit> {
         return try {
-            searchDataSource.insertLocalUserSearch(userSearch.toLocalData())
+            searchDataSource.insertLocalUserSearch(user.toLocalData())
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
@@ -71,5 +71,9 @@ class DefaultSearchRepository @Inject constructor(
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    override suspend fun getUserSearch(query: String, limit: Int): Result<List<User>> {
+        return searchDataSource.getUserSearch(query, limit).map { it.map { it.toDomain() } }
     }
 }

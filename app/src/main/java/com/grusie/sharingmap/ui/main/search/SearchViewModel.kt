@@ -40,6 +40,8 @@ class SearchViewModel @Inject constructor(
             it.onSuccess {
                 if(uiState.value.selectedTabIndex == 0) _uiState.value = _uiState.value.copy(userSearch = it.map { it as UserUiModel})
                 else _uiState.value = _uiState.value.copy(tagSearch = it.map { it as TagUiModel })
+            }.onFailure {
+
             }
         }.launchIn(viewModelScope)
         getUserSearchHistory()
@@ -50,8 +52,8 @@ class SearchViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(selectedTabIndex = index)
     }
 
-    private fun getUserSearch(): Result<List<UserUiModel>> {
-        return Result.success(fakeUserSearch)
+    private suspend fun getUserSearch(): Result<List<UserUiModel>> {
+        return searchUseCase.getUserSearchUseCase(searchTextField.text.toString(), 10).map { it.map { it.toUiModel() } }
     }
 
     private fun getUserSearchHistory() {
