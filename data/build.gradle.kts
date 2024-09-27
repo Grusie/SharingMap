@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.serialization)
     kotlin("kapt")
 }
 
@@ -52,5 +53,18 @@ dependencies {
     // hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+
+    // serialization
+    implementation(libs.serialization.json)
+    implementation(libs.serialization.converter)
+
+    // retrofit2
+    implementation(libs.retrofit2)
+
+    // okhttp
+    implementation(libs.okhttp3)
+    implementation(libs.okhttp3.interceptor)
+
+
 
 }
