@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +31,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.data.MarkerItem
 import com.grusie.sharingmap.designsystem.theme.Blue458FFF
@@ -56,9 +57,19 @@ import com.naver.maps.map.util.MapConstants
 import ted.gun0912.clustering.clustering.Cluster
 import ted.gun0912.clustering.naver.TedNaverClustering
 
+@Composable
+fun MapScreen(viewModel: MapViewModel = hiltViewModel()) {
+    MapFeedModal(
+        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        content = {
+            MapMainView()
+        }
+    )
+}
+
 @OptIn(ExperimentalNaverMapApi::class)
 @Composable
-fun MapScreen() {
+fun MapMainView() {
     var isFollowMode by remember { mutableStateOf(true) }
     val locationTrackingMode =
         if (isFollowMode) LocationTrackingMode.Follow else LocationTrackingMode.NoFollow
@@ -195,7 +206,6 @@ fun MapScreen() {
             }
         )
     }
-
 }
 
 @Composable
