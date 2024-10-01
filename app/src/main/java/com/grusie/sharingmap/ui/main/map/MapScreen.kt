@@ -41,6 +41,7 @@ import com.grusie.sharingmap.designsystem.theme.RedFF3D00
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.common.dpToPx
 import com.grusie.sharingmap.ui.common.spToPx
+import com.grusie.sharingmap.ui.model.MapBottomSheetExpendType
 import com.grusie.sharingmap.ui.model.MarkerType
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.DisposableMapEffect
@@ -63,9 +64,10 @@ import ted.gun0912.clustering.naver.TedNaverClustering
 fun MapScreen(viewModel: MapViewModel = hiltViewModel()) {
     MapFeedModal(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
-        mapContent = { isFollowMode, height, locationOnClicked ->
+        mapContent = { isFollowMode, expandedType, height, locationOnClicked ->
             MapMainView(
                 isFollowMode = isFollowMode,
+                bottomSheetExpandedType = expandedType,
                 bottomSheetHeight = height,
                 locationOnClicked = locationOnClicked
             )
@@ -77,6 +79,7 @@ fun MapScreen(viewModel: MapViewModel = hiltViewModel()) {
 @Composable
 fun MapMainView(
     isFollowMode: Boolean,
+    bottomSheetExpandedType: MapBottomSheetExpendType,
     bottomSheetHeight: Int,
     locationOnClicked: (Boolean) -> Unit
 ) {
@@ -91,6 +94,7 @@ fun MapMainView(
             ),
         )
     }
+
     val mapUiSettings by remember {
         mutableStateOf(
             MapUiSettings(
@@ -153,6 +157,7 @@ fun MapMainView(
                 subIcon = null,
                 icon = OverlayImage.fromResource(R.drawable.ic_location_mine),
             )
+
             var clusterManager by remember {
                 mutableStateOf<TedNaverClustering<MarkerItem>?>(
                     null
@@ -210,15 +215,17 @@ fun MapMainView(
             }
         }
 
-        CustomLocationButtonView(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(bottom = bottomSheetHeight.dp),
+        if(bottomSheetExpandedType != MapBottomSheetExpendType.FULL) {
+            CustomLocationButtonView(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = bottomSheetHeight.dp),
 
-            onClick = {
-                locationOnClicked(true)
-            }
-        )
+                onClick = {
+                    locationOnClicked(true)
+                }
+            )
+        }
     }
 }
 

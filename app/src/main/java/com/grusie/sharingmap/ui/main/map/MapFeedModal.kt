@@ -49,24 +49,25 @@ import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
 import com.grusie.sharingmap.designsystem.theme.GrayE8EAEB
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.ui.main.home.FeedModal
+import com.grusie.sharingmap.ui.model.MapBottomSheetExpendType
 
 @Composable
 @ExperimentalMaterialApi
 fun MapFeedModal(
     viewModel: MapViewModel = hiltViewModel(),
     uiState: MapUiState,
-    mapContent: @Composable (Boolean, Int, (Boolean) -> Unit) -> Unit
+    mapContent: @Composable (Boolean, MapBottomSheetExpendType, Int, (Boolean) -> Unit) -> Unit
 ) {
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
     var expandedType by remember {
-        mutableStateOf(ExpandedType.COLLAPSED)
+        mutableStateOf(MapBottomSheetExpendType.COLLAPSED)
     }
     val height by animateIntAsState(
         when (expandedType) {
-            ExpandedType.HALF -> screenHeight / 7 * 3
-            ExpandedType.FULL -> screenHeight
-            ExpandedType.COLLAPSED -> 100
+            MapBottomSheetExpendType.HALF -> screenHeight / 7 * 3
+            MapBottomSheetExpendType.FULL -> screenHeight
+            MapBottomSheetExpendType.COLLAPSED -> 100
         }
     )
     val bottomSheetScaffoldState = rememberBottomSheetScaffoldState(
@@ -93,24 +94,24 @@ fun MapFeedModal(
                                 change.consume()
                                 if (!isUpdated) {
                                     expandedType = when {
-                                        dragAmount < 0 && expandedType == ExpandedType.COLLAPSED -> {
-                                            ExpandedType.HALF
+                                        dragAmount < 0 && expandedType == MapBottomSheetExpendType.COLLAPSED -> {
+                                            MapBottomSheetExpendType.HALF
                                         }
 
-                                        dragAmount < 0 && expandedType == ExpandedType.HALF -> {
-                                            ExpandedType.FULL
+                                        dragAmount < 0 && expandedType == MapBottomSheetExpendType.HALF -> {
+                                            MapBottomSheetExpendType.FULL
                                         }
 
-                                        dragAmount > 0 && expandedType == ExpandedType.FULL -> {
-                                            ExpandedType.HALF
+                                        dragAmount > 0 && expandedType == MapBottomSheetExpendType.FULL -> {
+                                            MapBottomSheetExpendType.HALF
                                         }
 
-                                        dragAmount > 0 && expandedType == ExpandedType.HALF -> {
-                                            ExpandedType.COLLAPSED
+                                        dragAmount > 0 && expandedType == MapBottomSheetExpendType.HALF -> {
+                                            MapBottomSheetExpendType.COLLAPSED
                                         }
 
                                         else -> {
-                                            ExpandedType.FULL
+                                            MapBottomSheetExpendType.FULL
                                         }
                                     }
                                     isUpdated = true
@@ -126,7 +127,7 @@ fun MapFeedModal(
             },
             sheetPeekHeight = height.dp
         ) {
-            mapContent(isFollowMode, height) { isFollowMode = it }
+            mapContent(isFollowMode, expandedType, height) { isFollowMode = it }
         }
     }
 }
@@ -245,9 +246,4 @@ fun MapBottomSheetDragHandle(modifier: Modifier) {
 @Preview(showBackground = true)
 fun MapFeedBottomSheetPreView() {
     MapFeedBottomSheet(MapUiState(feeds = emptyList()), viewModel = hiltViewModel())
-}
-
-
-enum class ExpandedType {
-    HALF, FULL, COLLAPSED
 }
