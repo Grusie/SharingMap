@@ -16,9 +16,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +32,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.data.MarkerItem
 import com.grusie.sharingmap.designsystem.theme.Blue458FFF
@@ -39,6 +41,7 @@ import com.grusie.sharingmap.designsystem.theme.RedFF3D00
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.common.dpToPx
 import com.grusie.sharingmap.ui.common.spToPx
+import com.grusie.sharingmap.ui.model.MapBottomSheetExpendType
 import com.grusie.sharingmap.ui.model.MarkerType
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.compose.DisposableMapEffect
@@ -56,10 +59,30 @@ import com.naver.maps.map.util.MapConstants
 import ted.gun0912.clustering.clustering.Cluster
 import ted.gun0912.clustering.naver.TedNaverClustering
 
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun MapScreen(viewModel: MapViewModel = hiltViewModel()) {
+    MapFeedModal(
+        uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
+        mapContent = { isFollowMode, expandedType, height, locationOnClicked ->
+            MapMainView(
+                isFollowMode = isFollowMode,
+                bottomSheetExpandedType = expandedType,
+                bottomSheetHeight = height,
+                locationOnClicked = locationOnClicked
+            )
+        }
+    )
+}
+
 @OptIn(ExperimentalNaverMapApi::class)
 @Composable
-fun MapScreen() {
-    var isFollowMode by remember { mutableStateOf(true) }
+fun MapMainView(
+    isFollowMode: Boolean,
+    bottomSheetExpandedType: MapBottomSheetExpendType,
+    bottomSheetHeight: Int,
+    locationOnClicked: (Boolean) -> Unit
+) {
     val locationTrackingMode =
         if (isFollowMode) LocationTrackingMode.Follow else LocationTrackingMode.NoFollow
     val mapProperties by remember {
@@ -71,6 +94,7 @@ fun MapScreen() {
             ),
         )
     }
+
     val mapUiSettings by remember {
         mutableStateOf(
             MapUiSettings(
@@ -80,6 +104,7 @@ fun MapScreen() {
             )
         )
     }
+    val context = LocalContext.current
     val cameraPositionState = rememberCameraPositionState()
     val isCompassEnabled = locationTrackingMode == LocationTrackingMode.Follow
     val locationSource = rememberFusedLocationSource(
@@ -111,7 +136,6 @@ fun MapScreen() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 70.dp)
     )
     {
         NaverMap(
@@ -122,7 +146,7 @@ fun MapScreen() {
             locationSource = locationSource,
             onOptionChange = {
                 cameraPositionState.locationTrackingMode?.let {
-                    isFollowMode = it == LocationTrackingMode.Follow
+                    locationOnClicked(it == LocationTrackingMode.Follow)
                 }
             }
         ) {
@@ -134,8 +158,11 @@ fun MapScreen() {
                 icon = OverlayImage.fromResource(R.drawable.ic_location_mine),
             )
 
-            val context = LocalContext.current
-            var clusterManager by remember { mutableStateOf<TedNaverClustering<MarkerItem>?>(null) }
+            var clusterManager by remember {
+                mutableStateOf<TedNaverClustering<MarkerItem>?>(
+                    null
+                )
+            }
 
             clusterManager?.addItems(items)
 
@@ -188,15 +215,20 @@ fun MapScreen() {
             }
         }
 
-        CustomLocationButtonView(
-            modifier = Modifier.align(Alignment.BottomEnd),
-            onClick = {
-                isFollowMode = true
-            }
-        )
-    }
+        if(bottomSheetExpandedType != MapBottomSheetExpendType.FULL) {
+            CustomLocationButtonView(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(bottom = bottomSheetHeight.dp),
 
+                onClick = {
+                    locationOnClicked(true)
+                }
+            )
+        }
+    }
 }
+
 
 @Composable
 fun CustomLocationButtonView(
