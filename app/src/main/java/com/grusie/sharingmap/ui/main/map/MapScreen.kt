@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
@@ -57,20 +58,28 @@ import com.naver.maps.map.util.MapConstants
 import ted.gun0912.clustering.clustering.Cluster
 import ted.gun0912.clustering.naver.TedNaverClustering
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MapScreen(viewModel: MapViewModel = hiltViewModel()) {
     MapFeedModal(
         uiState = viewModel.uiState.collectAsStateWithLifecycle().value,
-        content = {
-            MapMainView()
+        mapContent = { isFollowMode, height, locationOnClicked ->
+            MapMainView(
+                isFollowMode = isFollowMode,
+                bottomSheetHeight = height,
+                locationOnClicked = locationOnClicked
+            )
         }
     )
 }
 
 @OptIn(ExperimentalNaverMapApi::class)
 @Composable
-fun MapMainView() {
-    var isFollowMode by remember { mutableStateOf(true) }
+fun MapMainView(
+    isFollowMode: Boolean,
+    bottomSheetHeight: Int,
+    locationOnClicked: (Boolean) -> Unit
+) {
     val locationTrackingMode =
         if (isFollowMode) LocationTrackingMode.Follow else LocationTrackingMode.NoFollow
     val mapProperties by remember {
@@ -91,6 +100,7 @@ fun MapMainView() {
             )
         )
     }
+    val context = LocalContext.current
     val cameraPositionState = rememberCameraPositionState()
     val isCompassEnabled = locationTrackingMode == LocationTrackingMode.Follow
     val locationSource = rememberFusedLocationSource(
@@ -122,7 +132,6 @@ fun MapMainView() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 70.dp)
     )
     {
         NaverMap(
@@ -133,7 +142,7 @@ fun MapMainView() {
             locationSource = locationSource,
             onOptionChange = {
                 cameraPositionState.locationTrackingMode?.let {
-                    isFollowMode = it == LocationTrackingMode.Follow
+                    locationOnClicked(it == LocationTrackingMode.Follow)
                 }
             }
         ) {
@@ -144,9 +153,11 @@ fun MapMainView() {
                 subIcon = null,
                 icon = OverlayImage.fromResource(R.drawable.ic_location_mine),
             )
-
-            val context = LocalContext.current
-            var clusterManager by remember { mutableStateOf<TedNaverClustering<MarkerItem>?>(null) }
+            var clusterManager by remember {
+                mutableStateOf<TedNaverClustering<MarkerItem>?>(
+                    null
+                )
+            }
 
             clusterManager?.addItems(items)
 
@@ -200,13 +211,17 @@ fun MapMainView() {
         }
 
         CustomLocationButtonView(
-            modifier = Modifier.align(Alignment.BottomEnd),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = bottomSheetHeight.dp),
+
             onClick = {
-                isFollowMode = true
+                locationOnClicked(true)
             }
         )
     }
 }
+
 
 @Composable
 fun CustomLocationButtonView(
