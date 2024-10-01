@@ -2,7 +2,6 @@ package com.grusie.sharingmap.ui.main.map
 
 import androidx.lifecycle.ViewModel
 import com.grusie.sharingmap.data.fakeFeeds
-import com.grusie.sharingmap.ui.model.FeedType
 import com.grusie.sharingmap.ui.model.FeedUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,11 +19,6 @@ class MapViewModel @Inject constructor() : ViewModel() {
 
     private fun getFeeds() {
         _uiState.value = _uiState.value.copy(feeds = fakeFeeds)
-    }
-
-    fun updateSelectedFeedType(feedType: FeedType) {
-        _uiState.value = _uiState.value.copy(selectedFeedType = feedType)
-        getFeeds()
     }
 
     fun updateSelectedFeed(feed: FeedUiModel) {

@@ -39,17 +39,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.grusie.sharingmap.R
+import com.grusie.sharingmap.designsystem.component.CommentContent
 import com.grusie.sharingmap.designsystem.component.CustomBottomSheet
 import com.grusie.sharingmap.designsystem.component.Feed
 import com.grusie.sharingmap.designsystem.component.UserLazyColumn
 import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
 import com.grusie.sharingmap.designsystem.theme.GrayE8EAEB
 import com.grusie.sharingmap.designsystem.theme.Typography
+import com.grusie.sharingmap.ui.main.home.FeedModal
 
 @Composable
 @ExperimentalMaterialApi
 fun MapFeedModal(
+    viewModel: MapViewModel = hiltViewModel(),
     uiState: MapUiState,
     mapContent: @Composable (Boolean, Int, (Boolean) -> Unit) -> Unit
 ) {
@@ -117,7 +121,7 @@ fun MapFeedModal(
                             }
                         )
                     })
-                    MapFeedBottomSheet(uiState = uiState)
+                    MapFeedBottomSheet(uiState = uiState, viewModel = viewModel)
                 }
             },
             sheetPeekHeight = height.dp
@@ -131,12 +135,16 @@ fun MapFeedModal(
 @Composable
 fun MapFeedBottomSheet(
     uiState: MapUiState,
+    viewModel: MapViewModel
 ) {
     var isArchivingBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
+    var isModalDialogOpen by rememberSaveable { mutableStateOf(false) }
     val archiveBottomSheetState =
         rememberModalBottomSheetState(
             skipPartiallyExpanded = true,
         )
+
+    var isCommentBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
 
     if (isArchivingBottomSheetOpen) {
         CustomBottomSheet(
@@ -170,13 +178,13 @@ fun MapFeedBottomSheet(
                     onLocationClick = { /*TODO*/ },
                     onArchivingClick = {
                         isArchivingBottomSheetOpen = !isArchivingBottomSheetOpen
-//                        viewModel.updateSelectedFeed(it)
+                        viewModel.updateSelectedFeed(it)
                     },
-                    onMeatBallClick = { /*isModalDialogOpen = !isModalDialogOpen*/ },
+                    onMeatBallClick = { isModalDialogOpen = !isModalDialogOpen },
                     onLikeClick = { /*TODO*/ },
                     onChatClick = {
-                        /*isCommentBottomSheetOpen = !isCommentBottomSheetOpen
-                        viewModel.updateSelectedFeed(it)*/
+                        isCommentBottomSheetOpen = !isCommentBottomSheetOpen
+                        viewModel.updateSelectedFeed(it)
                     },
                     onShareClick = { /*TODO*/ },
                 )
@@ -198,6 +206,25 @@ fun MapFeedBottomSheet(
             )
         }
     }
+
+    if (isModalDialogOpen) {
+        FeedModal(onDismiss = { isModalDialogOpen = false })
+    }
+
+    if (isCommentBottomSheetOpen) {
+        CustomBottomSheet(
+            title = stringResource(id = R.string.feed_bottom_sheet_comments_title),
+            isEmpty = uiState.selectedFeed?.comments?.isEmpty() ?: true,
+            emptyTitle = stringResource(id = R.string.feed_bottom_sheet_comments_empty_title),
+            content = {
+                CommentContent(
+                    comments = uiState.selectedFeed?.comments ?: emptyList()
+                )
+            },
+            sheetState = archiveBottomSheetState,
+            onDismiss = { isCommentBottomSheetOpen = false },
+        )
+    }
 }
 
 @Composable
@@ -217,7 +244,7 @@ fun MapBottomSheetDragHandle(modifier: Modifier) {
 @Composable
 @Preview(showBackground = true)
 fun MapFeedBottomSheetPreView() {
-    MapFeedBottomSheet(MapUiState(feeds = emptyList()))
+    MapFeedBottomSheet(MapUiState(feeds = emptyList()), viewModel = hiltViewModel())
 }
 
 
