@@ -1,16 +1,200 @@
 package com.grusie.sharingmap.ui.main.edit
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text2.BasicTextField2
+import androidx.compose.foundation.text2.input.TextFieldLineLimits
+import androidx.compose.foundation.text2.input.rememberTextFieldState
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.grusie.sharingmap.R
+import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
+import com.grusie.sharingmap.designsystem.theme.Typography
+import com.grusie.sharingmap.designsystem.theme.White
+import com.grusie.sharingmap.ui.main.map.CustomLocationButtonView
+import com.naver.maps.map.compose.ExperimentalNaverMapApi
+import com.naver.maps.map.compose.LocationTrackingMode
+import com.naver.maps.map.compose.MapProperties
+import com.naver.maps.map.compose.MapUiSettings
+import com.naver.maps.map.compose.NaverMap
+import com.naver.maps.map.compose.rememberCameraPositionState
+import com.naver.maps.map.compose.rememberFusedLocationSource
+import com.naver.maps.map.util.MapConstants
 
 @Composable
-fun EditScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        Text(text = "Edit Screen")
+fun EditScreen(navController: NavController) {
+    Scaffold { paddingValues ->
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            SearchMapView()
+        }
+
+        SearchTopView(
+            paddingValues = paddingValues,
+            onBackPressed = { navController.popBackStack() })
     }
+}
+
+@OptIn(ExperimentalNaverMapApi::class)
+@Composable
+fun SearchMapView() {
+
+    var isFollowMode by remember { mutableStateOf(true) }
+
+    val locationTrackingMode =
+        if (isFollowMode) LocationTrackingMode.Follow else LocationTrackingMode.NoFollow
+
+    val mapProperties by remember {
+        mutableStateOf(
+            MapProperties(
+                maxZoom = 20.0,
+                minZoom = 5.0,
+                extent = MapConstants.EXTENT_KOREA,
+                locationTrackingMode = locationTrackingMode
+            ),
+        )
+    }
+
+    val mapUiSettings by remember {
+        mutableStateOf(
+            MapUiSettings(
+                isZoomControlEnabled = false,
+                isTiltGesturesEnabled = false,
+                isRotateGesturesEnabled = false
+            )
+        )
+    }
+    val isCompassEnabled = locationTrackingMode == LocationTrackingMode.Follow
+    val cameraPositionState = rememberCameraPositionState()
+    val position by remember {
+        derivedStateOf {
+            cameraPositionState.position
+        }
+    }
+    val locationSource = rememberFusedLocationSource(
+        isCompassEnabled = isCompassEnabled,
+    )
+
+    Box() {
+        NaverMap(
+            modifier = Modifier.fillMaxSize(),
+            properties = mapProperties.copy(locationTrackingMode = locationTrackingMode),
+            uiSettings = mapUiSettings,
+            cameraPositionState = cameraPositionState,
+            locationSource = locationSource,
+            onOptionChange = {
+                cameraPositionState.locationTrackingMode?.let {
+                    isFollowMode = it == LocationTrackingMode.Follow
+                }
+            }
+        )
+
+        Image(
+            painterResource(com.naver.maps.map.R.drawable.navermap_default_marker_icon_blue),
+            contentDescription = "Marker for Adding Location",
+            modifier = Modifier
+                .padding(bottom = 54.dp)
+                .align(Alignment.Center)
+        )
+
+        CustomLocationButtonView(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(bottom = 70.dp),
+
+            onClick = {
+                isFollowMode = true
+            }
+        )
+
+        Text(
+            modifier = Modifier.padding(top = 30.dp),
+            text = "${position.target.latitude}, ${position.target.longitude}"
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun SearchTopView(paddingValues: PaddingValues = PaddingValues(), onBackPressed: () -> Unit = {}) {
+    Row(
+        modifier = Modifier
+            .padding(paddingValues)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        IconButton(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            onClick = { onBackPressed() }
+        ) {
+            Icon(
+                modifier = Modifier.padding(),
+                painter = painterResource(id = R.drawable.btn_back),
+                contentDescription = null,
+            )
+        }
+
+        val searchTextState = rememberTextFieldState()
+
+        BasicTextField2(
+            state = searchTextState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterVertically)
+                .padding(start = 10.dp),
+            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+            textStyle = Typography.headlineSmall.copy(color = Gray9A9C9F),
+            lineLimits = TextFieldLineLimits.SingleLine,
+            decorator = { innerTextField ->
+                Box(
+                    modifier = Modifier
+                        .clip(shape = RoundedCornerShape(12.dp))
+                        .background(color = White)
+                        .padding(vertical = 14.5.dp, horizontal = 16.dp),
+                ) {
+                    if (searchTextState.text.isEmpty()) {
+                        Text(
+                            text = stringResource(id = R.string.edit_search_location),
+                            style = Typography.headlineSmall,
+                            color = Gray9A9C9F,
+                        )
+                    }
+                    innerTextField()
+                }
+            }
+        )
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun SearchTopViewPreView() {
+    SearchTopView()
 }

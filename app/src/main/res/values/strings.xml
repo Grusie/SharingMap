@@ -42,4 +42,7 @@
     <!-- Custom Bottom Sheet -->
     <string name="custom_bottom_sheet_cancel_text">취소</string>
 
+    <!-- Edit -->
+    <string name="edit_search_location">장소를 검색해 주세요.</string>
+
 </resources>

@@ -91,6 +91,7 @@ fun MapMainView(
                 maxZoom = 20.0,
                 minZoom = 5.0,
                 locationTrackingMode = locationTrackingMode,
+                extent = MapConstants.EXTENT_KOREA
             ),
         )
     }
@@ -215,7 +216,7 @@ fun MapMainView(
             }
         }
 
-        if(bottomSheetExpandedType != MapBottomSheetExpendType.FULL) {
+        if (bottomSheetExpandedType != MapBottomSheetExpendType.FULL) {
             CustomLocationButtonView(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
