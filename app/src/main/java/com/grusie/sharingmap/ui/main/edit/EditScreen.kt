@@ -4,8 +4,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,17 +29,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.grusie.sharingmap.R
+import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
+import com.grusie.sharingmap.designsystem.theme.GrayF1F4F7
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
+import com.grusie.sharingmap.designsystem.theme.WhiteFBFBFB
 import com.grusie.sharingmap.ui.main.map.CustomLocationButtonView
+import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
 import com.naver.maps.map.compose.MapProperties
@@ -53,21 +65,47 @@ fun EditScreen(navController: NavController) {
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            SearchMapView()
-        }
+            var isFollowMode by remember { mutableStateOf(true) }
+            val cameraPositionState = rememberCameraPositionState()
+            val currentPosition by remember {
+                derivedStateOf {
+                    cameraPositionState.position
+                }
+            }
 
-        SearchTopView(
-            paddingValues = paddingValues,
-            onBackPressed = { navController.popBackStack() })
+            SearchMapView(isFollowMode, cameraPositionState) { isFollowMode = it }
+
+            SearchTopView(
+                paddingValues = paddingValues,
+                onBackPressed = { navController.popBackStack() })
+
+
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+            ) {
+                CustomLocationButtonView(
+                    modifier = Modifier
+                        .align(Alignment.End),
+
+                    onClick = {
+                        isFollowMode = true
+                    }
+                )
+                EditMapInfo(currentLocation = "${currentPosition.target.latitude}, ${currentPosition.target.longitude}")
+            }
+        }
     }
 }
 
 @OptIn(ExperimentalNaverMapApi::class)
 @Composable
-fun SearchMapView() {
-
-    var isFollowMode by remember { mutableStateOf(true) }
-
+fun SearchMapView(
+    isFollowMode: Boolean,
+    cameraPositionState: CameraPositionState,
+    setFollowMode: (Boolean) -> Unit
+) {
     val locationTrackingMode =
         if (isFollowMode) LocationTrackingMode.Follow else LocationTrackingMode.NoFollow
 
@@ -92,12 +130,7 @@ fun SearchMapView() {
         )
     }
     val isCompassEnabled = locationTrackingMode == LocationTrackingMode.Follow
-    val cameraPositionState = rememberCameraPositionState()
-    val position by remember {
-        derivedStateOf {
-            cameraPositionState.position
-        }
-    }
+
     val locationSource = rememberFusedLocationSource(
         isCompassEnabled = isCompassEnabled,
     )
@@ -111,7 +144,7 @@ fun SearchMapView() {
             locationSource = locationSource,
             onOptionChange = {
                 cameraPositionState.locationTrackingMode?.let {
-                    isFollowMode = it == LocationTrackingMode.Follow
+                    setFollowMode(it == LocationTrackingMode.Follow)
                 }
             }
         )
@@ -122,21 +155,6 @@ fun SearchMapView() {
             modifier = Modifier
                 .padding(bottom = 54.dp)
                 .align(Alignment.Center)
-        )
-
-        CustomLocationButtonView(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(bottom = 70.dp),
-
-            onClick = {
-                isFollowMode = true
-            }
-        )
-
-        Text(
-            modifier = Modifier.padding(top = 30.dp),
-            text = "${position.target.latitude}, ${position.target.longitude}"
         )
     }
 }
@@ -194,7 +212,63 @@ fun SearchTopView(paddingValues: PaddingValues = PaddingValues(), onBackPressed:
 }
 
 @Composable
+fun EditMapInfo(modifier: Modifier = Modifier, currentLocation: String = "") {
+    Column(
+        modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    0.1f to Color.Transparent,
+                    0.3f to White,
+                    1f to White
+                ),
+                shape = RectangleShape,
+                alpha = 1f
+            )
+            .fillMaxWidth()
+    ) {
+        Spacer(modifier = Modifier.padding(top = 59.dp))
+        Text(
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .fillMaxWidth()
+                .background(
+                    color = GrayF1F4F7,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(vertical = 15.5.dp),
+            color = Black,
+            text = currentLocation
+        )
+
+        Spacer(modifier = Modifier.padding(bottom = 12.dp))
+
+        Text(
+            text = stringResource(id = R.string.edit_search_store_location),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .fillMaxWidth()
+                .background(
+                    color = Black,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(22.5.dp),
+            color = WhiteFBFBFB,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
 @Preview(showBackground = true)
 fun SearchTopViewPreView() {
     SearchTopView()
+}
+
+@Composable
+@Preview(showBackground = true, backgroundColor = 0x00ff00)
+fun EditMapInfoPreview() {
+    EditMapInfo()
 }

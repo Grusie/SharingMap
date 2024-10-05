@@ -44,5 +44,6 @@
 
     <!-- Edit -->
     <string name="edit_search_location">장소를 검색해 주세요.</string>
+    <string name="edit_search_store_location">위치저장</string>
 
 </resources>
