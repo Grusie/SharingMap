@@ -3,6 +3,8 @@ package com.grusie.sharingmap.ui.main.edit
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text2.BasicTextField2
 import androidx.compose.foundation.text2.input.TextFieldLineLimits
@@ -21,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,9 +33,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusManager
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,7 +69,7 @@ import com.naver.maps.map.util.MapConstants
 
 @Composable
 fun EditScreen(navController: NavController) {
-    Scaffold { paddingValues ->
+    Scaffold(modifier = Modifier.clickable { }) { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -73,11 +81,21 @@ fun EditScreen(navController: NavController) {
                 }
             }
 
-            SearchMapView(isFollowMode, cameraPositionState) { isFollowMode = it }
+            val focusRequester = remember { FocusRequester() }
+            val focusManager = LocalFocusManager.current
+
+            SearchMapView(
+                isFollowMode = isFollowMode,
+                cameraPositionState = cameraPositionState,
+                focusManager = focusManager
+            ) { isFollowMode = it }
 
             SearchTopView(
                 paddingValues = paddingValues,
-                onBackPressed = { navController.popBackStack() })
+                onBackPressed = { navController.popBackStack() },
+                focusRequester = focusRequester,
+                onDoneClick = { focusManager.clearFocus() }
+            )
 
 
             Column(
@@ -104,7 +122,8 @@ fun EditScreen(navController: NavController) {
 fun SearchMapView(
     isFollowMode: Boolean,
     cameraPositionState: CameraPositionState,
-    setFollowMode: (Boolean) -> Unit
+    focusManager: FocusManager = LocalFocusManager.current,
+    setFollowMode: (Boolean) -> Unit,
 ) {
     val locationTrackingMode =
         if (isFollowMode) LocationTrackingMode.Follow else LocationTrackingMode.NoFollow
@@ -137,7 +156,8 @@ fun SearchMapView(
 
     Box() {
         NaverMap(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize(),
             properties = mapProperties.copy(locationTrackingMode = locationTrackingMode),
             uiSettings = mapUiSettings,
             cameraPositionState = cameraPositionState,
@@ -146,8 +166,15 @@ fun SearchMapView(
                 cameraPositionState.locationTrackingMode?.let {
                     setFollowMode(it == LocationTrackingMode.Follow)
                 }
-            }
+            },
+            onMapClick = { _, _ -> focusManager.clearFocus() },
         )
+
+        LaunchedEffect(cameraPositionState.isMoving) {
+            if (cameraPositionState.isMoving) {
+                focusManager.clearFocus()
+            }
+        }
 
         Image(
             painterResource(com.naver.maps.map.R.drawable.navermap_default_marker_icon_blue),
@@ -161,7 +188,12 @@ fun SearchMapView(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun SearchTopView(paddingValues: PaddingValues = PaddingValues(), onBackPressed: () -> Unit = {}) {
+fun SearchTopView(
+    paddingValues: PaddingValues = PaddingValues(),
+    onBackPressed: () -> Unit = {},
+    focusRequester: FocusRequester = FocusRequester(),
+    onDoneClick: () -> Unit = {}
+) {
     Row(
         modifier = Modifier
             .padding(paddingValues)
@@ -186,8 +218,14 @@ fun SearchTopView(paddingValues: PaddingValues = PaddingValues(), onBackPressed:
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.CenterVertically)
-                .padding(start = 10.dp),
+                .padding(start = 10.dp)
+                .focusRequester(focusRequester),
             keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    onDoneClick()
+                }
+            ),
             textStyle = Typography.headlineSmall.copy(color = Gray9A9C9F),
             lineLimits = TextFieldLineLimits.SingleLine,
             decorator = { innerTextField ->
@@ -236,6 +274,11 @@ fun EditMapInfo(modifier: Modifier = Modifier, currentLocation: String = "") {
                     color = GrayF1F4F7,
                     shape = RoundedCornerShape(12.dp)
                 )
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                    onClick = {}
+                )
                 .padding(vertical = 15.5.dp),
             color = Black,
             text = currentLocation
@@ -253,6 +296,9 @@ fun EditMapInfo(modifier: Modifier = Modifier, currentLocation: String = "") {
                     color = Black,
                     shape = RoundedCornerShape(12.dp)
                 )
+                .clickable {
+
+                }
                 .padding(22.5.dp),
             color = WhiteFBFBFB,
             fontSize = 16.sp,
