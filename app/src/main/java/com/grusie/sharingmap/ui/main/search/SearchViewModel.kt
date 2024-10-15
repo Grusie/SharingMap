@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -30,18 +31,27 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
 
     val searchTextField = TextFieldState()
-    private val _uiState = MutableStateFlow(SearchUiState())
+    private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Loading)
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
+    private val _selectedTabIndex = MutableStateFlow(0)
+    val selectedTabIndex: StateFlow<Int> = _selectedTabIndex.asStateFlow()
+
+
     init {
-        searchTextField.textAsFlow().debounce(500).mapLatest {
-            if (uiState.value.selectedTabIndex == 0) getUserSearch() else getTagSearch()
+        searchTextField.textAsFlow().debounce(500).onEach {
+            if(it.isEmpty() || it.isBlank()) {
+                if(_selectedTabIndex.value == 0) getUserSearchHistory()
+                else getTagSearchHistory()
+            }
+        }.filter { it.isNotEmpty() }.mapLatest {
+            if (_selectedTabIndex.value == 0) getUserSearch() else getTagSearch()
         }.onEach {
             it.onSuccess {
-                if(uiState.value.selectedTabIndex == 0) _uiState.value = _uiState.value.copy(userSearch = it.map { it as UserUiModel})
-                else _uiState.value = _uiState.value.copy(tagSearch = it.map { it as TagUiModel })
+                if(_selectedTabIndex.value == 0) _uiState.value = SearchUiState.SearchSuccess(userSearch = it.map { it as UserUiModel})
+                else _uiState.value = SearchUiState.SearchSuccess(tagSearch = it.map { it as TagUiModel })
             }.onFailure {
-
+                _uiState.value = SearchUiState.Error(it.message!!)
             }
         }.launchIn(viewModelScope)
         getUserSearchHistory()
@@ -49,7 +59,7 @@ class SearchViewModel @Inject constructor(
     }
 
     fun setSelectedTabIndex(index: Int) {
-        _uiState.value = _uiState.value.copy(selectedTabIndex = index)
+        _selectedTabIndex.value = index
     }
 
     private suspend fun getUserSearch(): Result<List<UserUiModel>> {
@@ -60,10 +70,11 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             searchUseCase.getAllLocalUserSearchUseCase().collect { result ->
                 result.onSuccess { userSearchList ->
-                    _uiState.value = _uiState.value.copy(
-                        userSearchHistory = userSearchList.map { it.toUiModel() }
+                    _uiState.value = SearchUiState.SearchSuccess(
+                        userSearch = userSearchList.map { it.toUiModel() }
                     )
                 }.onFailure {
+                    _uiState.value = SearchUiState.Error(it.message!!)
                 }
             }
         }
@@ -93,8 +104,8 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             searchUseCase.getAllLocalTagSearchUseCase().collect { result ->
                 result.onSuccess { tagSearchList ->
-                    _uiState.value = _uiState.value.copy(
-                        tagSearchHistory = tagSearchList.map { it.toUiModel() }
+                    _uiState.value = SearchUiState.SearchSuccess(
+                        tagSearch = tagSearchList.map { it.toUiModel() }
                     )
                 }.onFailure {
                 }

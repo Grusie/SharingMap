@@ -1,6 +1,7 @@
 package com.grusie.sharingmap.ui.main.search
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -17,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -34,6 +34,7 @@ import com.grusie.sharingmap.ui.navigation.main.NavItem
 @Composable
 fun SearchScreen(viewModel: SearchViewModel = hiltViewModel(), navController: NavController) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val selectedTabIndex by viewModel.selectedTabIndex.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -52,7 +53,10 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel(), navController: Na
                 ),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(painter = painterResource(id = R.drawable.btn_back), contentDescription = null)
+                        Icon(
+                            painter = painterResource(id = R.drawable.btn_back),
+                            contentDescription = null
+                        )
                     }
                 }
             )
@@ -60,11 +64,11 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel(), navController: Na
         content = {
             Column(modifier = Modifier.padding(it)) {
                 CustomTab(
-                    selectedTabIndex = uiState.selectedTabIndex,
+                    selectedTabIndex = selectedTabIndex,
                     onClick = { viewModel.setSelectedTabIndex(it) },
                     tabs = SearchTab.entries.map { it.title })
                 SearchContent(
-                    selectedTabIndex = uiState.selectedTabIndex,
+                    selectedTabIndex = selectedTabIndex,
                     uiState = uiState,
                     searchText = viewModel.searchTextField,
                     onUserItemClick = {
