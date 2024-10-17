@@ -229,7 +229,7 @@ fun MapFeedBottomSheet(
 }
 
 @Composable
-fun MapBottomSheetDragHandle(modifier: Modifier) {
+fun MapBottomSheetDragHandle(modifier: Modifier = Modifier) {
     Box(modifier = modifier.fillMaxWidth()) {
         Spacer(
             modifier = Modifier

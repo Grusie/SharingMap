@@ -46,4 +46,9 @@
     <string name="edit_search_location">장소를 검색해 주세요.</string>
     <string name="edit_search_store_location">위치저장</string>
 
+    <!-- SearchMap -->
+    <string name="search_map_title">장소검색</string>
+    <string name="search_map_hint">장소를 검색해 주세요.</string>
+    <string name="search_history">검색 기록</string>
+    <string name="search_delete_history">기록 삭제</string>
 </resources>

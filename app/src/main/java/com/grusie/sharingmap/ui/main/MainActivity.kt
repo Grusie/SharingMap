@@ -36,6 +36,7 @@ class MainActivity : ComponentActivity() {
                 currentDestination?.equals(MainBottomNavItem.Search.screenRoute) == true -> false
                 currentDestination?.equals(MainBottomNavItem.Edit.screenRoute) == true -> false
                 currentDestination?.startsWith(NavItem.User.screenRoute) == true -> false
+                currentDestination?.equals(NavItem.SearchMap.screenRoute) == true -> false
                 else -> true
             }
             SharingMapTheme {

@@ -1,6 +1,5 @@
 package com.grusie.sharingmap.ui.main.edit
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,17 +13,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text2.BasicTextField2
-import androidx.compose.foundation.text2.input.TextFieldLineLimits
-import androidx.compose.foundation.text2.input.rememberTextFieldState
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,17 +29,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusManager
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -53,10 +44,10 @@ import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
 import com.grusie.sharingmap.designsystem.theme.GrayF1F4F7
-import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.designsystem.theme.WhiteFBFBFB
 import com.grusie.sharingmap.ui.main.map.CustomLocationButtonView
+import com.grusie.sharingmap.ui.navigation.main.NavItem
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
@@ -67,8 +58,24 @@ import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.util.MapConstants
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditScreen(navController: NavController) {
+    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
+
+    BottomSheetScaffold(
+        scaffoldState = bottomSheetScaffoldState,
+        sheetContent = {
+            EditLocationModal()
+        },
+        content = {
+            EditHomeScreen(navController)
+        }
+    )
+}
+
+@Composable
+fun EditHomeScreen(navController: NavController) {
     Scaffold(modifier = Modifier.clickable { }) { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize()
@@ -81,20 +88,15 @@ fun EditScreen(navController: NavController) {
                 }
             }
 
-            val focusRequester = remember { FocusRequester() }
-            val focusManager = LocalFocusManager.current
-
             SearchMapView(
                 isFollowMode = isFollowMode,
                 cameraPositionState = cameraPositionState,
-                focusManager = focusManager
             ) { isFollowMode = it }
 
             SearchTopView(
                 paddingValues = paddingValues,
                 onBackPressed = { navController.popBackStack() },
-                focusRequester = focusRequester,
-                onDoneClick = { focusManager.clearFocus() }
+                goToSearchScreen = { navController.navigate(NavItem.SearchMap.screenRoute) }
             )
 
 
@@ -122,7 +124,6 @@ fun EditScreen(navController: NavController) {
 fun SearchMapView(
     isFollowMode: Boolean,
     cameraPositionState: CameraPositionState,
-    focusManager: FocusManager = LocalFocusManager.current,
     setFollowMode: (Boolean) -> Unit,
 ) {
     val locationTrackingMode =
@@ -166,15 +167,8 @@ fun SearchMapView(
                 cameraPositionState.locationTrackingMode?.let {
                     setFollowMode(it == LocationTrackingMode.Follow)
                 }
-            },
-            onMapClick = { _, _ -> focusManager.clearFocus() },
-        )
-
-        LaunchedEffect(cameraPositionState.isMoving) {
-            if (cameraPositionState.isMoving) {
-                focusManager.clearFocus()
             }
-        }
+        )
 
         Image(
             painterResource(com.naver.maps.map.R.drawable.navermap_default_marker_icon_blue),
@@ -186,13 +180,11 @@ fun SearchMapView(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SearchTopView(
     paddingValues: PaddingValues = PaddingValues(),
     onBackPressed: () -> Unit = {},
-    focusRequester: FocusRequester = FocusRequester(),
-    onDoneClick: () -> Unit = {}
+    goToSearchScreen: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -211,40 +203,19 @@ fun SearchTopView(
             )
         }
 
-        val searchTextState = rememberTextFieldState()
-
-        BasicTextField2(
-            state = searchTextState,
+        Text(
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable {
+                    goToSearchScreen()
+                }
                 .align(Alignment.CenterVertically)
                 .padding(start = 10.dp)
-                .focusRequester(focusRequester),
-            keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    onDoneClick()
-                }
-            ),
-            textStyle = Typography.headlineSmall.copy(color = Gray9A9C9F),
-            lineLimits = TextFieldLineLimits.SingleLine,
-            decorator = { innerTextField ->
-                Box(
-                    modifier = Modifier
-                        .clip(shape = RoundedCornerShape(12.dp))
-                        .background(color = White)
-                        .padding(vertical = 14.5.dp, horizontal = 16.dp),
-                ) {
-                    if (searchTextState.text.isEmpty()) {
-                        Text(
-                            text = stringResource(id = R.string.edit_search_location),
-                            style = Typography.headlineSmall,
-                            color = Gray9A9C9F,
-                        )
-                    }
-                    innerTextField()
-                }
-            }
+                .clip(shape = RoundedCornerShape(12.dp))
+                .background(color = White)
+                .padding(vertical = 14.5.dp, horizontal = 16.dp),
+            text = stringResource(id = R.string.edit_search_location),
+            color = Gray9A9C9F,
         )
     }
 }
