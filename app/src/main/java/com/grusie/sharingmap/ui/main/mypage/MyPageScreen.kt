@@ -93,7 +93,7 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
                         isOwnUser = true,
                         storages = uiState.storages,
                         onAddClick = { isStorageBottomSheetOpen = true },
-                        onClick = { navController.navigate(NavItem.Storage.screenRoute + "?storage=${Gson().toJson(it)}") }
+                        onClick = { navController.navigate(NavItem.FeedCollection.screenRoute + "?storage=${Gson().toJson(it)}") }
                     )
 
                     if (isStorageBottomSheetOpen) {

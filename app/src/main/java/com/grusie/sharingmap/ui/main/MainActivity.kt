@@ -32,7 +32,7 @@ class MainActivity : ComponentActivity() {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination?.route
             val isBottomBarVisible = when {
-                currentDestination?.startsWith(NavItem.Storage.screenRoute) == true -> false
+                currentDestination?.startsWith(NavItem.FeedCollection.screenRoute) == true -> false
                 currentDestination?.equals(MainBottomNavItem.Search.screenRoute) == true -> false
                 currentDestination?.equals(MainBottomNavItem.Edit.screenRoute) == true -> false
                 currentDestination?.startsWith(NavItem.User.screenRoute) == true -> false

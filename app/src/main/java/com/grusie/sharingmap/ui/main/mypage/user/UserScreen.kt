@@ -92,7 +92,7 @@ fun UserScreen(
                         onAddClick = { },
                         onClick = {
                             navController.navigate(
-                                NavItem.Storage.screenRoute + "?storage=${
+                                NavItem.FeedCollection.screenRoute + "?storage=${
                                     Gson().toJson(
                                         it
                                     )

@@ -84,6 +84,13 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel(), navController: Na
                     onUserHistoryDelete = viewModel::deleteAllUserSearchHistory,
                     onTagItemClick = {
                         viewModel.insertTagSearchHistory(it)
+                        navController.navigate(
+                            NavItem.FeedCollection.screenRoute + "?tag=${
+                                Gson().toJson(
+                                    it
+                                )
+                            }"
+                        )
                     },
                     onTagHistoryDelete = viewModel::deleteAllTagSearchHistory
                 )
