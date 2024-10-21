@@ -18,13 +18,13 @@ import com.grusie.sharingmap.designsystem.theme.GrayE8E9EA
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.designsystem.util.singleClickable
-import com.grusie.sharingmap.ui.model.FeedType
+import com.grusie.sharingmap.ui.model.ArchiveType
 
 @Composable
 fun FeedRadioGroup(
-    options: List<FeedType>,
-    selectedType: FeedType,
-    onClick: (FeedType) -> Unit,
+    options: List<ArchiveType>,
+    selectedType: ArchiveType,
+    onClick: (ArchiveType) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(

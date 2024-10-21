@@ -1,4 +1,4 @@
-package com.gruise.data.datasource
+package com.gruise.data.datasource.search
 
 import com.gruise.data.dao.TagSearchDao
 import com.gruise.data.dao.UserSearchDao

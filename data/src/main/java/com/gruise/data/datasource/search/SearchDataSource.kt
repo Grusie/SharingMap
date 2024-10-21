@@ -1,4 +1,4 @@
-package com.gruise.data.datasource
+package com.gruise.data.datasource.search
 
 import com.gruise.data.model.LocalTagSearch
 import com.gruise.data.model.LocalUserSearch

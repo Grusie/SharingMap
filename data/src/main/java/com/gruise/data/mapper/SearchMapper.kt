@@ -34,17 +34,3 @@ fun LocalTagSearch.toDomain(): Tag {
 fun Tag.toLocalData(): LocalTagSearch {
     return LocalTagSearch(tagId = tagId, tagName = tagName, tagCount = tagCount)
 }
-
-fun UserDto.toDomain(): User {
-    return User(
-        userId = userId,
-        profileImage = profileImage,
-        name = name,
-        description = description,
-        email = email
-    )
-}
-
-fun TagDto.toDomain(): Tag {
-    return Tag(tagId = tagId, tagName = tagName, tagCount = tagCount)
-}

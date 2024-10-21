@@ -1,6 +1,9 @@
 package com.gruise.data.di
 
+import com.gruise.domain.repository.ArchiveRepository
 import com.gruise.domain.repository.SearchRepository
+import com.gruise.domain.usecase.archive.ArchiveUseCase
+import com.gruise.domain.usecase.archive.GetArchivesUseCase
 import com.gruise.domain.usecase.search.DeleteAllLocalTagSearchUseCase
 import com.gruise.domain.usecase.search.DeleteAllLocalUserSearchUseCase
 import com.gruise.domain.usecase.search.GetAllLocalTagSearchUseCase
@@ -34,6 +37,16 @@ object UseCaseModule {
             deleteAllLocalTagSearchUseCase = DeleteAllLocalTagSearchUseCase(searchRepository),
             getUserSearchUseCase = GetUserSearchUseCase(searchRepository),
             getTagSearchUseCase = GetTagSearchUseCase(searchRepository)
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun providesArchiveUseCase(
+        archiveRepository: ArchiveRepository
+    ): ArchiveUseCase {
+        return ArchiveUseCase(
+           getArchivesUseCase = GetArchivesUseCase(archiveRepository)
         )
     }
 }

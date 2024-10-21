@@ -1,5 +1,6 @@
 package com.gruise.data.di
 
+import com.gruise.data.service.ArchiveService
 import com.gruise.data.service.SearchService
 import dagger.Module
 import dagger.Provides
@@ -19,5 +20,13 @@ object ServiceModule {
         retrofit: Retrofit,
     ): SearchService {
         return retrofit.create(SearchService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideArchiveService(
+        retrofit: Retrofit,
+    ): ArchiveService {
+        return retrofit.create(ArchiveService::class.java)
     }
 }

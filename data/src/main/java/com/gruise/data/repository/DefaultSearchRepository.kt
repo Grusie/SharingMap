@@ -1,6 +1,6 @@
 package com.gruise.data.repository
 
-import com.gruise.data.datasource.SearchDataSource
+import com.gruise.data.datasource.search.SearchDataSource
 import com.gruise.data.mapper.toDomain
 import com.gruise.data.mapper.toLocalData
 import com.gruise.domain.model.Tag
