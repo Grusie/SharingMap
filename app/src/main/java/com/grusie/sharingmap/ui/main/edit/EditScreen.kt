@@ -13,13 +13,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -61,22 +60,7 @@ import com.naver.maps.map.util.MapConstants
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditScreen(navController: NavController) {
-    val bottomSheetScaffoldState = rememberBottomSheetScaffoldState()
-
-    BottomSheetScaffold(
-        scaffoldState = bottomSheetScaffoldState,
-        sheetContent = {
-            EditLocationModal()
-        },
-        content = {
-            EditHomeScreen(navController)
-        }
-    )
-}
-
-@Composable
-fun EditHomeScreen(navController: NavController) {
-    Scaffold(modifier = Modifier.clickable { }) { paddingValues ->
+    Scaffold { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
@@ -87,6 +71,12 @@ fun EditHomeScreen(navController: NavController) {
                     cameraPositionState.position
                 }
             }
+            var isShowEditPlaceBottomSheet by remember { mutableStateOf(false) }
+            val editPlaceBottomSheetState =
+                rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+            val pickedAddress =
+                "${currentPosition.target.latitude}, ${currentPosition.target.longitude}"
 
             SearchMapView(
                 isFollowMode = isFollowMode,
@@ -113,7 +103,19 @@ fun EditHomeScreen(navController: NavController) {
                         isFollowMode = true
                     }
                 )
-                EditMapInfo(currentLocation = "${currentPosition.target.latitude}, ${currentPosition.target.longitude}")
+                EditMapInfo(
+                    currentLocation = pickedAddress,
+                    showEditPlaceBottomSheet = { isShowEditPlaceBottomSheet = true }
+                )
+
+                if (isShowEditPlaceBottomSheet) {
+                    EditPlaceBottomSheet(
+                        address = pickedAddress,
+                        sheetState = editPlaceBottomSheetState,
+                        onDismiss = { isShowEditPlaceBottomSheet = false },
+                        onSaveClick = {}
+                    )
+                }
             }
         }
     }
@@ -221,7 +223,11 @@ fun SearchTopView(
 }
 
 @Composable
-fun EditMapInfo(modifier: Modifier = Modifier, currentLocation: String = "") {
+fun EditMapInfo(
+    modifier: Modifier = Modifier,
+    currentLocation: String = "",
+    showEditPlaceBottomSheet: () -> Unit = {}
+) {
     Column(
         modifier
             .background(
@@ -248,7 +254,7 @@ fun EditMapInfo(modifier: Modifier = Modifier, currentLocation: String = "") {
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = {}
+                    onClick = { }
                 )
                 .padding(vertical = 15.5.dp),
             color = Black,
@@ -258,7 +264,7 @@ fun EditMapInfo(modifier: Modifier = Modifier, currentLocation: String = "") {
         Spacer(modifier = Modifier.padding(bottom = 12.dp))
 
         Text(
-            text = stringResource(id = R.string.edit_search_store_location),
+            text = stringResource(id = R.string.edit_save_location),
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .padding(horizontal = 20.dp)
@@ -268,7 +274,7 @@ fun EditMapInfo(modifier: Modifier = Modifier, currentLocation: String = "") {
                     shape = RoundedCornerShape(12.dp)
                 )
                 .clickable {
-
+                    showEditPlaceBottomSheet()
                 }
                 .padding(22.5.dp),
             color = WhiteFBFBFB,
@@ -277,6 +283,7 @@ fun EditMapInfo(modifier: Modifier = Modifier, currentLocation: String = "") {
         )
     }
 }
+
 
 @Composable
 @Preview(showBackground = true)

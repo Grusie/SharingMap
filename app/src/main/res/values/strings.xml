@@ -41,10 +41,16 @@
 
     <!-- Custom Bottom Sheet -->
     <string name="custom_bottom_sheet_cancel_text">취소</string>
+    <string name="custom_bottom_sheet_save_text">저장</string>
 
     <!-- Edit -->
     <string name="edit_search_location">장소를 검색해 주세요.</string>
-    <string name="edit_search_store_location">위치저장</string>
+    <string name="edit_save_location">위치저장</string>
+    <string name="edit_information_title">정보 입력</string>
+    <string name="edit_place_title">장소명</string>
+    <string name="edit_place_hint">장소명 입력...</string>
+    <string name="edit_content_title">내용</string>
+    <string name="edit_content_hint">내용 입력...</string>
 
     <!-- SearchMap -->
     <string name="search_map_title">장소검색</string>

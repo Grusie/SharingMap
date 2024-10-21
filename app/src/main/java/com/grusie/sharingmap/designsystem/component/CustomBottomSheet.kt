@@ -2,14 +2,17 @@ package com.grusie.sharingmap.designsystem.component
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -32,17 +35,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.Blue
 import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
 import com.grusie.sharingmap.designsystem.theme.GrayE6E6E6
+import com.grusie.sharingmap.designsystem.theme.GrayE8EAEB
 import com.grusie.sharingmap.designsystem.theme.SharingMapTheme
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.model.CommentUiModel
 import com.grusie.sharingmap.ui.model.UserUiModel
 import java.time.LocalDate
-import com.grusie.sharingmap.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -123,9 +127,11 @@ fun CustomCreateCancelBottomSheet(
         containerColor = White,
         dragHandle = null,
     ) {
-        Column(modifier = modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.96f)) {
+        Column(
+            modifier = modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.96f)
+        ) {
             HorizontalDivider(
                 modifier =
                 Modifier
@@ -136,8 +142,10 @@ fun CustomCreateCancelBottomSheet(
                 color = GrayE6E6E6,
             )
             Box(modifier = Modifier.fillMaxWidth()) {
-                Row(modifier = modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween) {
+                Row(
+                    modifier = modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     Text(
                         text = stringResource(id = R.string.custom_bottom_sheet_cancel_text),
                         style = Typography.titleSmall,
@@ -292,5 +300,19 @@ fun CustomBottomSheetPreview(modifier: Modifier = Modifier) {
                 )
             }
         }
+    }
+}
+
+@Composable
+fun CustomBottomSheetDragHandle(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.fillMaxWidth()) {
+        Spacer(
+            modifier = Modifier
+                .padding(top = 10.dp, bottom = 20.dp)
+                .align(Alignment.Center)
+                .height(5.dp)
+                .width(39.dp)
+                .background(GrayE8EAEB)
+        )
     }
 }

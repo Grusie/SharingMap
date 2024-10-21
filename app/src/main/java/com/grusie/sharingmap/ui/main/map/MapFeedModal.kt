@@ -3,15 +3,12 @@ package com.grusie.sharingmap.ui.main.map
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -43,10 +40,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.component.CommentContent
 import com.grusie.sharingmap.designsystem.component.CustomBottomSheet
+import com.grusie.sharingmap.designsystem.component.CustomBottomSheetDragHandle
 import com.grusie.sharingmap.designsystem.component.Feed
 import com.grusie.sharingmap.designsystem.component.UserLazyColumn
 import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
-import com.grusie.sharingmap.designsystem.theme.GrayE8EAEB
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.ui.main.home.FeedModal
 import com.grusie.sharingmap.ui.model.MapBottomSheetExpendType
@@ -88,7 +85,7 @@ fun MapFeedModal(
                         .fillMaxWidth()
                         .height(height.dp)
                 ) {
-                    MapBottomSheetDragHandle(modifier = Modifier.pointerInput(Unit) {
+                    CustomBottomSheetDragHandle(modifier = Modifier.pointerInput(Unit) {
                         detectVerticalDragGestures(
                             onVerticalDrag = { change, dragAmount ->
                                 change.consume()
@@ -224,20 +221,6 @@ fun MapFeedBottomSheet(
             },
             sheetState = archiveBottomSheetState,
             onDismiss = { isCommentBottomSheetOpen = false },
-        )
-    }
-}
-
-@Composable
-fun MapBottomSheetDragHandle(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.fillMaxWidth()) {
-        Spacer(
-            modifier = Modifier
-                .padding(top = 10.dp, bottom = 20.dp)
-                .align(Alignment.Center)
-                .height(5.dp)
-                .width(39.dp)
-                .background(GrayE8EAEB)
         )
     }
 }
