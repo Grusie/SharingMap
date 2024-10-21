@@ -34,7 +34,9 @@ class MainActivity : ComponentActivity() {
             val isBottomBarVisible = when {
                 currentDestination?.startsWith(NavItem.Storage.screenRoute) == true -> false
                 currentDestination?.equals(MainBottomNavItem.Search.screenRoute) == true -> false
+                currentDestination?.equals(MainBottomNavItem.Edit.screenRoute) == true -> false
                 currentDestination?.startsWith(NavItem.User.screenRoute) == true -> false
+                currentDestination?.equals(NavItem.SearchMap.screenRoute) == true -> false
                 else -> true
             }
             SharingMapTheme {
@@ -60,7 +62,8 @@ class MainActivity : ComponentActivity() {
                     },
                     content = {
                         MainBottomNavGraph(navController = navController) {
-                            if(isBottomBarVisible) finish() else navController.popBackStack()}
+                            if (isBottomBarVisible) finish() else navController.popBackStack()
+                        }
                     }
                 )
             }
