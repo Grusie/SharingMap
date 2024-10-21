@@ -39,7 +39,7 @@ import com.grusie.sharingmap.designsystem.component.UserLazyColumn
 import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
-import com.grusie.sharingmap.ui.model.FeedType
+import com.grusie.sharingmap.ui.model.ArchiveType
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -72,8 +72,8 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                 ) {
                     item {
                         FeedRadioGroup(
-                            options = FeedType.entries,
-                            selectedType = uiState.selectedFeedType,
+                            options = ArchiveType.entries,
+                            selectedType = uiState.selectedArchiveType,
                             onClick = viewModel::updateSelectedFeedType,
                         )
                     }
@@ -107,8 +107,8 @@ fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
                         .padding(top = it.calculateTopPadding()),
                 ) {
                     FeedRadioGroup(
-                        options = FeedType.entries,
-                        selectedType = uiState.selectedFeedType,
+                        options = ArchiveType.entries,
+                        selectedType = uiState.selectedArchiveType,
                         onClick = viewModel::updateSelectedFeedType,
                     )
                     Text(
