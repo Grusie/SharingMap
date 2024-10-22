@@ -1,5 +1,6 @@
 package com.grusie.sharingmap.ui.main.search
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.text2.input.textAsFlow
@@ -39,20 +40,8 @@ class SearchViewModel @Inject constructor(
 
 
     init {
-        searchTextField.textAsFlow().debounce(500).onEach {
-            if(it.isEmpty() || it.isBlank()) {
-                if(_selectedTabIndex.value == 0) getUserSearchHistory()
-                else getTagSearchHistory()
-            }
-        }.filter { it.isNotEmpty() }.mapLatest {
-            if (_selectedTabIndex.value == 0) getUserSearch() else getTagSearch()
-        }.onEach {
-            it.onSuccess {
-                if(_selectedTabIndex.value == 0) _uiState.value = SearchUiState.SearchSuccess(userSearch = it.map { it as UserUiModel})
-                else _uiState.value = SearchUiState.SearchSuccess(tagSearch = it.map { it as TagUiModel })
-            }.onFailure {
-                _uiState.value = SearchUiState.Error(it.message!!)
-            }
+        searchTextField.textAsFlow().debounce(300).onEach {
+            getSearch()
         }.launchIn(viewModelScope)
         getUserSearchHistory()
         getTagSearchHistory()
@@ -60,10 +49,29 @@ class SearchViewModel @Inject constructor(
 
     fun setSelectedTabIndex(index: Int) {
         _selectedTabIndex.value = index
+        viewModelScope.launch { getSearch() }
     }
 
-    private suspend fun getUserSearch(): Result<List<UserUiModel>> {
-        return searchUseCase.getUserSearchUseCase(searchTextField.text.toString(), 10).map { it.map { it.toUiModel() } }
+    private suspend fun getSearch() {
+        when {
+            searchTextField.text.isEmpty() || searchTextField.text.isBlank() -> {
+                if (_selectedTabIndex.value == 0) getUserSearchHistory()
+                else getTagSearchHistory()
+            }
+            _selectedTabIndex.value == 0 -> getUserSearch()
+            else -> getTagSearch()
+        }
+    }
+
+
+    private suspend fun getUserSearch() {
+        viewModelScope.launch {
+            searchUseCase.getUserSearchUseCase(searchTextField.text.toString(), 10).onSuccess {
+                _uiState.value = SearchUiState.SearchSuccess(userSearch = it.map { it.toUiModel() })
+            }.onFailure {
+                _uiState.value = SearchUiState.Error(it.message!!)
+            }
+        }
     }
 
     private fun getUserSearchHistory() {
@@ -96,11 +104,18 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private suspend fun getTagSearch(): Result<List<TagUiModel>> {
-        return searchUseCase.getTagSearchUseCase(searchTextField.text.toString(), 10).map { it.map { it.toUiModel() } }
+
+    private fun getTagSearch() {
+        viewModelScope.launch {
+            searchUseCase.getTagSearchUseCase(searchTextField.text.toString(), 10).onSuccess {
+                _uiState.value = SearchUiState.SearchSuccess(tagSearch = it.map { it.toUiModel() })
+            }.onFailure {
+                _uiState.value = SearchUiState.Error(it.message!!)
+            }
+        }
     }
 
-    private fun getTagSearchHistory(){
+    private fun getTagSearchHistory() {
         viewModelScope.launch {
             searchUseCase.getAllLocalTagSearchUseCase().collect { result ->
                 result.onSuccess { tagSearchList ->
