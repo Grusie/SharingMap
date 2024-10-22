@@ -1,4 +1,4 @@
-package com.grusie.sharingmap.ui.main.mypage.storage
+package com.grusie.sharingmap.ui.main.mypage.archivecollection
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.lazy.LazyColumn
@@ -37,9 +37,9 @@ import com.grusie.sharingmap.ui.model.TagUiModel
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun FeedCollectionScreen(
+fun ArchiveCollectionScreen(
     navController: NavController,
-    viewModel: FeedCollectionViewModel = hiltViewModel(),
+    viewModel: ArchiveCollectionViewModel = hiltViewModel(),
     storage: StorageUiModel?,
     tag: TagUiModel?
 ) {
@@ -51,7 +51,7 @@ fun FeedCollectionScreen(
             skipPartiallyExpanded = true,
         )
     var isCommentBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
-    val uiState: FeedCollectionUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState: ArchiveCollectionUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val selectedFeed by viewModel.selectedFeed.collectAsStateWithLifecycle()
     tag?.let { viewModel.updateFeedCollection(it) }
     Scaffold(
@@ -62,15 +62,15 @@ fun FeedCollectionScreen(
         },
         content = {
             when (uiState) {
-                is FeedCollectionUiState.Loading -> {
+                is ArchiveCollectionUiState.Loading -> {
 
                 }
 
-                is FeedCollectionUiState.Success -> {
+                is ArchiveCollectionUiState.Success -> {
                     LazyColumn(
                         contentPadding = it
                     ) {
-                        items((uiState as FeedCollectionUiState.Success).feeds) {
+                        items((uiState as ArchiveCollectionUiState.Success).feeds) {
                             Feed(
                                 feed = it,
                                 isFollow = true,
@@ -130,7 +130,7 @@ fun FeedCollectionScreen(
 
                 }
 
-                is FeedCollectionUiState.Error -> {
+                is ArchiveCollectionUiState.Error -> {
 
                 }
             }

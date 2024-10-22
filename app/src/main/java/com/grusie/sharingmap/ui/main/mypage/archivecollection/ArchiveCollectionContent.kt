@@ -1,4 +1,4 @@
-package com.grusie.sharingmap.ui.main.mypage
+package com.grusie.sharingmap.ui.main.mypage.archivecollection
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image

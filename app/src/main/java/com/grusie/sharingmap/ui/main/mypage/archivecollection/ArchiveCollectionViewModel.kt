@@ -1,4 +1,4 @@
-package com.grusie.sharingmap.ui.main.mypage.storage
+package com.grusie.sharingmap.ui.main.mypage.archivecollection
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -15,10 +15,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FeedCollectionViewModel @Inject constructor(
+class ArchiveCollectionViewModel @Inject constructor(
     private val archiveUseCase: ArchiveUseCase,
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<FeedCollectionUiState>(FeedCollectionUiState.Loading)
+    private val _uiState = MutableStateFlow<ArchiveCollectionUiState>(ArchiveCollectionUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
     private val _selectedFeed = MutableStateFlow<ArchiveUiModel?>(null)
@@ -36,9 +36,9 @@ class FeedCollectionViewModel @Inject constructor(
         viewModelScope.launch {
             archiveUseCase.getArchivesUseCase(tag = tag.name).onSuccess {
                 Log.d("TAG", "updateFeedCollection: $it")
-                _uiState.value = FeedCollectionUiState.Success(feeds = it.map { it.toUiModel() })
+                _uiState.value = ArchiveCollectionUiState.Success(feeds = it.map { it.toUiModel() })
             }.onFailure {
-                _uiState.value = FeedCollectionUiState.Error(it.message ?: "")
+                _uiState.value = ArchiveCollectionUiState.Error(it.message ?: "")
             }
         }
     }

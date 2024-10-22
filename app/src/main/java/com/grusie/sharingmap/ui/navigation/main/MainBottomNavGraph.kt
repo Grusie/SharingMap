@@ -13,7 +13,7 @@ import com.grusie.sharingmap.ui.main.home.HomeScreen
 import com.grusie.sharingmap.ui.main.map.MapScreen
 import com.grusie.sharingmap.ui.main.map.SearchMapScreen
 import com.grusie.sharingmap.ui.main.mypage.MyPageScreen
-import com.grusie.sharingmap.ui.main.mypage.storage.FeedCollectionScreen
+import com.grusie.sharingmap.ui.main.mypage.archivecollection.ArchiveCollectionScreen
 import com.grusie.sharingmap.ui.main.mypage.user.UserScreen
 import com.grusie.sharingmap.ui.main.search.SearchScreen
 import com.grusie.sharingmap.ui.model.StorageUiModel
@@ -45,7 +45,7 @@ fun MainBottomNavGraph(navController: NavHostController, onBackPressed: () -> Un
         ) {
             val storageJsonString = it.arguments?.getString("storage")
             val storage = Gson().fromJson(storageJsonString, StorageUiModel::class.java)
-            FeedCollectionScreen(navController = navController, storage = storage, tag = null)
+            ArchiveCollectionScreen(navController = navController, storage = storage, tag = null)
         }
 
         composable(
@@ -54,7 +54,7 @@ fun MainBottomNavGraph(navController: NavHostController, onBackPressed: () -> Un
         ) {
             val tagJsonString = it.arguments?.getString("tag")
             val tag = Gson().fromJson(tagJsonString, TagUiModel::class.java)
-            FeedCollectionScreen(navController = navController, storage = null, tag = tag)
+            ArchiveCollectionScreen(navController = navController, storage = null, tag = tag)
         }
 
         composable(
