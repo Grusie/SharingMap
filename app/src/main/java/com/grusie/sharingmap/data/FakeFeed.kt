@@ -2,6 +2,7 @@ package com.grusie.sharingmap.data
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.grusie.sharingmap.ui.model.ArchiveAttachUiModel
 import com.grusie.sharingmap.ui.model.CommentUiModel
 import com.grusie.sharingmap.ui.model.ArchiveInfoUiModel
 import com.grusie.sharingmap.ui.model.ArchiveUiModel
@@ -37,6 +38,25 @@ val fakeFeeds =
                 ),
             archiveAttaches =
                 listOf(
+                    ArchiveAttachUiModel(
+                        name = "",
+                        path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                        width = 100,
+                        height = 100,
+                    ),
+                    ArchiveAttachUiModel(
+                        name = "",
+                        path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                        width = 100,
+                        height = 100,
+                    ),
+                    ArchiveAttachUiModel(
+                        name = "",
+                        path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                        width = 100,
+                        height = 100,
+                    ),
+
                 ),
             location =
                 LocationUiModel(
@@ -88,6 +108,24 @@ val fakeFeeds =
             content = "honestatis",
             archiveAttaches =
             listOf(
+                ArchiveAttachUiModel(
+                    name = "",
+                    path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    width = 100,
+                    height = 100,
+                ),
+                ArchiveAttachUiModel(
+                    name = "",
+                    path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    width = 100,
+                    height = 100,
+                ),
+                ArchiveAttachUiModel(
+                    name = "",
+                    path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    width = 100,
+                    height = 100,
+                ),
             ),
             location =
             LocationUiModel(
@@ -115,6 +153,24 @@ val fakeFeeds =
             content = "honestatis",
             archiveAttaches =
             listOf(
+                ArchiveAttachUiModel(
+                    name = "",
+                    path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    width = 100,
+                    height = 100,
+                ),
+                ArchiveAttachUiModel(
+                    name = "",
+                    path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    width = 100,
+                    height = 100,
+                ),
+                ArchiveAttachUiModel(
+                    name = "",
+                    path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    width = 100,
+                    height = 100,
+                ),
             ),
             location =
             LocationUiModel(
