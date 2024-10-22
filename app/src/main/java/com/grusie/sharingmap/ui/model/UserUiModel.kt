@@ -6,6 +6,7 @@ data class UserUiModel(
     val profileImage: String = "",
     val name: String = "",
     val description: String = "",
+    val email: String? = "",
     val followerCount: Int = 0,
     val postCount: Int = 0,
 )

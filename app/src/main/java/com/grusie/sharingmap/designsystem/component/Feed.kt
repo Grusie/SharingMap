@@ -45,23 +45,23 @@ import com.grusie.sharingmap.designsystem.theme.GrayE8EAEB
 import com.grusie.sharingmap.designsystem.theme.GrayE8EAEB_30
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.util.singleClickable
-import com.grusie.sharingmap.ui.model.FeedInfoUiModel
-import com.grusie.sharingmap.ui.model.FeedUiModel
+import com.grusie.sharingmap.ui.model.ArchiveInfoUiModel
+import com.grusie.sharingmap.ui.model.ArchiveUiModel
 import com.grusie.sharingmap.ui.model.LocationUiModel
 import com.grusie.sharingmap.ui.model.UserUiModel
 
 @Composable
 fun Feed(
-    feed: FeedUiModel,
+    feed: ArchiveUiModel,
     isFollow: Boolean,
     onUserClick: (UserUiModel) -> Unit,
     onProfileClick: () -> Unit,
     onImageClick: (String) -> Unit,
     onLocationClick: () -> Unit,
-    onArchivingClick: (FeedUiModel) -> Unit,
+    onArchivingClick: (ArchiveUiModel) -> Unit,
     onMeatBallClick: () -> Unit,
     onLikeClick: () -> Unit,
-    onChatClick: (FeedUiModel) -> Unit,
+    onChatClick: (ArchiveUiModel) -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -150,12 +150,12 @@ fun ProfileImage(
 
 @Composable
 fun FeedRow(
-    feed: FeedUiModel,
+    feed: ArchiveUiModel,
     onImageClick: (String) -> Unit,
     onLocationClick: () -> Unit,
-    onArchivingClick: (FeedUiModel) -> Unit,
+    onArchivingClick: (ArchiveUiModel) -> Unit,
     onLikeClick: () -> Unit,
-    onChatClick: (FeedUiModel) -> Unit,
+    onChatClick: (ArchiveUiModel) -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -202,11 +202,11 @@ fun FeedRow(
 
 @Composable
 fun FeedContent(
-    feed: FeedUiModel,
+    feed: ArchiveUiModel,
     onImageClick: (String) -> Unit,
     onLocationClick: () -> Unit,
     onLikeClick: () -> Unit,
-    onChatClick: (FeedUiModel) -> Unit,
+    onChatClick: (ArchiveUiModel) -> Unit,
     onShareClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -218,9 +218,9 @@ fun FeedContent(
             modifier = Modifier.fillMaxWidth().padding(end = 14.dp),
         )
         Spacer(modifier = Modifier.height(12.dp))
-        if (feed.contentImages.size == 1) {
+        if (feed.archiveAttaches.size == 1) {
             SingleContentImage(
-                contentImage = feed.contentImages[0],
+                contentImage = feed.archiveAttaches[0].path,
                 onImageClick = onImageClick,
             )
         } else {
@@ -229,8 +229,8 @@ fun FeedContent(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 contentPadding = PaddingValues(end = 14.dp),
             ) {
-                itemsIndexed(feed.contentImages) { _, item ->
-                    ContentImage(contentImage = item, onImageClick = onImageClick)
+                itemsIndexed(feed.archiveAttaches) { _, item ->
+                    ContentImage(contentImage = item.path, onImageClick = onImageClick)
                 }
             }
         }
@@ -311,7 +311,7 @@ fun Location(
 
 @Composable
 fun FeedInfo(
-    feedInfo: FeedInfoUiModel,
+    feedInfo: ArchiveInfoUiModel,
     onLikeClick: () -> Unit,
     onChatClick: () -> Unit,
     onShareClick: () -> Unit,
@@ -398,7 +398,7 @@ fun ArchivingList(
 @Composable
 private fun FeedPreview() {
     Feed(
-        FeedUiModel(
+        ArchiveUiModel(
             id = 1,
             user =
                 UserUiModel(
@@ -408,19 +408,17 @@ private fun FeedPreview() {
                 ),
             date = "2024.04.17",
             content = "honestatis",
-            contentImages =
-                listOf(
-                    "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                    "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                    "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                ),
+            archiveAttaches =
+                listOf(),
             location =
                 LocationUiModel(
                     name = "Lilian Douglas",
                     address = "taciti",
+                    positionX = 0.0,
+                    positionY = 0.0
                 ),
             feedInfo =
-                FeedInfoUiModel(
+                ArchiveInfoUiModel(
                     likeCount = 2617,
                     chatCount = 1606,
                     shareCount = 8829,

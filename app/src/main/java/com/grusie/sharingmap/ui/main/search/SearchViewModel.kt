@@ -1,5 +1,6 @@
 package com.grusie.sharingmap.ui.main.search
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.text2.input.textAsFlow
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -30,38 +32,57 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
 
     val searchTextField = TextFieldState()
-    private val _uiState = MutableStateFlow(SearchUiState())
+    private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Loading)
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
+    private val _selectedTabIndex = MutableStateFlow(0)
+    val selectedTabIndex: StateFlow<Int> = _selectedTabIndex.asStateFlow()
+
+
     init {
-        searchTextField.textAsFlow().debounce(500).mapLatest {
-            if (uiState.value.selectedTabIndex == 0) getUserSearch() else getTagSearch()
-        }.onEach {
-            it.onSuccess {
-                if(uiState.value.selectedTabIndex == 0) _uiState.value = _uiState.value.copy(userSearch = it.map { it as UserUiModel})
-                else _uiState.value = _uiState.value.copy(tagSearch = it.map { it as TagUiModel })
-            }
+        searchTextField.textAsFlow().debounce(300).onEach {
+            getSearch()
         }.launchIn(viewModelScope)
         getUserSearchHistory()
         getTagSearchHistory()
     }
 
     fun setSelectedTabIndex(index: Int) {
-        _uiState.value = _uiState.value.copy(selectedTabIndex = index)
+        _selectedTabIndex.value = index
+        viewModelScope.launch { getSearch() }
     }
 
-    private fun getUserSearch(): Result<List<UserUiModel>> {
-        return Result.success(fakeUserSearch)
+    private suspend fun getSearch() {
+        when {
+            searchTextField.text.isEmpty() || searchTextField.text.isBlank() -> {
+                if (_selectedTabIndex.value == 0) getUserSearchHistory()
+                else getTagSearchHistory()
+            }
+            _selectedTabIndex.value == 0 -> getUserSearch()
+            else -> getTagSearch()
+        }
+    }
+
+
+    private suspend fun getUserSearch() {
+        viewModelScope.launch {
+            searchUseCase.getUserSearchUseCase(searchTextField.text.toString(), 10).onSuccess {
+                _uiState.value = SearchUiState.SearchSuccess(userSearch = it.map { it.toUiModel() })
+            }.onFailure {
+                _uiState.value = SearchUiState.Error(it.message!!)
+            }
+        }
     }
 
     private fun getUserSearchHistory() {
         viewModelScope.launch {
-            searchUseCase.getAllUserSearchUseCase().collect { result ->
+            searchUseCase.getAllLocalUserSearchUseCase().collect { result ->
                 result.onSuccess { userSearchList ->
-                    _uiState.value = _uiState.value.copy(
-                        userSearchHistory = userSearchList.map { it.toUiModel() }
+                    _uiState.value = SearchUiState.SearchSuccess(
+                        userSearch = userSearchList.map { it.toUiModel() }
                     )
                 }.onFailure {
+                    _uiState.value = SearchUiState.Error(it.message!!)
                 }
             }
         }
@@ -69,30 +90,37 @@ class SearchViewModel @Inject constructor(
 
     fun insertUserSearchHistory(userSearch: UserUiModel) {
         viewModelScope.launch {
-            searchUseCase.insertUserSearchUseCase(userSearch.toDomain()).onFailure {
-                //TODO 에러 처리
+            searchUseCase.insertLocalUserSearchUseCase(userSearch.toDomain()).onFailure {
+                _uiState.value = SearchUiState.Error(it.message!!)
             }
         }
     }
 
     fun deleteAllUserSearchHistory() {
         viewModelScope.launch {
-            searchUseCase.deleteAllUserSearchUseCase().onFailure {
-                //TODO 에러 처리
+            searchUseCase.deleteAllLocalUserSearchUseCase().onFailure {
+                _uiState.value = SearchUiState.Error(it.message!!)
             }
         }
     }
 
-    private fun getTagSearch(): Result<List<TagUiModel>> {
-        return Result.success(fakeTagSearch)
+
+    private fun getTagSearch() {
+        viewModelScope.launch {
+            searchUseCase.getTagSearchUseCase(searchTextField.text.toString(), 10).onSuccess {
+                _uiState.value = SearchUiState.SearchSuccess(tagSearch = it.map { it.toUiModel() })
+            }.onFailure {
+                _uiState.value = SearchUiState.Error(it.message!!)
+            }
+        }
     }
 
-    private fun getTagSearchHistory(){
+    private fun getTagSearchHistory() {
         viewModelScope.launch {
-            searchUseCase.getAllTagSearchUseCase().collect { result ->
+            searchUseCase.getAllLocalTagSearchUseCase().collect { result ->
                 result.onSuccess { tagSearchList ->
-                    _uiState.value = _uiState.value.copy(
-                        tagSearchHistory = tagSearchList.map { it.toUiModel() }
+                    _uiState.value = SearchUiState.SearchSuccess(
+                        tagSearch = tagSearchList.map { it.toUiModel() }
                     )
                 }.onFailure {
                 }
@@ -102,16 +130,16 @@ class SearchViewModel @Inject constructor(
 
     fun insertTagSearchHistory(tagSearch: TagUiModel) {
         viewModelScope.launch {
-            searchUseCase.insertTagSearchUseCase(tagSearch.toDomain()).onFailure {
-                //TODO 에러 처리
+            searchUseCase.insertLocalTagSearchUseCase(tagSearch.toDomain()).onFailure {
+                _uiState.value = SearchUiState.Error(it.message!!)
             }
         }
     }
 
     fun deleteAllTagSearchHistory() {
         viewModelScope.launch {
-            searchUseCase.deleteAllTagSearchUseCase().onFailure {
-                //TODO 에러 처리
+            searchUseCase.deleteAllLocalTagSearchUseCase().onFailure {
+                _uiState.value = SearchUiState.Error(it.message!!)
             }
         }
     }

@@ -3,10 +3,13 @@ package com.grusie.sharingmap.ui.main.search
 import com.grusie.sharingmap.ui.model.TagUiModel
 import com.grusie.sharingmap.ui.model.UserUiModel
 
-data class SearchUiState(
-    val selectedTabIndex: Int = 0,
-    val userSearch: List<UserUiModel> = emptyList(),
-    val userSearchHistory: List<UserUiModel> = emptyList(),
-    val tagSearch: List<TagUiModel> = emptyList(),
-    val tagSearchHistory: List<TagUiModel> = emptyList(),
-)
+
+sealed interface SearchUiState {
+    data object Loading : SearchUiState
+    data class SearchSuccess(
+        val userSearch: List<UserUiModel> = emptyList(),
+        val tagSearch: List<TagUiModel> = emptyList(),
+    ) : SearchUiState
+
+    data class Error(val message: String) : SearchUiState
+}

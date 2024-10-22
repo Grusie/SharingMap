@@ -29,7 +29,7 @@ import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.main.mypage.OtherUserInfo
-import com.grusie.sharingmap.ui.main.mypage.StorageLazyColumn
+import com.grusie.sharingmap.ui.main.mypage.archivecollection.StorageLazyColumn
 import com.grusie.sharingmap.ui.model.MyPageTab
 import com.grusie.sharingmap.ui.model.UserUiModel
 import com.grusie.sharingmap.ui.navigation.main.NavItem
@@ -92,7 +92,7 @@ fun UserScreen(
                         onAddClick = { },
                         onClick = {
                             navController.navigate(
-                                NavItem.Storage.screenRoute + "?storage=${
+                                NavItem.FeedCollection.screenRoute + "?storage=${
                                     Gson().toJson(
                                         it
                                     )

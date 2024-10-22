@@ -1,15 +1,19 @@
 package com.grusie.sharingmap.data
 
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.grusie.sharingmap.ui.model.ArchiveAttachUiModel
 import com.grusie.sharingmap.ui.model.CommentUiModel
-import com.grusie.sharingmap.ui.model.FeedInfoUiModel
-import com.grusie.sharingmap.ui.model.FeedUiModel
+import com.grusie.sharingmap.ui.model.ArchiveInfoUiModel
+import com.grusie.sharingmap.ui.model.ArchiveUiModel
 import com.grusie.sharingmap.ui.model.LocationUiModel
 import com.grusie.sharingmap.ui.model.UserUiModel
 import java.time.LocalDate
 
+@RequiresApi(Build.VERSION_CODES.O)
 val fakeFeeds =
     listOf(
-        FeedUiModel(
+        ArchiveUiModel(
             id = 1,
             user =
                 UserUiModel(
@@ -32,19 +36,37 @@ val fakeFeeds =
                         name = "장원철",
                     ),
                 ),
-            contentImages =
+            archiveAttaches =
                 listOf(
-                    "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                    "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                    "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    ArchiveAttachUiModel(
+                        name = "",
+                        path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                        width = 100,
+                        height = 100,
+                    ),
+                    ArchiveAttachUiModel(
+                        name = "",
+                        path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                        width = 100,
+                        height = 100,
+                    ),
+                    ArchiveAttachUiModel(
+                        name = "",
+                        path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                        width = 100,
+                        height = 100,
+                    ),
+
                 ),
             location =
                 LocationUiModel(
                     name = "Lilian Douglas",
                     address = "taciti",
+                    positionX = 0.0,
+                    positionY = 0.0
                 ),
             feedInfo =
-                FeedInfoUiModel(
+                ArchiveInfoUiModel(
                     likeCount = 2617,
                     chatCount = 1606,
                     shareCount = 8829,
@@ -74,7 +96,7 @@ val fakeFeeds =
                 ),
             ),
         ),
-        FeedUiModel(
+        ArchiveUiModel(
             id = 2,
             user =
                 UserUiModel(
@@ -84,25 +106,42 @@ val fakeFeeds =
                 ),
             date = "2024.04.17",
             content = "honestatis",
-            contentImages =
-                listOf(
-                    "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                    "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                    "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+            archiveAttaches =
+            listOf(
+                ArchiveAttachUiModel(
+                    name = "",
+                    path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    width = 100,
+                    height = 100,
                 ),
+                ArchiveAttachUiModel(
+                    name = "",
+                    path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    width = 100,
+                    height = 100,
+                ),
+                ArchiveAttachUiModel(
+                    name = "",
+                    path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    width = 100,
+                    height = 100,
+                ),
+            ),
             location =
-                LocationUiModel(
-                    name = "Lilian Douglas",
-                    address = "taciti",
-                ),
+            LocationUiModel(
+                name = "Lilian Douglas",
+                address = "taciti",
+                positionX = 0.0,
+                positionY = 0.0
+            ),
             feedInfo =
-                FeedInfoUiModel(
+                ArchiveInfoUiModel(
                     likeCount = 2617,
                     chatCount = 1606,
                     shareCount = 8829,
                 ),
         ),
-        FeedUiModel(
+        ArchiveUiModel(
             id = 3,
             user =
                 UserUiModel(
@@ -112,19 +151,36 @@ val fakeFeeds =
                 ),
             date = "2024.04.17",
             content = "honestatis",
-            contentImages =
-                listOf(
-                    "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                    "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                    "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+            archiveAttaches =
+            listOf(
+                ArchiveAttachUiModel(
+                    name = "",
+                    path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    width = 100,
+                    height = 100,
                 ),
+                ArchiveAttachUiModel(
+                    name = "",
+                    path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    width = 100,
+                    height = 100,
+                ),
+                ArchiveAttachUiModel(
+                    name = "",
+                    path = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
+                    width = 100,
+                    height = 100,
+                ),
+            ),
             location =
-                LocationUiModel(
-                    name = "Lilian Douglas",
-                    address = "taciti",
-                ),
+            LocationUiModel(
+                name = "Lilian Douglas",
+                address = "taciti",
+                positionX = 0.0,
+                positionY = 0.0
+            ),
             feedInfo =
-                FeedInfoUiModel(
+                ArchiveInfoUiModel(
                     likeCount = 2617,
                     chatCount = 1606,
                     shareCount = 8829,

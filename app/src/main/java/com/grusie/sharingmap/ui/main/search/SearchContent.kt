@@ -1,5 +1,6 @@
 package com.grusie.sharingmap.ui.main.search
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -45,17 +46,29 @@ fun SearchContent(
     SearchContentItem(
         selectedTabIndex = selectedTabIndex,
         lazyColumn = {
-            if (selectedTabIndex == 0) UserLazyColumn(
-                users = if (searchText.text.isEmpty()) uiState.userSearchHistory else uiState.userSearch,
-                isBottomSheet = true,
-                modifier = Modifier.fillMaxHeight(),
-                onClick = onUserItemClick,
-            ) else {
-                TagLazyColumn(
-                    tags = if (searchText.text.isEmpty()) uiState.tagSearchHistory else uiState.tagSearch,
-                    modifier = Modifier.fillMaxHeight(),
-                    onClick = onTagItemClick
-                )
+            when (uiState) {
+                is SearchUiState.SearchSuccess -> {
+                    if (selectedTabIndex == 0) UserLazyColumn(
+                        users = uiState.userSearch,
+                        isBottomSheet = true,
+                        modifier = Modifier.fillMaxHeight(),
+                        onClick = onUserItemClick,
+                    ) else {
+                        TagLazyColumn(
+                            tags = uiState.tagSearch,
+                            modifier = Modifier.fillMaxHeight(),
+                            onClick = onTagItemClick
+                        )
+                    }
+                }
+                is SearchUiState.Loading -> {
+
+                }
+
+                is SearchUiState.Error -> {
+
+                }
+
             }
         },
         onUserHistoryDelete = onUserHistoryDelete,

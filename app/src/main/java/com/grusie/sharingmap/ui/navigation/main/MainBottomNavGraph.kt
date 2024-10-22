@@ -13,10 +13,11 @@ import com.grusie.sharingmap.ui.main.home.HomeScreen
 import com.grusie.sharingmap.ui.main.map.MapScreen
 import com.grusie.sharingmap.ui.main.map.SearchMapScreen
 import com.grusie.sharingmap.ui.main.mypage.MyPageScreen
-import com.grusie.sharingmap.ui.main.mypage.storage.StorageScreen
+import com.grusie.sharingmap.ui.main.mypage.archivecollection.ArchiveCollectionScreen
 import com.grusie.sharingmap.ui.main.mypage.user.UserScreen
 import com.grusie.sharingmap.ui.main.search.SearchScreen
 import com.grusie.sharingmap.ui.model.StorageUiModel
+import com.grusie.sharingmap.ui.model.TagUiModel
 import com.grusie.sharingmap.ui.model.UserUiModel
 
 @Composable
@@ -39,12 +40,21 @@ fun MainBottomNavGraph(navController: NavHostController, onBackPressed: () -> Un
         }
 
         composable(
-            NavItem.Storage.screenRoute + "?storage={storage}",
+            NavItem.FeedCollection.screenRoute + "?storage={storage}",
             arguments = listOf(navArgument("storage") { type = NavType.StringType })
         ) {
             val storageJsonString = it.arguments?.getString("storage")
             val storage = Gson().fromJson(storageJsonString, StorageUiModel::class.java)
-            StorageScreen(navController = navController, storage = storage)
+            ArchiveCollectionScreen(navController = navController, storage = storage, tag = null)
+        }
+
+        composable(
+            NavItem.FeedCollection.screenRoute + "?tag={tag}",
+            arguments = listOf(navArgument("tag") { type = NavType.StringType })
+        ) {
+            val tagJsonString = it.arguments?.getString("tag")
+            val tag = Gson().fromJson(tagJsonString, TagUiModel::class.java)
+            ArchiveCollectionScreen(navController = navController, storage = null, tag = tag)
         }
 
         composable(

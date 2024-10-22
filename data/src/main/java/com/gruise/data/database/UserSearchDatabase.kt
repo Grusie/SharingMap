@@ -7,7 +7,7 @@ import com.gruise.data.model.LocalUserSearch
 
 @Database(
     entities = [LocalUserSearch::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class UserSearchDatabase: RoomDatabase() {

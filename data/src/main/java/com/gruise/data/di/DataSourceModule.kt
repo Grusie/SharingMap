@@ -1,7 +1,9 @@
 package com.gruise.data.di
 
-import com.gruise.data.datasource.SearchDataSource
-import com.gruise.data.datasource.SearchRemoteDataSource
+import com.gruise.data.datasource.archive.ArchiveDataSource
+import com.gruise.data.datasource.archive.ArchiveRemoteDataSource
+import com.gruise.data.datasource.search.SearchDataSource
+import com.gruise.data.datasource.search.SearchRemoteDataSource
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -17,5 +19,12 @@ abstract class DataSourceModule {
     abstract fun bindSearchDataSource(
         searchRemoteDataSource: SearchRemoteDataSource,
     ): SearchDataSource
+
+    @Singleton
+    @Binds
+    abstract fun bindArchiveDataSource(
+        archiveRemoteDataSource: ArchiveRemoteDataSource
+    ): ArchiveDataSource
+
 
 }

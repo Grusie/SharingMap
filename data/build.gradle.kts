@@ -64,7 +64,4 @@ dependencies {
     // okhttp
     implementation(libs.okhttp3)
     implementation(libs.okhttp3.interceptor)
-
-
-
 }

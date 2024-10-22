@@ -1,6 +1,7 @@
 package com.grusie.sharingmap.ui.main.search
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -17,21 +18,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.google.gson.Gson
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.component.CustomTab
+import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.model.SearchTab
+import com.grusie.sharingmap.ui.navigation.main.NavItem
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SearchScreen(viewModel: SearchViewModel = hiltViewModel(), navController: NavController) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val selectedTabIndex by viewModel.selectedTabIndex.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -50,7 +54,11 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel(), navController: Na
                 ),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(painter = painterResource(id = R.drawable.btn_back), contentDescription = null)
+                        Icon(
+                            painter = painterResource(id = R.drawable.btn_back),
+                            tint = Black,
+                            contentDescription = null
+                        )
                     }
                 }
             )
@@ -58,19 +66,33 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel(), navController: Na
         content = {
             Column(modifier = Modifier.padding(it)) {
                 CustomTab(
-                    selectedTabIndex = uiState.selectedTabIndex,
+                    selectedTabIndex = selectedTabIndex,
                     onClick = { viewModel.setSelectedTabIndex(it) },
                     tabs = SearchTab.entries.map { it.title })
                 SearchContent(
-                    selectedTabIndex = uiState.selectedTabIndex,
+                    selectedTabIndex = selectedTabIndex,
                     uiState = uiState,
                     searchText = viewModel.searchTextField,
                     onUserItemClick = {
                         viewModel.insertUserSearchHistory(it)
+                        navController.navigate(
+                            NavItem.User.screenRoute + "?user=${
+                                Gson().toJson(
+                                    it
+                                )
+                            }"
+                        )
                     },
                     onUserHistoryDelete = viewModel::deleteAllUserSearchHistory,
                     onTagItemClick = {
                         viewModel.insertTagSearchHistory(it)
+                        navController.navigate(
+                            NavItem.FeedCollection.screenRoute + "?tag=${
+                                Gson().toJson(
+                                    it
+                                )
+                            }"
+                        )
                     },
                     onTagHistoryDelete = viewModel::deleteAllTagSearchHistory
                 )

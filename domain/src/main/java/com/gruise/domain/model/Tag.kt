@@ -1,6 +1,6 @@
 package com.gruise.domain.model
 
-data class TagSearch(
+data class Tag(
     val tagId: Long,
     val tagName: String,
     val tagCount: Int,
