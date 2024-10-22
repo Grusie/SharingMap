@@ -1,10 +1,10 @@
 package com.grusie.sharingmap.ui.main.map
 
-import com.grusie.sharingmap.ui.model.FeedType
-import com.grusie.sharingmap.ui.model.FeedUiModel
+import com.grusie.sharingmap.ui.model.ArchiveType
+import com.grusie.sharingmap.ui.model.ArchiveUiModel
 
 data class MapUiState(
-    val feeds: List<FeedUiModel> = emptyList(),
-    val selectedFeedType: FeedType = FeedType.ALL,
-    val selectedFeed: FeedUiModel? = null,
+    val feeds: List<ArchiveUiModel> = emptyList(),
+    val selectedFeedType: ArchiveType = ArchiveType.ALL,
+    val selectedFeed: ArchiveUiModel? = null,
 )
