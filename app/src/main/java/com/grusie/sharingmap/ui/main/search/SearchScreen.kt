@@ -24,6 +24,7 @@ import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.component.CustomTab
+import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.model.SearchTab
@@ -55,6 +56,7 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel(), navController: Na
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
                             painter = painterResource(id = R.drawable.btn_back),
+                            tint = Black,
                             contentDescription = null
                         )
                     }
