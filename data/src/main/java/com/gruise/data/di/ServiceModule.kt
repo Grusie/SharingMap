@@ -2,6 +2,7 @@ package com.gruise.data.di
 
 import com.gruise.data.service.ArchiveService
 import com.gruise.data.service.SearchService
+import com.gruise.data.service.UserService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,5 +29,13 @@ object ServiceModule {
         retrofit: Retrofit,
     ): ArchiveService {
         return retrofit.create(ArchiveService::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun provideUserService(
+        retrofit: Retrofit,
+    ): UserService {
+        return retrofit.create(UserService::class.java)
     }
 }
