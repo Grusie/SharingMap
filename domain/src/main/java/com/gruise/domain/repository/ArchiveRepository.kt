@@ -14,4 +14,6 @@ interface ArchiveRepository {
     ): Result<List<Archive>>
 
     suspend fun getArchivesByAuthorId(authorId: Long): Result<List<Archive>>
+
+    suspend fun getArchivesByStorageId(storageId: Long): Result<List<Archive>>
 }

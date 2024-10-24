@@ -14,4 +14,6 @@ interface ArchiveDataSource {
     ): Result<ArchivesDto>
 
     suspend fun getArchivesByAuthorId(authorId: Long): Result<ArchivesDto>
+
+    suspend fun getArchivesByStorageId(storageId: Long): Result<ArchivesDto>
 }

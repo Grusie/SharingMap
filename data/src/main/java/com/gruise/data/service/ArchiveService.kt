@@ -21,4 +21,10 @@ interface ArchiveService {
     suspend fun getArchivesByAuthorId(
         @Path("authorId") authorId: Long,
     ): Result<ArchivesDto>
+
+    @GET("api/folders/{foldersId}/archives")
+    suspend fun getArchivesByStorageId(
+        @Path("foldersId") storageId: Long,
+    ): Result<ArchivesDto>
+
 }

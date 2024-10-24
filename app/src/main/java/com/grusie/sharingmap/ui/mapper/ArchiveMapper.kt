@@ -11,11 +11,11 @@ fun Archive.toUiModel(): ArchiveUiModel {
     return ArchiveUiModel(
         id = id,
         user = author.toUiModel(),
-        date = "",
+        date = "2024.10.24",
         content = content,
         archivings = emptyList(),
         archiveAttaches = archiveAttaches.map { it.toUiModel() },
-        location = LocationUiModel(address = address, positionX = positionX, positionY = positionY),
+        location = LocationUiModel(name = name, address = address, positionX = positionX, positionY = positionY),
         feedInfo = ArchiveInfoUiModel(likeCount = 0, chatCount = 0, shareCount = 0)
     )
 }

@@ -42,4 +42,13 @@ class DefaultArchiveRepository @Inject constructor(
         }
         return Result.failure(Exception("getArchivesByAuthorId failed"))
     }
+
+    override suspend fun getArchivesByStorageId(storageId: Long): Result<List<Archive>> {
+        archiveRemoteDataSource.getArchivesByStorageId(storageId).onSuccess {
+            return Result.success(it.archives.map { it.toDomain() })
+        }.onFailure {
+            return Result.failure(it)
+        }
+        return Result.failure(Exception("getArchivesByStorageId failed"))
+    }
 }
