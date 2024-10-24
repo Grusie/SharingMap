@@ -61,7 +61,7 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
                     MyPageTopAppBar(name = (uiState as MyPageUiState.Success).user.name, onSettingClick = {})
                 },
                 content = {
-                    Column(modifier = Modifier.padding(it)) {
+                    Column(modifier = Modifier.padding(it).padding(bottom = 70.dp)) {
                         MyUserInfo(user = (uiState as MyPageUiState.Success).user)
                         CustomTab(
                             selectedTabIndex = selectedTabIndex,

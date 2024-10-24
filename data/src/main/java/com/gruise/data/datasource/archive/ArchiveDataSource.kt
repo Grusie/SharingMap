@@ -12,4 +12,6 @@ interface ArchiveDataSource {
         follow: Boolean?,
         tag: String?
     ): Result<ArchivesDto>
+
+    suspend fun getArchivesByAuthorId(authorId: Long): Result<ArchivesDto>
 }

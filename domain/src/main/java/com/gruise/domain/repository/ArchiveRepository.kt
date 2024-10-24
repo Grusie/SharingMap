@@ -12,4 +12,6 @@ interface ArchiveRepository {
         follow: Boolean?,
         tag: String?
     ): Result<List<Archive>>
+
+    suspend fun getArchivesByAuthorId(authorId: Long): Result<List<Archive>>
 }

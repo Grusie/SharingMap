@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gruise.domain.usecase.archive.ArchiveUseCase
 import com.gruise.domain.usecase.storage.StorageUseCase
 import com.gruise.domain.usecase.user.UserUseCase
 import com.grusie.sharingmap.data.fakeFeeds
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
     private val userUseCase: UserUseCase,
-    private val storageUseCase: StorageUseCase
+    private val storageUseCase: StorageUseCase,
+    private val archiveUseCase: ArchiveUseCase
 ) : ViewModel() {
 
     val storageTitleTextField = TextFieldState()
@@ -43,12 +45,21 @@ class MyPageViewModel @Inject constructor(
             val myInfo = myInfoDeferred.await()
             val storages = storagesDeferred.await()
 
-            if (myInfo.isSuccess && storages.isSuccess) {
-                _uiState.value = MyPageUiState.Success(
-                    user = myInfo.getOrNull()!!.toUiModel(),
-                    feeds = fakeFeeds,
-                    storages = storages.getOrNull()!!.map { it.toUiModel() }
-                )
+            if (myInfo.isSuccess) {
+                val myFeedDeferred =
+                    async { archiveUseCase.getArchivesByAuthorIdUseCase(myInfo.getOrNull()!!.userId) }
+
+                val myFeed = myFeedDeferred.await()
+
+                if (myFeed.isSuccess && storages.isSuccess) {
+                    _uiState.value = MyPageUiState.Success(
+                        user = myInfo.getOrNull()!!.toUiModel(),
+                        feeds = myFeed.getOrNull()!!.map { it.toUiModel() },
+                        storages = storages.getOrNull()!!.map { it.toUiModel() }
+                    )
+                } else {
+                    _uiState.value = MyPageUiState.Error("Error")
+                }
             } else {
                 _uiState.value = MyPageUiState.Error("Error")
             }
