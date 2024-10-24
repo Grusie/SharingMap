@@ -4,17 +4,15 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gruise.domain.usecase.storage.StorageUseCase
 import com.gruise.domain.usecase.user.UserUseCase
 import com.grusie.sharingmap.data.fakeFeeds
-import com.grusie.sharingmap.data.fakeStorage
-import com.grusie.sharingmap.designsystem.component.UserInfo
 import com.grusie.sharingmap.ui.mapper.toUiModel
-import com.grusie.sharingmap.ui.model.UserUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
     private val userUseCase: UserUseCase,
-): ViewModel() {
+    private val storageUseCase: StorageUseCase
+) : ViewModel() {
 
     val storageTitleTextField = TextFieldState()
     private val _uiState = MutableStateFlow<MyPageUiState>(MyPageUiState.Loading)
@@ -31,27 +30,27 @@ class MyPageViewModel @Inject constructor(
     val selectedTabIndex: StateFlow<Int> = _selectedTabIndex.asStateFlow()
 
     init {
-        /*_uiState.value = _uiState.value.copy(
-            user = UserUiModel(
-                id = 1,
-                name = "김민수",
-                profileImage = "https://img.freepik.com/free-photo/adorable-kitty-looking-like-it-want-to-hunt_23-2149167099.jpg?w=2000",
-                followerCount = 100,
-                postCount = 100,
-                description = "안녕하세요. 만나서 반갑습니다/안녕하세요. 만나서 반갑습니다/안녕하세요. 만나서 반갑습니다/안녕하세요. 만나서 반갑습니다/",
-            ),
-            feeds = fakeFeeds,
-            storages = fakeStorage,
-            )*/
-        getMyInfo()
+        getMyPageInfo()
     }
 
-    private fun getMyInfo() {
+    private fun getMyPageInfo() {
         viewModelScope.launch {
-            userUseCase.getMyInfoUseCase().onSuccess {
-                _uiState.value = MyPageUiState.Success(user = it.toUiModel())
-            }.onFailure {
-                _uiState.value = MyPageUiState.Error(it.message.toString())
+            _uiState.value = MyPageUiState.Loading
+
+            val myInfoDeferred = async { userUseCase.getMyInfoUseCase() }
+            val storagesDeferred = async { storageUseCase.getStoragesUseCase() }
+
+            val myInfo = myInfoDeferred.await()
+            val storages = storagesDeferred.await()
+
+            if (myInfo.isSuccess && storages.isSuccess) {
+                _uiState.value = MyPageUiState.Success(
+                    user = myInfo.getOrNull()!!.toUiModel(),
+                    feeds = fakeFeeds,
+                    storages = storages.getOrNull()!!.map { it.toUiModel() }
+                )
+            } else {
+                _uiState.value = MyPageUiState.Error("Error")
             }
         }
     }
