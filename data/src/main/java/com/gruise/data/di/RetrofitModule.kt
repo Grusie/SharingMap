@@ -12,6 +12,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.security.SecureRandom
 import javax.inject.Singleton
 import javax.net.ssl.SSLContext
@@ -24,9 +25,14 @@ object RetrofitModule {
     private const val BASE_URL = "https://40.82.145.61/"
     private val CONTENT_TYPE = "application/json".toMediaType()
 
+    private const val NAVER_BASE_URL = "https://naveropenapi.apigw.ntruss.com/"
+
     @Singleton
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
+    @Qualifiers.DefaultRetrofit
+    fun provideRetrofit(
+        @Qualifiers.DefaultInterceptor okHttpClient: OkHttpClient
+    ): Retrofit =
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addCallAdapterFactory(PlaceCokCallAdapterFactory())
@@ -34,10 +40,20 @@ object RetrofitModule {
             .client(okHttpClient)
             .build()
 
-
-   /* @Singleton
+    @Singleton
     @Provides
-    fun provideOkhttpClient(): OkHttpClient {
+    @Qualifiers.NaverRetrofit
+    fun provideNaverRetrofit(@Qualifiers.NaverInterceptor okHttpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(NAVER_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
+
+    @Singleton
+    @Provides
+    @Qualifiers.NaverInterceptor
+    fun provideNaverOkhttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
             .run {
                 addInterceptor(
@@ -45,12 +61,27 @@ object RetrofitModule {
                         level = HttpLoggingInterceptor.Level.BODY
                     },
                 )
-                addInterceptor(AccessTokenInterceptor)
                 build()
             }
-    }*/
+    }
+
+    /* @Singleton
+     @Provides
+     fun provideOkhttpClient(): OkHttpClient {
+         return OkHttpClient.Builder()
+             .run {
+                 addInterceptor(
+                     HttpLoggingInterceptor().apply {
+                         level = HttpLoggingInterceptor.Level.BODY
+                     },
+                 )
+                 addInterceptor(AccessTokenInterceptor)
+                 build()
+             }
+     }*/
     @Singleton
     @Provides
+    @Qualifiers.DefaultInterceptor
     fun unsafeOkhttpClient(): OkHttpClient {
         val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
             override fun checkClientTrusted(

@@ -1,8 +1,10 @@
 package com.gruise.data.di
 
 import com.gruise.data.repository.DefaultArchiveRepository
+import com.gruise.data.repository.DefaultMapRepository
 import com.gruise.data.repository.DefaultSearchRepository
 import com.gruise.domain.repository.ArchiveRepository
+import com.gruise.domain.repository.MapRepository
 import com.gruise.domain.repository.SearchRepository
 import dagger.Binds
 import dagger.Module
@@ -26,4 +28,9 @@ abstract class RepositoryModule {
         archiveRepositoryImpl: DefaultArchiveRepository
     ): ArchiveRepository
 
+    @Singleton
+    @Binds
+    abstract fun bindMapRepository(
+        mapRepositoryImpl: DefaultMapRepository
+    ): MapRepository
 }

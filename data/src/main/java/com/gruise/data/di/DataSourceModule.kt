@@ -2,6 +2,8 @@ package com.gruise.data.di
 
 import com.gruise.data.datasource.archive.ArchiveDataSource
 import com.gruise.data.datasource.archive.ArchiveRemoteDataSource
+import com.gruise.data.datasource.map.MapDataSource
+import com.gruise.data.datasource.map.MapRemoteDataSource
 import com.gruise.data.datasource.search.SearchDataSource
 import com.gruise.data.datasource.search.SearchRemoteDataSource
 import dagger.Binds
@@ -26,5 +28,9 @@ abstract class DataSourceModule {
         archiveRemoteDataSource: ArchiveRemoteDataSource
     ): ArchiveDataSource
 
-
+    @Singleton
+    @Binds
+    abstract fun bindMapDataSource(
+        mapRemoteDataSource: MapRemoteDataSource
+    ): MapDataSource
 }
