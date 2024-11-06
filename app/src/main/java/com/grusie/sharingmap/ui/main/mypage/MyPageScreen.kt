@@ -5,7 +5,9 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -57,6 +59,7 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
         is MyPageUiState.Loading -> {}
         is MyPageUiState.Success -> {
             Scaffold(
+                modifier = Modifier.fillMaxSize().statusBarsPadding(),
                 topBar = {
                     MyPageTopAppBar(name = (uiState as MyPageUiState.Success).user.name, onSettingClick = {})
                 },

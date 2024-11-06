@@ -4,7 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -33,13 +33,14 @@ import com.grusie.sharingmap.ui.model.UserUiModel
 fun MyUserInfo(user: UserUiModel, modifier: Modifier = Modifier) {
     Column {
         UserInfo(user = user)
-        CustomOutLineButton(
+        Spacer(modifier = Modifier.height(12.dp))
+        /*CustomOutLineButton(
             text = "프로필 수정",
-            onClick = { /*TODO*/ },
+            onClick = { *//*TODO*//* },
             modifier = Modifier
                 .padding(horizontal = 24.dp)
                 .padding(top = 12.dp, bottom = 16.dp)
-        )
+        )*/
     }
 }
 
@@ -53,7 +54,8 @@ fun OtherUserInfo(
 ) {
     Column {
         UserInfo(user = user)
-        Row(modifier = Modifier
+        Spacer(modifier = Modifier.height(12.dp))
+       /* Row(modifier = Modifier
             .padding(horizontal = 24.dp)
             .padding(top = 12.dp, bottom = 16.dp)) {
             FollowButton(
@@ -67,7 +69,7 @@ fun OtherUserInfo(
                 onClick = onMapClick,
                 modifier = Modifier.weight(1f)
             )
-        }
+        }*/
     }
 }
 

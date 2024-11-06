@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.gruise.domain.usecase.archive.ArchiveUseCase
 import com.gruise.domain.usecase.storage.StorageUseCase
 import com.gruise.domain.usecase.user.UserUseCase
-import com.grusie.sharingmap.data.fakeFeeds
 import com.grusie.sharingmap.ui.mapper.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
