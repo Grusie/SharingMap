@@ -9,6 +9,7 @@ fun User.toUiModel() = UserUiModel(
     name = name,
     description = description,
     email = email,
+    follow = follow,
 )
 
 fun UserUiModel.toDomain() = User(
@@ -17,4 +18,5 @@ fun UserUiModel.toDomain() = User(
     name = name,
     description = description,
     email = email,
+    follow = follow,
 )
