@@ -3,6 +3,7 @@ package com.grusie.sharingmap.ui.main
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.WindowInsets
@@ -40,7 +41,17 @@ class MainActivity : ComponentActivity() {
                 else -> true
             }
             SharingMapTheme {
-                enableEdgeToEdge()
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.light(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT
+                    )
+                    ,
+                    navigationBarStyle = SystemBarStyle.light(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT
+                    )
+                )
                 Scaffold(
                     modifier = Modifier.windowInsetsPadding(
                         WindowInsets.systemBars.only(

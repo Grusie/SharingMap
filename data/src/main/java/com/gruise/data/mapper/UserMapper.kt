@@ -9,7 +9,8 @@ fun UserDto.toDomain(): User {
         name = name,
         email = email,
         description = description,
-        profileImage = profileImage
+        profileImage = profileImage,
+        follow = follow
     )
 }
 
@@ -19,6 +20,7 @@ fun User.toDto(): UserDto {
         name = name,
         email = email,
         description = description,
-        profileImage = profileImage
+        profileImage = profileImage,
+        follow = follow
     )
 }

@@ -28,4 +28,12 @@ class ArchiveRemoteDataSource @Inject constructor(
             tag
         )
     }
+
+    override suspend fun getArchivesByAuthorId(authorId: Long): Result<ArchivesDto> {
+        return archiveService.getArchivesByAuthorId(authorId)
+    }
+
+    override suspend fun getArchivesByStorageId(storageId: Long): Result<ArchivesDto> {
+        return archiveService.getArchivesByStorageId(storageId)
+    }
 }

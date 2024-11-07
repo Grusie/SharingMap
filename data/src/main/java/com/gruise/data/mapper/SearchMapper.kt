@@ -13,7 +13,7 @@ fun LocalUserSearch.toDomain(): User {
         profileImage = profileImage,
         name = name,
         description = description,
-        email = email
+        email = email,
     )
 }
 
@@ -22,7 +22,7 @@ fun User.toLocalData(): LocalUserSearch {
         userId = userId,
         profileImage = profileImage,
         name = name,
-        description = description,
+        description = description ?: "",
         email = email
     )
 }

@@ -4,21 +4,28 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -32,99 +39,142 @@ import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.component.CustomCreateCancelBottomSheet
 import com.grusie.sharingmap.designsystem.component.CustomTab
 import com.grusie.sharingmap.designsystem.component.Feed
+import com.grusie.sharingmap.designsystem.component.Snackbar
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.main.mypage.archivecollection.NewStorageContent
 import com.grusie.sharingmap.ui.main.mypage.archivecollection.StorageLazyColumn
 import com.grusie.sharingmap.ui.model.MyPageTab
 import com.grusie.sharingmap.ui.navigation.main.NavItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
 fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: NavController) {
 
-    val uiState: MyPageUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var isStorageBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
     val storageBottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
     var isLock by rememberSaveable { mutableStateOf(false) }
+    val selectedTabIndex by viewModel.selectedTabIndex.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
-    Scaffold(
-        topBar = {
-            MyPageTopAppBar(name = uiState.user.name, onSettingClick = {})
-        },
-        content = {
-            Column(modifier = Modifier.padding(it)) {
-                MyUserInfo(user = uiState.user)
-                CustomTab(
-                    selectedTabIndex = uiState.selectedTabIndex,
-                    onClick = viewModel::setSelectedTabIndex,
-                    tabs = MyPageTab.entries.map { it.title })
-                if (uiState.selectedTabIndex == 0) {
-                    LazyColumn {
-                        items(uiState.feeds) {
-                            Feed(
-                                feed = it,
-                                isFollow = true,
-                                onProfileClick = { /*TODO*/ },
-                                onUserClick = {
+    when (uiState) {
+        is MyPageUiState.Loading -> {}
+        is MyPageUiState.Success -> {
+            Scaffold(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .statusBarsPadding(),
+                topBar = {
+                    MyPageTopAppBar(
+                        name = (uiState as MyPageUiState.Success).user.name,
+                        onSettingClick = {})
+                },
+                content = {
+                    Column(
+                        modifier = Modifier
+                            .padding(it)
+                            .padding(bottom = 70.dp)
+                    ) {
+                        MyUserInfo(user = (uiState as MyPageUiState.Success).user)
+                        CustomTab(
+                            selectedTabIndex = selectedTabIndex,
+                            onClick = viewModel::setSelectedTabIndex,
+                            tabs = MyPageTab.entries.map { it.title })
+                        if (selectedTabIndex == 0) {
+                            LazyColumn {
+                                items((uiState as MyPageUiState.Success).feeds) {
+                                    Feed(
+                                        feed = it,
+                                        isFollow = true,
+                                        onProfileClick = { /*TODO*/ },
+                                        onUserClick = {
+                                            navController.navigate(
+                                                NavItem.User.screenRoute + "?user=${
+                                                    Gson().toJson(
+                                                        it
+                                                    )
+                                                }"
+                                            )
+                                        },
+                                        onImageClick = {},
+                                        onLocationClick = { /*TODO*/ },
+                                        onArchivingClick = {
+                                        },
+                                        onMeatBallClick = { },
+                                        onLikeClick = { /*TODO*/ },
+                                        onChatClick = {},
+                                        onShareClick = { /*TODO*/ },
+                                    )
+                                }
+                            }
+                        } else {
+                            StorageLazyColumn(
+                                isOwnUser = true,
+                                storages = (uiState as MyPageUiState.Success).storages,
+                                onAddClick = { isStorageBottomSheetOpen = true },
+                                onClick = {
                                     navController.navigate(
-                                        NavItem.User.screenRoute + "?user=${
+                                        NavItem.FeedCollection.screenRoute + "?storage=${
                                             Gson().toJson(
                                                 it
                                             )
                                         }"
                                     )
-                                },
-                                onImageClick = {},
-                                onLocationClick = { /*TODO*/ },
-                                onArchivingClick = {
-                                },
-                                onMeatBallClick = { },
-                                onLikeClick = { /*TODO*/ },
-                                onChatClick = {},
-                                onShareClick = { /*TODO*/ },
+                                }
                             )
-                        }
-                    }
-                } else {
-                    StorageLazyColumn(
-                        isOwnUser = true,
-                        storages = uiState.storages,
-                        onAddClick = { isStorageBottomSheetOpen = true },
-                        onClick = {
-                            navController.navigate(
-                                NavItem.FeedCollection.screenRoute + "?storage=${
-                                    Gson().toJson(
-                                        it
-                                    )
-                                }"
-                            )
-                        }
-                    )
 
-                    if (isStorageBottomSheetOpen) {
-                        CustomCreateCancelBottomSheet(
-                            title = stringResource(id = R.string.mypage_storages_add_title),
-                            createText = stringResource(id = R.string.mypage_storage_create_title),
-                            content = {
-                                NewStorageContent(
-                                    textFieldState = viewModel.storageTitleTextField,
-                                    isLock = isLock,
-                                    onLockClick = { isLock = !isLock })
-                            },
-                            sheetState = storageBottomSheetState,
-                            onDismiss = { isStorageBottomSheetOpen = false },
-                            onCreateClick = { /*TODO*/ })
+                            if (isStorageBottomSheetOpen) {
+                                CustomCreateCancelBottomSheet(
+                                    title = stringResource(id = R.string.mypage_storages_add_title),
+                                    createText = stringResource(id = R.string.mypage_storage_create_title),
+                                    content = {
+                                        NewStorageContent(
+                                            textFieldState = viewModel.storageTitleTextField,
+                                            isLock = isLock,
+                                            onLockClick = { isLock = !isLock })
+                                    },
+                                    sheetState = storageBottomSheetState,
+                                    onDismiss = { isStorageBottomSheetOpen = false },
+                                    onCreateClick = { /*TODO*/ })
+                            }
+                        }
                     }
                 }
+            )
+        }
+
+        is MyPageUiState.Error -> {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 70.dp)
+            ) {
+                CoroutineScope(Dispatchers.Main).launch {
+                    snackbarHostState.showSnackbar(
+                        message = (uiState as MyPageUiState.Error).message,
+                    )
+                }
+
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 10.dp),
+                    snackbar = {
+                        Snackbar(data = it)
+                    }
+                )
             }
         }
-    )
-
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -149,9 +149,9 @@ fun UserInfo(user: UserUiModel, modifier: Modifier = Modifier) {
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     Column {
         UserItemWithCount(user)
-        if (user.description.isNotEmpty()) {
+        if (user.description?.isNotEmpty() == true) {
             LimitedText(
-                text = user.description,
+                text = user.description ?: "",
                 isExpanded = isExpanded,
                 onClick = { isExpanded = !isExpanded },
                 modifier = modifier.padding(16.dp)
