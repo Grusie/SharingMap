@@ -4,6 +4,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gruise.data.remote.RemoteError
 import com.gruise.domain.usecase.archive.ArchiveUseCase
 import com.gruise.domain.usecase.storage.StorageUseCase
 import com.gruise.domain.usecase.user.UserUseCase
@@ -57,10 +58,10 @@ class MyPageViewModel @Inject constructor(
                         storages = storages.getOrNull()!!.map { it.toUiModel() }
                     )
                 } else {
-                    _uiState.value = MyPageUiState.Error("Error")
+                    _uiState.value = MyPageUiState.Error((myFeed.exceptionOrNull() as RemoteError).toStringForUser())
                 }
             } else {
-                _uiState.value = MyPageUiState.Error("Error")
+                _uiState.value = MyPageUiState.Error((myInfo.exceptionOrNull() as RemoteError).toStringForUser())
             }
         }
     }
