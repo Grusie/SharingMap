@@ -41,6 +41,7 @@ import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.Black000000
 import com.grusie.sharingmap.designsystem.theme.Gray8D8D8E
 import com.grusie.sharingmap.designsystem.theme.GrayE6E6E6
+import com.grusie.sharingmap.ui.model.SearchRegionUiModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
 
@@ -109,8 +110,13 @@ fun SearchMapScreen(
                 LazyColumn {
                     items(searchRegionList) { searchRegion ->
                         SearchHistoryItem(
-                            keyword = searchRegion.placeName ?: "",
-                            address = searchRegion.address ?: ""
+                            searchRegion = searchRegion, onItemClicked = {
+                                navController.previousBackStackEntry?.savedStateHandle?.set(
+                                    "search_region",
+                                    searchRegion
+                                )
+                                navController.popBackStack()
+                            }
                         )
                     }
                 }
@@ -145,22 +151,25 @@ fun SearchTopBar(finish: () -> Unit = {}) {
 }
 
 @Composable
-fun SearchHistoryItem(keyword: String, address: String) {
+fun SearchHistoryItem(
+    searchRegion: SearchRegionUiModel,
+    onItemClicked: (SearchRegionUiModel) -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { }
+            .clickable { onItemClicked(searchRegion) }
             .padding(vertical = 12.dp, horizontal = 20.dp)
     ) {
         Text(
-            text = keyword,
+            text = searchRegion.placeName ?: "",
             color = Black,
             fontSize = 14.sp,
             style = TextStyle(fontWeight = FontWeight(500))
         )
         Text(
             modifier = Modifier.padding(top = 4.dp),
-            text = address,
+            text = searchRegion.address ?: "",
             fontSize = 13.sp,
             color = Gray8D8D8E,
             style = TextStyle(fontWeight = FontWeight(500))
@@ -183,5 +192,14 @@ fun SearchMapScreenPreview() {
 @Composable
 @Preview(backgroundColor = 0xffffff, showBackground = true)
 fun SearchHistoryItemPreview() {
-    SearchHistoryItem(keyword = "맥도날드 서울역점", address = "서울 용산구 한강대로 405 서울역(철도역)")
+    SearchHistoryItem(
+        SearchRegionUiModel(
+            placeName = "맥도날드 서울역점",
+            address = "서울 용산구 한강대로 405 서울역(철도역)",
+            id = null,
+            latitude = null,
+            categoryName = null,
+            longitude = null
+        )
+    )
 }

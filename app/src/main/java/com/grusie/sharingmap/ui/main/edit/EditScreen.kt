@@ -51,7 +51,10 @@ import com.grusie.sharingmap.designsystem.theme.WhiteFBFBFB
 import com.grusie.sharingmap.ui.common.roundToSixDecimals
 import com.grusie.sharingmap.ui.main.map.CustomLocationButtonView
 import com.grusie.sharingmap.ui.model.AdditionalArchiveModel
+import com.grusie.sharingmap.ui.model.SearchRegionUiModel
 import com.grusie.sharingmap.ui.navigation.main.NavItem
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
@@ -62,12 +65,28 @@ import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.util.MapConstants
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalNaverMapApi::class)
 @Composable
 fun EditScreen(
     navController: NavController,
     viewModel: EditPlaceViewModel = hiltViewModel()
 ) {
+
+    val searchRegion = navController.currentBackStackEntry
+        ?.savedStateHandle
+        ?.get<SearchRegionUiModel>("search_region")
+
+    searchRegion?.let {
+        viewModel.setAdditionalArchiveModel(
+            viewModel.additionalArchiveModel.value.copy(
+                latitude = searchRegion.latitude,
+                longitude = searchRegion.longitude,
+                address = searchRegion.address ?: "",
+                placeName = searchRegion.placeName ?: ""
+            )
+        )
+    }
+
     Scaffold { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize()
@@ -105,6 +124,23 @@ fun EditScreen(
                 }
             }
 
+            LaunchedEffect(searchRegion) {
+                if (searchRegion != null) {
+                    isFollowMode = false
+
+                    cameraPositionState.move(
+                        CameraUpdate.scrollTo(
+                            LatLng(
+                                searchRegion.latitude
+                                    ?: cameraPositionState.position.target.latitude,
+                                searchRegion.longitude
+                                    ?: cameraPositionState.position.target.longitude
+                            )
+                        )
+                    )
+                }
+            }
+
             SearchMapView(
                 isFollowMode = isFollowMode,
                 cameraPositionState = cameraPositionState,
@@ -136,7 +172,7 @@ fun EditScreen(
 
                 if (isShowEditPlaceBottomSheet) {
                     EditPlaceBottomSheet(
-                        address = additionalArchiveModel.address,
+                        additionalArchiveModel = additionalArchiveModel,
                         sheetState = editPlaceBottomSheetState,
                         onDismiss = { isShowEditPlaceBottomSheet = false },
                         onSaveClick = {}

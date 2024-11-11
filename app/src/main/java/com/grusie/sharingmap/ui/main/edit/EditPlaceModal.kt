@@ -52,6 +52,7 @@ import com.grusie.sharingmap.designsystem.theme.GrayE6E6E6
 import com.grusie.sharingmap.designsystem.theme.GrayF1F4F7
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
+import com.grusie.sharingmap.ui.model.AdditionalArchiveModel
 import com.grusie.sharingmap.ui.model.AttachUiModel
 
 
@@ -59,7 +60,7 @@ import com.grusie.sharingmap.ui.model.AttachUiModel
 @Composable
 fun EditPlaceBottomSheet(
     sheetState: SheetState = rememberModalBottomSheetState(),
-    address: String = "",
+    additionalArchiveModel: AdditionalArchiveModel = AdditionalArchiveModel(),
     onDismiss: () -> Unit = {},
     onSaveClick: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -75,7 +76,7 @@ fun EditPlaceBottomSheet(
     ) {
         EditPlaceBottomSheetContent(
             modifier = modifier,
-            address = address,
+            additionalArchiveModel = additionalArchiveModel,
             onDismiss = onDismiss,
             onSaveClick = onSaveClick
         )
@@ -88,13 +89,13 @@ fun EditPlaceBottomSheetContent(
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit = {},
     onSaveClick: () -> Unit = {},
-    address: String = "",
+    additionalArchiveModel: AdditionalArchiveModel,
     isLock: Boolean = false
-
 ) {
-    val placeTextFieldState = rememberTextFieldState()
+    val placeTextFieldState = rememberTextFieldState(additionalArchiveModel.placeName)
     val contentTextFieldState = rememberTextFieldState()
     val scrollState = rememberScrollState()
+
 
     Column()
     {
@@ -154,7 +155,7 @@ fun EditPlaceBottomSheetContent(
                     )
                     .padding(vertical = 17.dp, horizontal = 16.dp)
                     .fillMaxWidth(),
-                text = address,
+                text = additionalArchiveModel.address,
                 fontWeight = FontWeight(400)
             )
 
@@ -269,5 +270,5 @@ fun CustomTextField(
 @Composable
 @Preview(showBackground = true)
 fun EditPlaceBottomSheetPreview() {
-    EditPlaceBottomSheetContent(address = "서울특별시 서초구 효령로49길 52")
+    EditPlaceBottomSheetContent(additionalArchiveModel = AdditionalArchiveModel(address = "서울특별시 서초구 효령로49길 52"))
 }
