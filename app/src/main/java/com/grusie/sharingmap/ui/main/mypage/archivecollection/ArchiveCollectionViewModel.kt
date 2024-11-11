@@ -29,13 +29,19 @@ class ArchiveCollectionViewModel @Inject constructor(
     }
 
     fun updateFeedCollection(storage: StorageUiModel) {
+        viewModelScope.launch {
+            archiveUseCase.getArchivesByAuthorIdUseCase(storage.id).onSuccess {
+                _uiState.value = ArchiveCollectionUiState.Success(feeds = it.map { it.toUiModel() })
+            }.onFailure {
+                _uiState.value = ArchiveCollectionUiState.Error(it.message ?: "")
+            }
+        }
 
     }
 
     fun updateFeedCollection(tag: TagUiModel) {
         viewModelScope.launch {
             archiveUseCase.getArchivesUseCase(tag = tag.name).onSuccess {
-                Log.d("TAG", "updateFeedCollection: $it")
                 _uiState.value = ArchiveCollectionUiState.Success(feeds = it.map { it.toUiModel() })
             }.onFailure {
                 _uiState.value = ArchiveCollectionUiState.Error(it.message ?: "")

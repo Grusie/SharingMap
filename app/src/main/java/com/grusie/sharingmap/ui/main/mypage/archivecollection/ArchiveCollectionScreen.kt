@@ -53,7 +53,10 @@ fun ArchiveCollectionScreen(
     var isCommentBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
     val uiState: ArchiveCollectionUiState by viewModel.uiState.collectAsStateWithLifecycle()
     val selectedFeed by viewModel.selectedFeed.collectAsStateWithLifecycle()
+
     tag?.let { viewModel.updateFeedCollection(it) }
+    storage?.let { viewModel.updateFeedCollection(it) }
+
     Scaffold(
         topBar = {
             FeedCollectionTopAppBar(

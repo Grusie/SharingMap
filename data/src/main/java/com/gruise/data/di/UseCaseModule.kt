@@ -4,7 +4,11 @@ import com.gruise.domain.repository.ArchiveRepository
 import com.gruise.domain.repository.MapRepository
 import com.gruise.domain.repository.SearchRegionRepository
 import com.gruise.domain.repository.SearchRepository
+import com.gruise.domain.repository.StorageRepository
+import com.gruise.domain.repository.UserRepository
 import com.gruise.domain.usecase.archive.ArchiveUseCase
+import com.gruise.domain.usecase.archive.GetArchivesByAuthorIdUseCase
+import com.gruise.domain.usecase.archive.GetArchivesByStorageIdUseCase
 import com.gruise.domain.usecase.archive.GetArchivesUseCase
 import com.gruise.domain.usecase.map.GetAddressUseCase
 import com.gruise.domain.usecase.map.GetSearchRegionListUseCase
@@ -18,6 +22,10 @@ import com.gruise.domain.usecase.search.GetUserSearchUseCase
 import com.gruise.domain.usecase.search.InsertLocalTagSearchUseCase
 import com.gruise.domain.usecase.search.InsertLocalUserSearchUseCase
 import com.gruise.domain.usecase.search.SearchUseCase
+import com.gruise.domain.usecase.storage.GetStoragesUseCase
+import com.gruise.domain.usecase.storage.StorageUseCase
+import com.gruise.domain.usecase.user.GetMyInfoUseCase
+import com.gruise.domain.usecase.user.UserUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,6 +60,29 @@ object UseCaseModule {
     ): ArchiveUseCase {
         return ArchiveUseCase(
             getArchivesUseCase = GetArchivesUseCase(archiveRepository)
+            getArchivesUseCase = GetArchivesUseCase(archiveRepository),
+            getArchivesByAuthorIdUseCase = GetArchivesByAuthorIdUseCase(archiveRepository),
+            getArchivesByStorageIdUseCase = GetArchivesByStorageIdUseCase(archiveRepository)
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun providesUserUseCase(
+        userRepository: UserRepository
+    ): UserUseCase {
+        return UserUseCase(
+            getMyInfoUseCase = GetMyInfoUseCase(userRepository)
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun providesStorageUseCase(
+        storageRepository: StorageRepository
+    ): StorageUseCase {
+        return StorageUseCase(
+            getStoragesUseCase = GetStoragesUseCase(storageRepository)
         )
     }
 
