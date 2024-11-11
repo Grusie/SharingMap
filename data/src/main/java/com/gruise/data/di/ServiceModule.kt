@@ -54,7 +54,7 @@ object ServiceModule {
     @Singleton
     @Provides
     fun provideUserService(
-        retrofit: Retrofit,
+        @Qualifiers.DefaultRetrofit retrofit: Retrofit,
     ): UserService {
         return retrofit.create(UserService::class.java)
     }
@@ -62,7 +62,7 @@ object ServiceModule {
     @Singleton
     @Provides
     fun provideStorageService(
-        retrofit: Retrofit,
+        @Qualifiers.DefaultRetrofit retrofit: Retrofit,
     ): StorageService {
         return retrofit.create(StorageService::class.java)
     }

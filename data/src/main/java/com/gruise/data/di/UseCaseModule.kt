@@ -59,7 +59,6 @@ object UseCaseModule {
         archiveRepository: ArchiveRepository
     ): ArchiveUseCase {
         return ArchiveUseCase(
-            getArchivesUseCase = GetArchivesUseCase(archiveRepository)
             getArchivesUseCase = GetArchivesUseCase(archiveRepository),
             getArchivesByAuthorIdUseCase = GetArchivesByAuthorIdUseCase(archiveRepository),
             getArchivesByStorageIdUseCase = GetArchivesByStorageIdUseCase(archiveRepository)
