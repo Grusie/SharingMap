@@ -26,6 +26,7 @@ object RetrofitModule {
     private val CONTENT_TYPE = "application/json".toMediaType()
 
     private const val NAVER_BASE_URL = "https://naveropenapi.apigw.ntruss.com/"
+    private const val KAKAO_BASE_URL = "https://dapi.kakao.com/"
 
     @Singleton
     @Provides
@@ -52,18 +53,13 @@ object RetrofitModule {
 
     @Singleton
     @Provides
-    @Qualifiers.NaverInterceptor
-    fun provideNaverOkhttpClient(): OkHttpClient {
-        return OkHttpClient.Builder()
-            .run {
-                addInterceptor(
-                    HttpLoggingInterceptor().apply {
-                        level = HttpLoggingInterceptor.Level.BODY
-                    },
-                )
-                build()
-            }
-    }
+    @Qualifiers.KakaoRetrofit
+    fun provideKakaoRetrofit(@Qualifiers.KakaoInterceptor okHttpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(KAKAO_BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClient)
+            .build()
 
     /* @Singleton
      @Provides
@@ -121,5 +117,35 @@ object RetrofitModule {
         }
 
         return builder
+    }
+
+    @Singleton
+    @Provides
+    @Qualifiers.NaverInterceptor
+    fun provideNaverOkhttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .run {
+                addInterceptor(
+                    HttpLoggingInterceptor().apply {
+                        level = HttpLoggingInterceptor.Level.BODY
+                    },
+                )
+                build()
+            }
+    }
+
+    @Singleton
+    @Provides
+    @Qualifiers.KakaoInterceptor
+    fun provideKakaoOkhttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .run {
+                addInterceptor(
+                    HttpLoggingInterceptor().apply {
+                        level = HttpLoggingInterceptor.Level.BODY
+                    },
+                )
+                build()
+            }
     }
 }

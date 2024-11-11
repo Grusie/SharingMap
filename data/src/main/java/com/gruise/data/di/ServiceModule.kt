@@ -2,6 +2,7 @@ package com.gruise.data.di
 
 import com.gruise.data.service.ArchiveService
 import com.gruise.data.service.MapService
+import com.gruise.data.service.SearchRegionService
 import com.gruise.data.service.SearchService
 import dagger.Module
 import dagger.Provides
@@ -38,4 +39,13 @@ object ServiceModule {
     ): MapService {
         return retrofit.create(MapService::class.java)
     }
+
+    @Singleton
+    @Provides
+    fun provideSearchMapService(
+        @Qualifiers.KakaoRetrofit retrofit: Retrofit
+    ): SearchRegionService {
+        return retrofit.create(SearchRegionService::class.java)
+    }
+
 }

@@ -2,10 +2,12 @@ package com.gruise.data.di
 
 import com.gruise.domain.repository.ArchiveRepository
 import com.gruise.domain.repository.MapRepository
+import com.gruise.domain.repository.SearchRegionRepository
 import com.gruise.domain.repository.SearchRepository
 import com.gruise.domain.usecase.archive.ArchiveUseCase
 import com.gruise.domain.usecase.archive.GetArchivesUseCase
 import com.gruise.domain.usecase.map.GetAddressUseCase
+import com.gruise.domain.usecase.map.GetSearchRegionListUseCase
 import com.gruise.domain.usecase.map.MapUseCases
 import com.gruise.domain.usecase.search.DeleteAllLocalTagSearchUseCase
 import com.gruise.domain.usecase.search.DeleteAllLocalUserSearchUseCase
@@ -56,8 +58,12 @@ object UseCaseModule {
     @Singleton
     @Provides
     fun provideMapUseCase(
-        mapRepository: MapRepository
+        mapRepository: MapRepository,
+        searchRegionRepository: SearchRegionRepository
     ): MapUseCases {
-        return MapUseCases(getAddressUseCase = GetAddressUseCase(mapRepository))
+        return MapUseCases(
+            getAddressUseCase = GetAddressUseCase(mapRepository),
+            getSearchRegionListUseCase = GetSearchRegionListUseCase(searchRegionRepository)
+        )
     }
 }

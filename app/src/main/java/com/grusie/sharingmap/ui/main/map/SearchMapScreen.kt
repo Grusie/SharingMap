@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.material.Divider
 import androidx.compose.material3.Icon
@@ -18,6 +19,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -27,6 +31,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.grusie.sharingmap.R
@@ -35,10 +41,18 @@ import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.Black000000
 import com.grusie.sharingmap.designsystem.theme.Gray8D8D8E
 import com.grusie.sharingmap.designsystem.theme.GrayE6E6E6
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.debounce
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, FlowPreview::class)
 @Composable
-fun SearchMapScreen(navController: NavController = rememberNavController()) {
+fun SearchMapScreen(
+    navController: NavController = rememberNavController(),
+    searchMapViewModel: SearchRegionViewModel = hiltViewModel()
+) {
+    val uiState by searchMapViewModel.uiState.collectAsStateWithLifecycle()
+    val searchRegionList by searchMapViewModel.searchRegionList.collectAsStateWithLifecycle()
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -52,6 +66,16 @@ fun SearchMapScreen(navController: NavController = rememberNavController()) {
                 .padding(top = 16.dp)
         ) {
             val textState = rememberTextFieldState()
+
+            LaunchedEffect(textState.text) {
+                snapshotFlow { textState.text }
+                    .debounce(300)
+                    .collect { query ->
+                        if (query.isNotEmpty()) {
+                            searchMapViewModel.getSearchRegionList(query.toString())
+                        }
+                    }
+            }
 
             CustomTextFieldWithBackground(
                 textFieldState = textState,
@@ -83,10 +107,10 @@ fun SearchMapScreen(navController: NavController = rememberNavController()) {
                 )
 
                 LazyColumn {
-                    items(5) {
+                    items(searchRegionList) { searchRegion ->
                         SearchHistoryItem(
-                            keyword = "맥도날드 서울역점",
-                            address = "서울 용산구 한강대로 405 서울역(철도역)"
+                            keyword = searchRegion.placeName ?: "",
+                            address = searchRegion.address ?: ""
                         )
                     }
                 }
