@@ -46,29 +46,21 @@ fun SearchContent(
     SearchContentItem(
         selectedTabIndex = selectedTabIndex,
         lazyColumn = {
-            when (uiState) {
-                is SearchUiState.SearchSuccess -> {
-                    if (selectedTabIndex == 0) UserLazyColumn(
-                        users = uiState.userSearch,
-                        isBottomSheet = true,
+            if(uiState.isLoading) {
+
+            } else {
+                if (selectedTabIndex == 0) UserLazyColumn(
+                    users = uiState.userSearch,
+                    isBottomSheet = true,
+                    modifier = Modifier.fillMaxHeight(),
+                    onClick = onUserItemClick,
+                ) else {
+                    TagLazyColumn(
+                        tags = uiState.tagSearch,
                         modifier = Modifier.fillMaxHeight(),
-                        onClick = onUserItemClick,
-                    ) else {
-                        TagLazyColumn(
-                            tags = uiState.tagSearch,
-                            modifier = Modifier.fillMaxHeight(),
-                            onClick = onTagItemClick
-                        )
-                    }
+                        onClick = onTagItemClick
+                    )
                 }
-                is SearchUiState.Loading -> {
-
-                }
-
-                is SearchUiState.Error -> {
-
-                }
-
             }
         },
         onUserHistoryDelete = onUserHistoryDelete,

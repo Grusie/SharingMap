@@ -6,6 +6,7 @@ import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.text2.input.textAsFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gruise.data.remote.RemoteError
 import com.gruise.domain.usecase.search.SearchUseCase
 import com.grusie.sharingmap.data.fakeTagSearch
 import com.grusie.sharingmap.data.fakeUserSearch
@@ -14,8 +15,11 @@ import com.grusie.sharingmap.ui.mapper.toUiModel
 import com.grusie.sharingmap.ui.model.TagUiModel
 import com.grusie.sharingmap.ui.model.UserUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
@@ -32,11 +36,11 @@ class SearchViewModel @Inject constructor(
 ) : ViewModel() {
 
     val searchTextField = TextFieldState()
-    private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Loading)
+    private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
-    private val _selectedTabIndex = MutableStateFlow(0)
-    val selectedTabIndex: StateFlow<Int> = _selectedTabIndex.asStateFlow()
+    private val _errorMessage = MutableSharedFlow<String>()
+    val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
 
 
     init {
@@ -48,17 +52,17 @@ class SearchViewModel @Inject constructor(
     }
 
     fun setSelectedTabIndex(index: Int) {
-        _selectedTabIndex.value = index
+        _uiState.value = _uiState.value.copy(selectedTabIndex = index)
         viewModelScope.launch { getSearch() }
     }
 
     private suspend fun getSearch() {
         when {
             searchTextField.text.isEmpty() || searchTextField.text.isBlank() -> {
-                if (_selectedTabIndex.value == 0) getUserSearchHistory()
+                if (_uiState.value.selectedTabIndex == 0) getUserSearchHistory()
                 else getTagSearchHistory()
             }
-            _selectedTabIndex.value == 0 -> getUserSearch()
+                _uiState.value.selectedTabIndex == 0 -> getUserSearch()
             else -> getTagSearch()
         }
     }
@@ -66,23 +70,25 @@ class SearchViewModel @Inject constructor(
 
     private suspend fun getUserSearch() {
         viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
             searchUseCase.getUserSearchUseCase(searchTextField.text.toString(), 10).onSuccess {
-                _uiState.value = SearchUiState.SearchSuccess(userSearch = it.map { it.toUiModel() })
+                _uiState.value = _uiState.value.copy(isLoading = false, userSearch = it.map { it.toUiModel() })
             }.onFailure {
-                _uiState.value = SearchUiState.Error(it.message!!)
+                _uiState.value = _uiState.value.copy(isLoading = false)
+                _errorMessage.emit((it as RemoteError).toStringForUser())
             }
         }
     }
 
     private fun getUserSearchHistory() {
         viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
             searchUseCase.getAllLocalUserSearchUseCase().collect { result ->
                 result.onSuccess { userSearchList ->
-                    _uiState.value = SearchUiState.SearchSuccess(
-                        userSearch = userSearchList.map { it.toUiModel() }
-                    )
+                    _uiState.value = _uiState.value.copy(isLoading = false, userSearch = userSearchList.map { it.toUiModel() })
                 }.onFailure {
-                    _uiState.value = SearchUiState.Error(it.message!!)
+                    _uiState.value = _uiState.value.copy(isLoading = false)
+                    _errorMessage.emit(it.message!!)
                 }
             }
         }
@@ -91,7 +97,7 @@ class SearchViewModel @Inject constructor(
     fun insertUserSearchHistory(userSearch: UserUiModel) {
         viewModelScope.launch {
             searchUseCase.insertLocalUserSearchUseCase(userSearch.toDomain()).onFailure {
-                _uiState.value = SearchUiState.Error(it.message!!)
+                _errorMessage.emit(it.message!!)
             }
         }
     }
@@ -99,7 +105,7 @@ class SearchViewModel @Inject constructor(
     fun deleteAllUserSearchHistory() {
         viewModelScope.launch {
             searchUseCase.deleteAllLocalUserSearchUseCase().onFailure {
-                _uiState.value = SearchUiState.Error(it.message!!)
+                _errorMessage.emit(it.message!!)
             }
         }
     }
@@ -107,10 +113,12 @@ class SearchViewModel @Inject constructor(
 
     private fun getTagSearch() {
         viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
             searchUseCase.getTagSearchUseCase(searchTextField.text.toString(), 10).onSuccess {
-                _uiState.value = SearchUiState.SearchSuccess(tagSearch = it.map { it.toUiModel() })
+                _uiState.value = _uiState.value.copy(isLoading = false, tagSearch = it.map { it.toUiModel() })
             }.onFailure {
-                _uiState.value = SearchUiState.Error(it.message!!)
+                _uiState.value = _uiState.value.copy(isLoading = false)
+                _errorMessage.emit((it as RemoteError).toStringForUser())
             }
         }
     }
@@ -119,10 +127,10 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             searchUseCase.getAllLocalTagSearchUseCase().collect { result ->
                 result.onSuccess { tagSearchList ->
-                    _uiState.value = SearchUiState.SearchSuccess(
-                        tagSearch = tagSearchList.map { it.toUiModel() }
-                    )
+                    _uiState.value = _uiState.value.copy(isLoading = false, tagSearch = tagSearchList.map { it.toUiModel() })
                 }.onFailure {
+                    _uiState.value = _uiState.value.copy(isLoading = false)
+                    _errorMessage.emit(it.message!!)
                 }
             }
         }
@@ -131,7 +139,7 @@ class SearchViewModel @Inject constructor(
     fun insertTagSearchHistory(tagSearch: TagUiModel) {
         viewModelScope.launch {
             searchUseCase.insertLocalTagSearchUseCase(tagSearch.toDomain()).onFailure {
-                _uiState.value = SearchUiState.Error(it.message!!)
+                _errorMessage.emit(it.message!!)
             }
         }
     }
@@ -139,7 +147,7 @@ class SearchViewModel @Inject constructor(
     fun deleteAllTagSearchHistory() {
         viewModelScope.launch {
             searchUseCase.deleteAllLocalTagSearchUseCase().onFailure {
-                _uiState.value = SearchUiState.Error(it.message!!)
+                _errorMessage.emit(it.message!!)
             }
         }
     }
