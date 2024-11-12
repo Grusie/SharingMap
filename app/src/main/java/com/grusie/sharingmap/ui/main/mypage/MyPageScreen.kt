@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -20,11 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,9 +45,7 @@ import com.grusie.sharingmap.ui.main.mypage.archivecollection.NewStorageContent
 import com.grusie.sharingmap.ui.main.mypage.archivecollection.StorageLazyColumn
 import com.grusie.sharingmap.ui.model.MyPageTab
 import com.grusie.sharingmap.ui.navigation.main.NavItem
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.collectLatest
 
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -57,40 +54,51 @@ import kotlinx.coroutines.launch
 fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: NavController) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    var isStorageBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
     val storageBottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
-    var isLock by rememberSaveable { mutableStateOf(false) }
-    val selectedTabIndex by viewModel.selectedTabIndex.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    when (uiState) {
-        is MyPageUiState.Loading -> {}
-        is MyPageUiState.Success -> {
-            Scaffold(
+    LaunchedEffect(Unit) {
+        viewModel.errorMessage.collectLatest {
+            snackbarHostState.showSnackbar(it)
+        }
+    }
+
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding(),
+        topBar = {
+            MyPageTopAppBar(
+                name = uiState.user?.name ?: "",
+                onSettingClick = {})
+        },
+        content = {
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .statusBarsPadding(),
-                topBar = {
-                    MyPageTopAppBar(
-                        name = (uiState as MyPageUiState.Success).user.name,
-                        onSettingClick = {})
-                },
-                content = {
-                    Column(
-                        modifier = Modifier
-                            .padding(it)
-                            .padding(bottom = 70.dp)
-                    ) {
-                        MyUserInfo(user = (uiState as MyPageUiState.Success).user)
+                    .padding(bottom = 70.dp)
+                    .padding(it)
+            ) {
+
+                Column {
+                    uiState.user?.let {
+                        MyUserInfo(user = it)
                         CustomTab(
-                            selectedTabIndex = selectedTabIndex,
+                            selectedTabIndex = uiState.selectedTabIndex,
                             onClick = viewModel::setSelectedTabIndex,
                             tabs = MyPageTab.entries.map { it.title })
-                        if (selectedTabIndex == 0) {
+                    }
+
+                    if (uiState.isLoading) {
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        }
+                    } else {
+                        if (uiState.selectedTabIndex == 0) {
                             LazyColumn {
-                                items((uiState as MyPageUiState.Success).feeds) {
+                                items(uiState.feeds) {
                                     Feed(
                                         feed = it,
                                         isFollow = true,
@@ -118,8 +126,8 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
                         } else {
                             StorageLazyColumn(
                                 isOwnUser = true,
-                                storages = (uiState as MyPageUiState.Success).storages,
-                                onAddClick = { isStorageBottomSheetOpen = true },
+                                storages = uiState.storages,
+                                onAddClick = { viewModel.updateIsStorageBottomSheetOpen(true) },
                                 onClick = {
                                     navController.navigate(
                                         NavItem.FeedCollection.screenRoute + "?storage=${
@@ -131,36 +139,22 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
                                 }
                             )
 
-                            if (isStorageBottomSheetOpen) {
+                            if (uiState.isStorageBottomSheetOpen) {
                                 CustomCreateCancelBottomSheet(
                                     title = stringResource(id = R.string.mypage_storages_add_title),
                                     createText = stringResource(id = R.string.mypage_storage_create_title),
                                     content = {
                                         NewStorageContent(
                                             textFieldState = viewModel.storageTitleTextField,
-                                            isLock = isLock,
-                                            onLockClick = { isLock = !isLock })
+                                            isLock = uiState.isStorageLock,
+                                            onLockClick = { viewModel.updateIsStorageLock() })
                                     },
                                     sheetState = storageBottomSheetState,
-                                    onDismiss = { isStorageBottomSheetOpen = false },
+                                    onDismiss = { viewModel.updateIsStorageBottomSheetOpen(false) },
                                     onCreateClick = { /*TODO*/ })
                             }
                         }
                     }
-                }
-            )
-        }
-
-        is MyPageUiState.Error -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(bottom = 70.dp)
-            ) {
-                CoroutineScope(Dispatchers.Main).launch {
-                    snackbarHostState.showSnackbar(
-                        message = (uiState as MyPageUiState.Error).message,
-                    )
                 }
 
                 SnackbarHost(
@@ -174,7 +168,7 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
                 )
             }
         }
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
