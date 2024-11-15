@@ -39,6 +39,7 @@ abstract class DataSourceModule {
     abstract fun bindMapDataSource(
         mapRemoteDataSource: MapRemoteDataSource
     ): MapDataSource
+
     @Singleton
     @Binds
     abstract fun bindUserDataSource(
@@ -54,6 +55,6 @@ abstract class DataSourceModule {
     @Singleton
     @Binds
     abstract fun bindSearchRegionDataSource(
-        searchRegionRemoteDataSource: SearchRegionRemoteDataSource
+        searchRegionRemoteDataSource: SearchRegionRemoteDataSource,
     ): SearchRegionDataSource
 }

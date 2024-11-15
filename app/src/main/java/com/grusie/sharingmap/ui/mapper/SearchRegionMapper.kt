@@ -13,3 +13,14 @@ fun SearchRegion.toUiModel(): SearchRegionUiModel {
         categoryName = categoryName
     )
 }
+
+fun SearchRegionUiModel.toDomainModel(): SearchRegion {
+    return SearchRegion(
+        id = id,
+        latitude = latitude,
+        longitude = longitude,
+        address = address,
+        placeName = placeName,
+        categoryName = categoryName
+    )
+}

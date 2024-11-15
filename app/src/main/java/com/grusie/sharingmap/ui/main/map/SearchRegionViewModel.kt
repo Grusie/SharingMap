@@ -2,6 +2,7 @@ package com.grusie.sharingmap.ui.main.map
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gruise.domain.model.SearchRegion
 import com.gruise.domain.usecase.map.MapUseCases
 import com.grusie.sharingmap.ui.mapper.toUiModel
 import com.grusie.sharingmap.ui.model.SearchRegionUiModel
@@ -13,7 +14,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SearchRegionViewModel @Inject constructor(private val mapUseCases: MapUseCases) :
+class SearchRegionViewModel @Inject constructor(
+    private val mapUseCases: MapUseCases
+) :
     ViewModel() {
     private val _uiState: MutableStateFlow<SearchRegionUiState> =
         MutableStateFlow(SearchRegionUiState.Init)
@@ -32,6 +35,33 @@ class SearchRegionViewModel @Inject constructor(private val mapUseCases: MapUseC
             }.onFailure {
                 _uiState.emit(SearchRegionUiState.Error)
             }
+        }
+    }
+
+    fun saveSelectedSearchRegion(selectedItem : SearchRegion){
+        viewModelScope.launch {
+            mapUseCases.saveSearchRegionHistory(selectedItem)
+        }
+    }
+
+    fun getSearchRegionHistory(){
+        viewModelScope.launch {
+            _uiState.emit(SearchRegionUiState.Loading)
+            mapUseCases.getSearchRegionHistory().onSuccess {list ->
+                _searchRegionList.emit(list.map { it.toUiModel() })
+            }.onFailure {
+                _uiState.emit(SearchRegionUiState.Error)
+            }
+        }
+    }
+
+    fun clearSearchRegionList() {
+        viewModelScope.launch {
+            _uiState.emit(SearchRegionUiState.Loading)
+            mapUseCases.clearSearchRegionHistory().onSuccess {
+                _uiState.emit(SearchRegionUiState.Success)
+                _searchRegionList.emit(emptyList())
+            }.onFailure { _uiState.emit(SearchRegionUiState.Error) }
         }
     }
 }

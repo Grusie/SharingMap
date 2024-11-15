@@ -21,6 +21,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,6 +44,7 @@ import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.Black000000
 import com.grusie.sharingmap.designsystem.theme.Gray8D8D8E
 import com.grusie.sharingmap.designsystem.theme.GrayE6E6E6
+import com.grusie.sharingmap.ui.mapper.toDomainModel
 import com.grusie.sharingmap.ui.model.SearchRegionUiModel
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -67,13 +71,18 @@ fun SearchMapScreen(
                 .padding(top = 16.dp)
         ) {
             val textState = rememberTextFieldState()
+            var isHistoryVisible by remember { mutableStateOf(true) }
 
             LaunchedEffect(textState.text) {
                 snapshotFlow { textState.text }
                     .debounce(300)
                     .collect { query ->
-                        if (query.isNotEmpty()) {
+                        if (query.trim().isNotEmpty()) {
+                            isHistoryVisible = false
                             searchMapViewModel.getSearchRegionList(query.toString())
+                        } else {
+                            isHistoryVisible = true
+                            searchMapViewModel.getSearchRegionHistory()
                         }
                     }
             }
@@ -91,16 +100,21 @@ fun SearchMapScreen(
                         .padding(horizontal = 20.dp)
                 ) {
                     Text(
-                        text = stringResource(id = R.string.search_history),
+                        text = stringResource(id = if(isHistoryVisible) R.string.search_history else R.string.search_result),
                         fontSize = 14.sp,
                         color = Black
                     )
-                    Text(
-                        modifier = Modifier.clickable { },
-                        text = stringResource(id = R.string.search_delete_history),
-                        fontSize = 14.sp,
-                        color = Black
-                    )
+
+                    if(isHistoryVisible) {
+                        Text(
+                            modifier = Modifier.clickable {
+                                searchMapViewModel.clearSearchRegionList()
+                            },
+                            text = stringResource(id = R.string.search_delete_history),
+                            fontSize = 14.sp,
+                            color = Black
+                        )
+                    }
                 }
                 Divider(
                     modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp),
@@ -111,6 +125,7 @@ fun SearchMapScreen(
                     items(searchRegionList) { searchRegion ->
                         SearchHistoryItem(
                             searchRegion = searchRegion, onItemClicked = {
+                                searchMapViewModel.saveSelectedSearchRegion(it.toDomainModel())
                                 navController.previousBackStackEntry?.savedStateHandle?.set(
                                     "search_region",
                                     searchRegion

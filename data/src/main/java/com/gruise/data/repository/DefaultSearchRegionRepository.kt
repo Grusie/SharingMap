@@ -13,4 +13,16 @@ class DefaultSearchRegionRepository @Inject constructor(
         return searchRegionDataSource.getSearchRegionList(keyword).map { it.toDomainModel() }
     }
 
+    override suspend fun saveSearchRegionHistory(searchRegion: SearchRegion): Result<Nothing?> {
+        return searchRegionDataSource.saveSearchRegionHistory(searchRegion)
+    }
+
+    override suspend fun getSearchRegionHistory(): Result<List<SearchRegion>> {
+        return searchRegionDataSource.getSearchRegionHistory()
+    }
+
+    override suspend fun clearSearchRegionHistory(): Result<Nothing?> {
+        return searchRegionDataSource.clearSearchRegionHistory()
+    }
+
 }

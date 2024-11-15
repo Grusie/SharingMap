@@ -1,6 +1,10 @@
 package com.gruise.data.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.room.Room
 import com.gruise.data.database.TagSearchDatabase
 import com.gruise.data.database.UserSearchDatabase
@@ -38,4 +42,13 @@ object DatabaseModule {
     fun provideTagSearchDao(tagSearchDatabase: TagSearchDatabase) =
         tagSearchDatabase.getTagSearchDao()
 
+    @Singleton
+    @Provides
+    fun provideSearchRegionHistoryDataStore(
+        @ApplicationContext context: Context
+    ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
+        produceFile = {
+            context.preferencesDataStoreFile("search_region_history")
+        }
+    )
 }
