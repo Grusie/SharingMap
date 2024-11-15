@@ -20,6 +20,10 @@ fun Int.spToPx(context: Context): Float {
     return (this * context.resources.displayMetrics.scaledDensity)
 }
 
+fun roundToSixDecimals(value: Double): Double {
+    return String.format("%.5f", value).toDouble()
+}
+
 @Composable
 fun keyboardAsState(): State<Boolean> {
     val keyboardState = remember { mutableStateOf(false) }

@@ -1,6 +1,8 @@
 package com.gruise.data.di
 
 import com.gruise.domain.repository.ArchiveRepository
+import com.gruise.domain.repository.MapRepository
+import com.gruise.domain.repository.SearchRegionRepository
 import com.gruise.domain.repository.SearchRepository
 import com.gruise.domain.repository.StorageRepository
 import com.gruise.domain.repository.UserRepository
@@ -8,6 +10,12 @@ import com.gruise.domain.usecase.archive.ArchiveUseCase
 import com.gruise.domain.usecase.archive.GetArchivesByAuthorIdUseCase
 import com.gruise.domain.usecase.archive.GetArchivesByStorageIdUseCase
 import com.gruise.domain.usecase.archive.GetArchivesUseCase
+import com.gruise.domain.usecase.map.ClearSearchRegionHistoryUseCase
+import com.gruise.domain.usecase.map.GetAddressUseCase
+import com.gruise.domain.usecase.map.GetSearchRegionHistoryUseCase
+import com.gruise.domain.usecase.map.GetSearchRegionListUseCase
+import com.gruise.domain.usecase.map.MapUseCases
+import com.gruise.domain.usecase.map.SaveSearchRegionHistoryUseCase
 import com.gruise.domain.usecase.search.DeleteAllLocalTagSearchUseCase
 import com.gruise.domain.usecase.search.DeleteAllLocalUserSearchUseCase
 import com.gruise.domain.usecase.search.GetAllLocalTagSearchUseCase
@@ -77,6 +85,21 @@ object UseCaseModule {
     ): StorageUseCase {
         return StorageUseCase(
             getStoragesUseCase = GetStoragesUseCase(storageRepository)
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideMapUseCase(
+        mapRepository: MapRepository,
+        searchRegionRepository: SearchRegionRepository
+    ): MapUseCases {
+        return MapUseCases(
+            getAddressUseCase = GetAddressUseCase(mapRepository),
+            getSearchRegionListUseCase = GetSearchRegionListUseCase(searchRegionRepository),
+            getSearchRegionHistory = GetSearchRegionHistoryUseCase(searchRegionRepository),
+            clearSearchRegionHistory = ClearSearchRegionHistoryUseCase(searchRegionRepository),
+            saveSearchRegionHistory = SaveSearchRegionHistoryUseCase(searchRegionRepository)
         )
     }
 }

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -5,6 +7,9 @@ plugins {
     alias(libs.plugins.serialization)
     kotlin("kapt")
 }
+
+val localProperties = Properties()
+localProperties.load(project.rootProject.file("local.properties").inputStream())
 
 android {
     namespace = "com.gruise.data"
@@ -15,6 +20,22 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
+
+        buildConfigField(
+            "String",
+            "KAKAO_REST_API_KEY",
+            localProperties.getProperty("KAKAO_REST_API_KEY"),
+        )
+        buildConfigField(
+            "String",
+            "NAVER_ACCESS_KEY",
+            localProperties.getProperty("NAVER_ACCESS_KEY"),
+        )
+        buildConfigField(
+            "String",
+            "NAVER_SECRET_KEY",
+            localProperties.getProperty("NAVER_SECRET_KEY"),
+        )
     }
 
     buildTypes {
@@ -32,6 +53,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = "17"
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 
@@ -60,8 +85,12 @@ dependencies {
 
     // retrofit2
     implementation(libs.retrofit2)
+    implementation(libs.retrofit2.gson)
 
     // okhttp
     implementation(libs.okhttp3)
     implementation(libs.okhttp3.interceptor)
+
+    // dataStore
+    implementation(libs.data.store)
 }

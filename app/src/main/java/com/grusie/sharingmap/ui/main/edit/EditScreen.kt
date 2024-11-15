@@ -20,6 +20,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +39,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.theme.Black
@@ -45,8 +48,13 @@ import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
 import com.grusie.sharingmap.designsystem.theme.GrayF1F4F7
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.designsystem.theme.WhiteFBFBFB
+import com.grusie.sharingmap.ui.common.roundToSixDecimals
 import com.grusie.sharingmap.ui.main.map.CustomLocationButtonView
+import com.grusie.sharingmap.ui.model.AdditionalArchiveModel
+import com.grusie.sharingmap.ui.model.SearchRegionUiModel
 import com.grusie.sharingmap.ui.navigation.main.NavItem
+import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.compose.CameraPositionState
 import com.naver.maps.map.compose.ExperimentalNaverMapApi
 import com.naver.maps.map.compose.LocationTrackingMode
@@ -57,9 +65,28 @@ import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.util.MapConstants
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalNaverMapApi::class)
 @Composable
-fun EditScreen(navController: NavController) {
+fun EditScreen(
+    navController: NavController,
+    viewModel: EditPlaceViewModel = hiltViewModel()
+) {
+
+    val searchRegion = navController.currentBackStackEntry
+        ?.savedStateHandle
+        ?.get<SearchRegionUiModel>("search_region")
+
+    searchRegion?.let {
+        viewModel.setAdditionalArchiveModel(
+            viewModel.additionalArchiveModel.value.copy(
+                latitude = searchRegion.latitude,
+                longitude = searchRegion.longitude,
+                address = searchRegion.address ?: "",
+                placeName = searchRegion.placeName ?: ""
+            )
+        )
+    }
+
     Scaffold { paddingValues ->
         Box(
             modifier = Modifier.fillMaxSize()
@@ -75,8 +102,44 @@ fun EditScreen(navController: NavController) {
             val editPlaceBottomSheetState =
                 rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-            val pickedAddress =
-                "${currentPosition.target.latitude}, ${currentPosition.target.longitude}"
+            val additionalArchiveModel: AdditionalArchiveModel by viewModel.additionalArchiveModel.collectAsStateWithLifecycle()
+
+            LaunchedEffect(cameraPositionState.isMoving) {
+                val roundedLatitude = roundToSixDecimals(currentPosition.target.latitude)
+                val roundedLongitude = roundToSixDecimals(currentPosition.target.longitude)
+
+                val previousLatitude =
+                    additionalArchiveModel.latitude?.let { roundToSixDecimals(it) }
+                val previousLongitude = additionalArchiveModel.longitude?.let {
+                    roundToSixDecimals(
+                        it
+                    )
+                }
+
+                if (previousLatitude != roundedLatitude || previousLongitude != roundedLongitude) {
+                    viewModel.getLocation(
+                        currentPosition.target.latitude,
+                        currentPosition.target.longitude
+                    )
+                }
+            }
+
+            LaunchedEffect(searchRegion) {
+                if (searchRegion != null) {
+                    isFollowMode = false
+
+                    cameraPositionState.move(
+                        CameraUpdate.scrollTo(
+                            LatLng(
+                                searchRegion.latitude
+                                    ?: cameraPositionState.position.target.latitude,
+                                searchRegion.longitude
+                                    ?: cameraPositionState.position.target.longitude
+                            )
+                        )
+                    )
+                }
+            }
 
             SearchMapView(
                 isFollowMode = isFollowMode,
@@ -88,7 +151,6 @@ fun EditScreen(navController: NavController) {
                 onBackPressed = { navController.popBackStack() },
                 goToSearchScreen = { navController.navigate(NavItem.SearchMap.screenRoute) }
             )
-
 
             Column(
                 modifier = Modifier
@@ -104,13 +166,13 @@ fun EditScreen(navController: NavController) {
                     }
                 )
                 EditMapInfo(
-                    currentLocation = pickedAddress,
+                    currentLocation = additionalArchiveModel.address,
                     showEditPlaceBottomSheet = { isShowEditPlaceBottomSheet = true }
                 )
 
                 if (isShowEditPlaceBottomSheet) {
                     EditPlaceBottomSheet(
-                        address = pickedAddress,
+                        additionalArchiveModel = additionalArchiveModel,
                         sheetState = editPlaceBottomSheetState,
                         onDismiss = { isShowEditPlaceBottomSheet = false },
                         onSaveClick = {}

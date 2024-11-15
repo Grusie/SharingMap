@@ -1,10 +1,14 @@
 package com.gruise.data.di
 
 import com.gruise.data.repository.DefaultArchiveRepository
+import com.gruise.data.repository.DefaultMapRepository
+import com.gruise.data.repository.DefaultSearchRegionRepository
 import com.gruise.data.repository.DefaultSearchRepository
 import com.gruise.data.repository.DefaultStorageRepository
 import com.gruise.data.repository.DefaultUserRepository
 import com.gruise.domain.repository.ArchiveRepository
+import com.gruise.domain.repository.MapRepository
+import com.gruise.domain.repository.SearchRegionRepository
 import com.gruise.domain.repository.SearchRepository
 import com.gruise.domain.repository.StorageRepository
 import com.gruise.domain.repository.UserRepository
@@ -42,4 +46,15 @@ abstract class RepositoryModule {
         storageRepositoryImpl: DefaultStorageRepository
     ): StorageRepository
 
+    @Singleton
+    @Binds
+    abstract fun bindMapRepository(
+        mapRepositoryImpl: DefaultMapRepository
+    ): MapRepository
+
+    @Singleton
+    @Binds
+    abstract fun bindSearchRegionRepository(
+        searchRegionRepositoryImpl: DefaultSearchRegionRepository
+    ): SearchRegionRepository
 }
