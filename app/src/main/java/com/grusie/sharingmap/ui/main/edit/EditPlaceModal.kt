@@ -52,6 +52,7 @@ import com.grusie.sharingmap.designsystem.theme.GrayE6E6E6
 import com.grusie.sharingmap.designsystem.theme.GrayF1F4F7
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
+import com.grusie.sharingmap.designsystem.util.ToastUtil
 import com.grusie.sharingmap.ui.model.AdditionalArchiveModel
 import com.grusie.sharingmap.ui.model.AttachUiModel
 
@@ -63,7 +64,9 @@ fun EditPlaceBottomSheet(
     additionalArchiveModel: AdditionalArchiveModel = AdditionalArchiveModel(),
     onDismiss: () -> Unit = {},
     onSaveClick: () -> Unit = {},
-    modifier: Modifier = Modifier
+    onLockClick: (Boolean) -> Unit = {},
+    modifier: Modifier = Modifier,
+    isToastShow: Boolean
 ) {
 
     ModalBottomSheet(
@@ -74,12 +77,23 @@ fun EditPlaceBottomSheet(
         containerColor = White,
         dragHandle = { CustomBottomSheetDragHandle() },
     ) {
-        EditPlaceBottomSheetContent(
-            modifier = modifier,
-            additionalArchiveModel = additionalArchiveModel,
-            onDismiss = onDismiss,
-            onSaveClick = onSaveClick
-        )
+        Box() {
+            EditPlaceBottomSheetContent(
+                modifier = modifier,
+                additionalArchiveModel = additionalArchiveModel,
+                onDismiss = onDismiss,
+                onSaveClick = onSaveClick,
+                onLockClick = onLockClick
+            )
+            if (isToastShow) {
+                ToastUtil.ShowToast(
+                    toastViewModifier = Modifier
+                        .align(Alignment.BottomCenter),
+                    fontColor = White,
+                    messageTxt = stringResource(id = if (additionalArchiveModel.isPublic) R.string.edit_toast_public else R.string.edit_toast_private)
+                )
+            }
+        }
     }
 }
 
@@ -90,7 +104,7 @@ fun EditPlaceBottomSheetContent(
     onDismiss: () -> Unit = {},
     onSaveClick: () -> Unit = {},
     additionalArchiveModel: AdditionalArchiveModel,
-    isLock: Boolean = false
+    onLockClick: (Boolean) -> Unit = {},
 ) {
     val placeTextFieldState = rememberTextFieldState(additionalArchiveModel.placeName)
     val contentTextFieldState = rememberTextFieldState()
@@ -198,16 +212,20 @@ fun EditPlaceBottomSheetContent(
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_gallery),
-                        contentDescription = "edit_ic_gallery"
+                        contentDescription = "edit_ic_gallery",
+                        tint = Gray9A9C9F
                     )
                 }
                 Spacer(modifier = Modifier.width(12.dp))
                 IconButton(
                     modifier = Modifier.size(24.dp),
-                    onClick = {}
+                    onClick = {
+                        onLockClick(!additionalArchiveModel.isPublic)
+                    }
                 ) {
                     Icon(
-                        painter = painterResource(id = if (isLock) R.drawable.ic_lock_close else R.drawable.ic_lock_open),
+                        painter = painterResource(id = if (!additionalArchiveModel.isPublic) R.drawable.ic_lock_close else R.drawable.ic_lock_open),
+                        tint = Gray9A9C9F,
                         contentDescription = "edit_ic_gallery"
                     )
                 }

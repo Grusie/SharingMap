@@ -25,6 +25,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,6 +65,9 @@ import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.util.MapConstants
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalNaverMapApi::class)
 @Composable
@@ -98,11 +102,15 @@ fun EditScreen(
                     cameraPositionState.position
                 }
             }
+
             var isShowEditPlaceBottomSheet by remember { mutableStateOf(false) }
             val editPlaceBottomSheetState =
                 rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
             val additionalArchiveModel: AdditionalArchiveModel by viewModel.additionalArchiveModel.collectAsStateWithLifecycle()
+            var isToastShow by remember { mutableStateOf(false) }
+            val coroutineScope = rememberCoroutineScope()
+            var toastJob by remember { mutableStateOf<Job?>(null) }
 
             LaunchedEffect(cameraPositionState.isMoving) {
                 val roundedLatitude = roundToSixDecimals(currentPosition.target.latitude)
@@ -170,13 +178,34 @@ fun EditScreen(
                     showEditPlaceBottomSheet = { isShowEditPlaceBottomSheet = true }
                 )
 
-                if (isShowEditPlaceBottomSheet) {
-                    EditPlaceBottomSheet(
-                        additionalArchiveModel = additionalArchiveModel,
-                        sheetState = editPlaceBottomSheetState,
-                        onDismiss = { isShowEditPlaceBottomSheet = false },
-                        onSaveClick = {}
-                    )
+                Box() {
+                    if (isShowEditPlaceBottomSheet) {
+
+                        EditPlaceBottomSheet(
+                            additionalArchiveModel = additionalArchiveModel,
+                            sheetState = editPlaceBottomSheetState,
+                            onDismiss = { isShowEditPlaceBottomSheet = false },
+                            onSaveClick = {
+
+                            },
+                            onLockClick = { isPublic ->
+                                viewModel.setAdditionalArchiveModel(
+                                    additionalArchiveModel.copy(
+                                        isPublic = isPublic
+                                    )
+                                )
+
+                                toastJob?.cancel() // 이전 토스트 코루틴 취소
+
+                                toastJob = coroutineScope.launch {
+                                    isToastShow = true
+                                    delay(1500)
+                                    isToastShow = false
+                                }
+                            },
+                            isToastShow = isToastShow
+                        )
+                    }
                 }
             }
         }
