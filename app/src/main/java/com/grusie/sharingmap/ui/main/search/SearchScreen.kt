@@ -45,9 +45,9 @@ fun SearchScreen(viewModel: SearchViewModel = hiltViewModel(), navController: Na
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(Unit) {
-        viewModel.errorMessage.collectLatest {
-            snackbarHostState.showSnackbar(it)
+    LaunchedEffect(uiState.errorMessage) {
+        if(uiState.errorMessage.isNotEmpty()) {
+            snackbarHostState.showSnackbar(uiState.errorMessage)
         }
     }
 

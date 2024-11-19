@@ -9,4 +9,5 @@ data class SearchUiState(
     val userSearch: List<UserUiModel> = emptyList(),
     val tagSearch: List<TagUiModel> = emptyList(),
     val selectedTabIndex: Int = 0,
+    val errorMessage: String = ""
 )

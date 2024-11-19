@@ -59,10 +59,8 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
     )
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(Unit) {
-        viewModel.errorMessage.collectLatest {
-            snackbarHostState.showSnackbar(it)
-        }
+    LaunchedEffect(uiState.errorMessage) {
+        if(uiState.errorMessage.isNotEmpty()) snackbarHostState.showSnackbar(uiState.errorMessage)
     }
 
     Scaffold(

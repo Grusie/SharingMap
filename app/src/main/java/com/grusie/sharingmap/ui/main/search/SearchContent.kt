@@ -1,6 +1,5 @@
 package com.grusie.sharingmap.ui.main.search
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,7 +45,7 @@ fun SearchContent(
     SearchContentItem(
         selectedTabIndex = selectedTabIndex,
         lazyColumn = {
-            if(uiState.isLoading) {
+            if (uiState.isLoading) {
 
             } else {
                 if (selectedTabIndex == 0) UserLazyColumn(

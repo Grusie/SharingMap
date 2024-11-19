@@ -12,4 +12,5 @@ data class MyPageUiState(
     val selectedTabIndex: Int = 0,
     val isStorageBottomSheetOpen: Boolean = false,
     val isStorageLock: Boolean = false,
+    val errorMessage: String = ""
 )

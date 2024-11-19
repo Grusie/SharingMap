@@ -31,15 +31,15 @@ class MyPageViewModel @Inject constructor(
     val storageTitleTextField = TextFieldState()
     private val _uiState = MutableStateFlow(MyPageUiState())
     val uiState: StateFlow<MyPageUiState> = _uiState.asStateFlow()
-    private val _errorMessage = MutableSharedFlow<String>()
-    val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()
+   /* private val _errorMessage = MutableSharedFlow<String>()
+    val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()*/
 
     init {
         getMyPageInfo()
     }
 
     private fun getMyPageInfo() {
-        _uiState.value = _uiState.value.copy(isLoading = true)
+        _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = "")
         viewModelScope.launch {
             val myInfoDeferred = async { userUseCase.getMyInfoUseCase() }
             val storagesDeferred = async { storageUseCase.getStoragesUseCase() }
@@ -61,12 +61,10 @@ class MyPageViewModel @Inject constructor(
                         storages = storages.getOrNull()!!.map { it.toUiModel() },
                     )
                 } else {
-                    _uiState.value = _uiState.value.copy(isLoading = false)
-                    _errorMessage.emit((myFeed.exceptionOrNull() as RemoteError).toStringForUser())
+                    _uiState.value = _uiState.value.copy(isLoading = false, errorMessage = (myFeed.exceptionOrNull() as RemoteError).toStringForUser())
                 }
             } else {
-                _uiState.value = _uiState.value.copy(isLoading = false)
-                _errorMessage.emit((myInfo.exceptionOrNull() as RemoteError).toStringForUser())
+                _uiState.value = _uiState.value.copy(isLoading = false, errorMessage = (myInfo.exceptionOrNull() as RemoteError).toStringForUser())
             }
         }
     }
