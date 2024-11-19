@@ -40,7 +40,7 @@ class SearchViewModel @Inject constructor(
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     init {
-        searchTextField.textAsFlow().debounce(300).onEach {
+        _uiState.value.searchTextField.textAsFlow().debounce(300).onEach {
             getSearch()
         }.launchIn(viewModelScope)
         getUserSearchHistory()

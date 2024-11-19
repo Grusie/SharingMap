@@ -60,7 +60,7 @@ fun SearchRoute(
     SearchScreen(
         uiState = uiState,
         snackbarHostState = snackbarHostState,
-        searchTextField = viewModel.searchTextField,
+        searchTextField = uiState.searchTextField,
         updateSelectedTabIndex = viewModel::setSelectedTabIndex,
         insertUserSearchHistory = viewModel::insertUserSearchHistory,
         insertTagSearchHistory = viewModel::insertTagSearchHistory,
