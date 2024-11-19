@@ -29,11 +29,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import com.google.gson.Gson
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.component.CustomCreateCancelBottomSheet
 import com.grusie.sharingmap.designsystem.component.CustomTab
@@ -44,25 +43,63 @@ import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.main.mypage.archivecollection.NewStorageContent
 import com.grusie.sharingmap.ui.main.mypage.archivecollection.StorageLazyColumn
 import com.grusie.sharingmap.ui.model.MyPageTab
-import com.grusie.sharingmap.ui.navigation.main.NavItem
-import kotlinx.coroutines.flow.collectLatest
-
+import com.grusie.sharingmap.ui.model.StorageUiModel
+import com.grusie.sharingmap.ui.model.UserUiModel
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
 @Composable
-fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: NavController) {
-
+fun MyPageRoute(
+    onUserClick: (UserUiModel) -> Unit,
+    onStorageClick: (StorageUiModel) -> Unit,
+    viewModel: MyPageViewModel = hiltViewModel()
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val storageBottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
     )
     val snackbarHostState = remember { SnackbarHostState() }
 
+
     LaunchedEffect(uiState.errorMessage) {
-        if(uiState.errorMessage.isNotEmpty()) snackbarHostState.showSnackbar(uiState.errorMessage)
+        if (uiState.errorMessage.isNotEmpty()) snackbarHostState.showSnackbar(uiState.errorMessage)
     }
 
+    if (uiState.isStorageBottomSheetOpen) {
+        CustomCreateCancelBottomSheet(
+            title = stringResource(id = R.string.mypage_storages_add_title),
+            createText = stringResource(id = R.string.mypage_storage_create_title),
+            content = {
+                NewStorageContent(
+                    textFieldState = viewModel.storageTitleTextField,
+                    isLock = uiState.isStorageLock,
+                    onLockClick = { viewModel.updateIsStorageLock() })
+            },
+            sheetState = storageBottomSheetState,
+            onDismiss = { viewModel.updateIsStorageBottomSheetOpen(false) },
+            onCreateClick = { /*TODO*/ })
+    }
+
+    MyPageScreen(
+        uiState = uiState,
+        snackbarHostState = snackbarHostState,
+        updateSelectedTabIndex = viewModel::setSelectedTabIndex,
+        updateIsStorageBottomSheetOpen = viewModel::updateIsStorageBottomSheetOpen,
+        onUserClick = onUserClick,
+        onStorageClick = onStorageClick,
+    )
+
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "CoroutineCreationDuringComposition")
+@Composable
+fun MyPageScreen(
+    uiState: MyPageUiState,
+    snackbarHostState: SnackbarHostState,
+    updateSelectedTabIndex: (Int) -> Unit,
+    updateIsStorageBottomSheetOpen: (Boolean) -> Unit,
+    onUserClick: (UserUiModel) -> Unit,
+    onStorageClick: (StorageUiModel) -> Unit,
+) {
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -85,7 +122,7 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
                         MyUserInfo(user = it)
                         CustomTab(
                             selectedTabIndex = uiState.selectedTabIndex,
-                            onClick = viewModel::setSelectedTabIndex,
+                            onClick = updateSelectedTabIndex,
                             tabs = MyPageTab.entries.map { it.title })
                     }
 
@@ -102,13 +139,7 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
                                         isFollow = true,
                                         onProfileClick = { /*TODO*/ },
                                         onUserClick = {
-                                            navController.navigate(
-                                                NavItem.User.screenRoute + "?user=${
-                                                    Gson().toJson(
-                                                        it
-                                                    )
-                                                }"
-                                            )
+                                            onUserClick(it)
                                         },
                                         onImageClick = {},
                                         onLocationClick = { /*TODO*/ },
@@ -125,32 +156,11 @@ fun MyPageScreen(viewModel: MyPageViewModel = hiltViewModel(), navController: Na
                             StorageLazyColumn(
                                 isOwnUser = true,
                                 storages = uiState.storages,
-                                onAddClick = { viewModel.updateIsStorageBottomSheetOpen(true) },
+                                onAddClick = { updateIsStorageBottomSheetOpen(true) },
                                 onClick = {
-                                    navController.navigate(
-                                        NavItem.FeedCollection.screenRoute + "?storage=${
-                                            Gson().toJson(
-                                                it
-                                            )
-                                        }"
-                                    )
+                                    onStorageClick(it)
                                 }
                             )
-
-                            if (uiState.isStorageBottomSheetOpen) {
-                                CustomCreateCancelBottomSheet(
-                                    title = stringResource(id = R.string.mypage_storages_add_title),
-                                    createText = stringResource(id = R.string.mypage_storage_create_title),
-                                    content = {
-                                        NewStorageContent(
-                                            textFieldState = viewModel.storageTitleTextField,
-                                            isLock = uiState.isStorageLock,
-                                            onLockClick = { viewModel.updateIsStorageLock() })
-                                    },
-                                    sheetState = storageBottomSheetState,
-                                    onDismiss = { viewModel.updateIsStorageBottomSheetOpen(false) },
-                                    onCreateClick = { /*TODO*/ })
-                            }
                         }
                     }
                 }
@@ -194,6 +204,33 @@ fun MyPageTopAppBar(name: String, onSettingClick: () -> Unit, modifier: Modifier
             containerColor = White,
             scrolledContainerColor = White,
         ),
+    )
+}
+
+val previewUserDummy = UserUiModel(
+    id = 1L,
+    profileImage = "",
+    name = "김민수",
+    description = "안녕하세요, 반갑습니다",
+    email = "",
+    followerCount = 50,
+    postCount = 20,
+    follow = false
+)
+
+
+@Preview
+@Composable
+fun MyPageScreenPreview() {
+    MyPageScreen(
+        uiState = MyPageUiState(
+            user = previewUserDummy
+        ),
+        snackbarHostState = SnackbarHostState(),
+        updateSelectedTabIndex = {},
+        updateIsStorageBottomSheetOpen = {},
+        onUserClick = {},
+        onStorageClick = {}
     )
 }
 

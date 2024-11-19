@@ -12,10 +12,10 @@ import com.grusie.sharingmap.ui.main.edit.EditScreen
 import com.grusie.sharingmap.ui.main.home.HomeScreen
 import com.grusie.sharingmap.ui.main.map.MapScreen
 import com.grusie.sharingmap.ui.main.map.SearchMapScreen
-import com.grusie.sharingmap.ui.main.mypage.MyPageScreen
+import com.grusie.sharingmap.ui.main.mypage.MyPageRoute
 import com.grusie.sharingmap.ui.main.mypage.archivecollection.ArchiveCollectionScreen
 import com.grusie.sharingmap.ui.main.mypage.user.UserScreen
-import com.grusie.sharingmap.ui.main.search.SearchScreen
+import com.grusie.sharingmap.ui.main.search.SearchRoute
 import com.grusie.sharingmap.ui.model.StorageUiModel
 import com.grusie.sharingmap.ui.model.TagUiModel
 import com.grusie.sharingmap.ui.model.UserUiModel
@@ -33,10 +33,40 @@ fun MainBottomNavGraph(navController: NavHostController, onBackPressed: () -> Un
             EditScreen(navController = navController)
         }
         composable(MainBottomNavItem.Search.screenRoute) {
-            SearchScreen(navController = navController)
+            SearchRoute(
+                onNavigationClick = { navController.popBackStack() },
+                onUserItemClick = {
+                    navController.navigate(
+                        NavItem.User.screenRoute + "?user=${
+                            Gson().toJson(
+                                it
+                            )
+                        }"
+                    )
+                },
+                onTagItemClick = {
+                    navController.navigate(
+                        NavItem.FeedCollection.screenRoute + "?tag=${
+                            Gson().toJson(
+                                it
+                            )
+                        }"
+                    )
+                }
+            )
         }
         composable(MainBottomNavItem.MyPage.screenRoute) {
-            MyPageScreen(navController = navController)
+            MyPageRoute(onUserClick = {
+                navController.navigate(NavItem.User.screenRoute + "?user=${Gson().toJson(it)}")
+            }, onStorageClick = {
+                navController.navigate(
+                    NavItem.FeedCollection.screenRoute + "?storage=${
+                        Gson().toJson(
+                            it
+                        )
+                    }"
+                )
+            })
         }
 
         composable(
