@@ -18,7 +18,6 @@ import org.junit.Test
 @OptIn(ExperimentalFoundationApi::class)
 class SearchScreenTest : BaseTest() {
 
-    private var state = mutableStateOf(SearchUiState())
     private val fakeUserData = listOf(
         UserUiModel(
             id = 1L,
@@ -54,10 +53,10 @@ class SearchScreenTest : BaseTest() {
             count = 30,
         )
     )
+    private var state = mutableStateOf(SearchUiState(userSearch = fakeUserData, tagSearch = fakeTagData))
 
     @Before
     fun setUp() {
-        state.value = SearchUiState(userSearch = fakeUserData, tagSearch = fakeTagData)
         composeTestRule.setContent {
             SearchScreen(
                 uiState = state.value,
@@ -115,4 +114,11 @@ class SearchScreenTest : BaseTest() {
         composeTestRule.onNodeWithText("이하은").assertIsNotDisplayed()
         composeTestRule.onNodeWithText("이하영").assertIsNotDisplayed()
     }
+
+   /* @Test
+    fun 에러가_발생하면_에러문구를_스낵바에_보여준다() {
+        state.value = SearchUiState(errorMessage = "에러가 발생했습니다.")
+
+        composeTestRule.onNodeWithText("에러가 발생했습니다.").assertIsDisplayed()
+    }*/
 }

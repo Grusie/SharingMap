@@ -35,7 +35,6 @@ class SearchViewModel @Inject constructor(
     private val searchUseCase: SearchUseCase,
 ) : ViewModel() {
 
-    val searchTextField = TextFieldState()
     private val _uiState = MutableStateFlow(SearchUiState())
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
@@ -54,7 +53,7 @@ class SearchViewModel @Inject constructor(
 
     private suspend fun getSearch() {
         when {
-            searchTextField.text.isEmpty() || searchTextField.text.isBlank() -> {
+            _uiState.value.searchTextField.text.isEmpty() || _uiState.value.searchTextField.text.isBlank() -> {
                 if (_uiState.value.selectedTabIndex == 0) {
                     getUserSearchHistory()
                 }
@@ -71,7 +70,7 @@ class SearchViewModel @Inject constructor(
     private suspend fun getUserSearch() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = "")
-            searchUseCase.getUserSearchUseCase(searchTextField.text.toString(), 10).onSuccess {
+            searchUseCase.getUserSearchUseCase(_uiState.value.searchTextField.text.toString(), 10).onSuccess {
                 _uiState.value = _uiState.value.copy(isLoading = false, userSearch = it.map { it.toUiModel() })
             }.onFailure {
                 _uiState.value = _uiState.value.copy(isLoading = false, errorMessage = (it as RemoteError).toStringForUser())
@@ -114,7 +113,7 @@ class SearchViewModel @Inject constructor(
     private fun getTagSearch() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = "")
-            searchUseCase.getTagSearchUseCase(searchTextField.text.toString(), 10).onSuccess {
+            searchUseCase.getTagSearchUseCase(_uiState.value.searchTextField.text.toString(), 10).onSuccess {
                 _uiState.value = _uiState.value.copy(isLoading = false, tagSearch = it.map { it.toUiModel() })
             }.onFailure {
                 _uiState.value = _uiState.value.copy(isLoading = false)
