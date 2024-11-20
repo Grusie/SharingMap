@@ -28,6 +28,7 @@ import com.gruise.domain.usecase.search.SearchUseCase
 import com.gruise.domain.usecase.storage.GetStoragesUseCase
 import com.gruise.domain.usecase.storage.StorageUseCase
 import com.gruise.domain.usecase.user.GetMyInfoUseCase
+import com.gruise.domain.usecase.user.GetUserByUserIdUseCase
 import com.gruise.domain.usecase.user.UserUseCase
 import dagger.Module
 import dagger.Provides
@@ -74,7 +75,8 @@ object UseCaseModule {
         userRepository: UserRepository
     ): UserUseCase {
         return UserUseCase(
-            getMyInfoUseCase = GetMyInfoUseCase(userRepository)
+            getMyInfoUseCase = GetMyInfoUseCase(userRepository),
+            getUserByUserIdUseCase = GetUserByUserIdUseCase(userRepository)
         )
     }
 

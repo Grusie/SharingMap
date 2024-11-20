@@ -12,4 +12,8 @@ class DefaultUserRepository @Inject constructor(
     override suspend fun getMyInfo(): Result<User> {
         return userRemoteDataSource.getMyInfo().map { it.toDomain() }
     }
+
+    override suspend fun getUserByUserId(userId: Long): Result<User> {
+        return userRemoteDataSource.getUserByUserId(userId).map { it.toDomain() }
+    }
 }

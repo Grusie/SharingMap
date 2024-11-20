@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserSearchDao {
-    @Query("SELECT * FROM userSearch ORDER BY ID DESC ")
+    @Query("SELECT * FROM userSearch ORDER BY createdAt DESC ")
     fun getAll(): Flow<List<LocalUserSearch>>
 
     @Query("DELETE FROM userSearch")

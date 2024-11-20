@@ -7,12 +7,12 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "tagSearch")
 data class LocalTagSearch(
     @ColumnInfo(name = "tag_id")
+    @PrimaryKey
     val tagId: Long,
     @ColumnInfo(name = "tag_name")
     val tagName: String,
     @ColumnInfo(name = "tag_count")
     val tagCount: Int,
-) {
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0
-}
+    @ColumnInfo(name = "createdAt")
+    val createdAt: Long,
+)

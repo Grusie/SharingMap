@@ -54,7 +54,7 @@ import com.grusie.sharingmap.ui.model.UserUiModel
 fun Feed(
     feed: ArchiveUiModel,
     isFollow: Boolean,
-    onUserClick: (UserUiModel) -> Unit,
+    onUserClick: (Long) -> Unit,
     onProfileClick: () -> Unit,
     onImageClick: (String) -> Unit,
     onLocationClick: () -> Unit,
@@ -71,7 +71,7 @@ fun Feed(
                 Modifier
                     .fillMaxWidth()
                     .padding(14.dp).clickable {
-                        onUserClick(feed.user)
+                        onUserClick(feed.user.id)
                     },
         ) {
             ProfileImage(feed.user.profileImage, isFollow, onProfileClick)
