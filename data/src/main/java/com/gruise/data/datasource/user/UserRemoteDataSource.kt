@@ -10,4 +10,8 @@ class UserRemoteDataSource @Inject constructor(
     override suspend fun getMyInfo(): Result<UserDto> {
         return userService.getMyInfo()
     }
+
+    override suspend fun getUserByUserId(userId: Long): Result<UserDto> {
+        return userService.getUserByUserId(userId)
+    }
 }

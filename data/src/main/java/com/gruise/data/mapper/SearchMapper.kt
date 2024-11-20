@@ -23,7 +23,8 @@ fun User.toLocalData(): LocalUserSearch {
         profileImage = profileImage,
         name = name,
         description = description ?: "",
-        email = email
+        email = email,
+        createdAt = System.currentTimeMillis()
     )
 }
 
@@ -32,5 +33,5 @@ fun LocalTagSearch.toDomain(): Tag {
 }
 
 fun Tag.toLocalData(): LocalTagSearch {
-    return LocalTagSearch(tagId = tagId, tagName = tagName, tagCount = tagCount)
+    return LocalTagSearch(tagId = tagId, tagName = tagName, tagCount = tagCount, createdAt = System.currentTimeMillis())
 }

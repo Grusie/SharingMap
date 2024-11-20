@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "userSearch")
 data class LocalUserSearch(
     @ColumnInfo(name = "user_id")
+    @PrimaryKey
     val userId: Long,
     @ColumnInfo(name = "profile_image")
     val profileImage: String,
@@ -16,7 +17,6 @@ data class LocalUserSearch(
     val description: String,
     @ColumnInfo(name = "email")
     val email: String?,
-) {
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0
-}
+    @ColumnInfo(name = "createdAt")
+    val createdAt: Long,
+)

@@ -5,9 +5,11 @@ import com.grusie.sharingmap.ui.model.StorageUiModel
 import com.grusie.sharingmap.ui.model.UserUiModel
 
 data class UserUiState(
+    val isLoading: Boolean = false,
     val user: UserUiModel = UserUiModel(),
     val selectedTabIndex: Int = 0,
     val isFollow: Boolean = false,
     val feeds: List<ArchiveUiModel> = emptyList(),
-    val storages: List<StorageUiModel> = emptyList()
+    val storages: List<StorageUiModel> = emptyList(),
+    val errorMessage: String = ""
 )

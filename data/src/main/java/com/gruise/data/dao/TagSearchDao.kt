@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TagSearchDao {
-    @Query("SELECT * FROM tagSearch ORDER BY ID DESC ")
+    @Query("SELECT * FROM tagSearch ORDER BY createdAt DESC ")
     fun getAll(): Flow<List<LocalTagSearch>>
 
     @Query("DELETE FROM tagSearch")

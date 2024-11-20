@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">SharingMap</string>
 
+    <!-- All -->
+    <string name="loading_prgress">로딩 프로그레스</string>
+
     <!-- Main Bottom Nav -->
     <string name="main_bottom_nav_home">home</string>
     <string name="main_bottom_nav_map">map</string>
@@ -38,6 +41,7 @@
     <string name="mypage_storage_title">보관함 제목</string>
     <string name="mypage_storage_title_hint_text">제목 입력…</string>
     <string name="mypage_storage_create_title">생성</string>
+    <string name="mypage_limited_text_button">더보기/접기 버튼</string>
 
     <!-- Custom Bottom Sheet -->
     <string name="custom_bottom_sheet_cancel_text">취소</string>

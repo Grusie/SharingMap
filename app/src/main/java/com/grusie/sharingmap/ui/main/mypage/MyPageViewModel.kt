@@ -11,8 +11,11 @@ import com.gruise.domain.usecase.user.UserUseCase
 import com.grusie.sharingmap.ui.mapper.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,19 +29,18 @@ class MyPageViewModel @Inject constructor(
 ) : ViewModel() {
 
     val storageTitleTextField = TextFieldState()
-    private val _uiState = MutableStateFlow<MyPageUiState>(MyPageUiState.Loading)
+    private val _uiState = MutableStateFlow(MyPageUiState())
     val uiState: StateFlow<MyPageUiState> = _uiState.asStateFlow()
-    private val _selectedTabIndex = MutableStateFlow(0)
-    val selectedTabIndex: StateFlow<Int> = _selectedTabIndex.asStateFlow()
+   /* private val _errorMessage = MutableSharedFlow<String>()
+    val errorMessage: SharedFlow<String> = _errorMessage.asSharedFlow()*/
 
     init {
         getMyPageInfo()
     }
 
     private fun getMyPageInfo() {
+        _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = "")
         viewModelScope.launch {
-            _uiState.value = MyPageUiState.Loading
-
             val myInfoDeferred = async { userUseCase.getMyInfoUseCase() }
             val storagesDeferred = async { storageUseCase.getStoragesUseCase() }
 
@@ -46,28 +48,36 @@ class MyPageViewModel @Inject constructor(
             val storages = storagesDeferred.await()
 
             if (myInfo.isSuccess) {
+                _uiState.value = _uiState.value.copy(user = myInfo.getOrNull()!!.toUiModel())
+
                 val myFeedDeferred =
-                    async { archiveUseCase.getArchivesByAuthorIdUseCase(myInfo.getOrNull()!!.userId) }
+                    async { archiveUseCase.getArchivesByAuthorIdUseCase(_uiState.value.user!!.id) }
 
                 val myFeed = myFeedDeferred.await()
-
                 if (myFeed.isSuccess && storages.isSuccess) {
-                    _uiState.value = MyPageUiState.Success(
-                        user = myInfo.getOrNull()!!.toUiModel(),
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
                         feeds = myFeed.getOrNull()!!.map { it.toUiModel() },
-                        storages = storages.getOrNull()!!.map { it.toUiModel() }
+                        storages = storages.getOrNull()!!.map { it.toUiModel() },
                     )
                 } else {
-                    _uiState.value = MyPageUiState.Error((myFeed.exceptionOrNull() as RemoteError).toStringForUser())
+                    _uiState.value = _uiState.value.copy(isLoading = false, errorMessage = (myFeed.exceptionOrNull() as RemoteError).toStringForUser())
                 }
             } else {
-                _uiState.value = MyPageUiState.Error((myInfo.exceptionOrNull() as RemoteError).toStringForUser())
+                _uiState.value = _uiState.value.copy(isLoading = false, errorMessage = (myInfo.exceptionOrNull() as RemoteError).toStringForUser())
             }
         }
     }
 
     fun setSelectedTabIndex(index: Int) {
-        _selectedTabIndex.value = index
+        _uiState.value = _uiState.value.copy(selectedTabIndex = index)
     }
 
+    fun updateIsStorageBottomSheetOpen(isOpen: Boolean) {
+        _uiState.value = _uiState.value.copy(isStorageBottomSheetOpen = isOpen)
+    }
+
+    fun updateIsStorageLock() {
+        _uiState.value = _uiState.value.copy(isStorageLock = _uiState.value.isStorageLock.not())
+    }
 }

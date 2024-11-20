@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -20,8 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import com.google.gson.Gson
 import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.component.CustomTab
 import com.grusie.sharingmap.designsystem.component.Feed
@@ -31,32 +29,57 @@ import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.ui.main.mypage.OtherUserInfo
 import com.grusie.sharingmap.ui.main.mypage.archivecollection.StorageLazyColumn
 import com.grusie.sharingmap.ui.model.MyPageTab
-import com.grusie.sharingmap.ui.model.UserUiModel
-import com.grusie.sharingmap.ui.navigation.main.NavItem
+import com.grusie.sharingmap.ui.model.StorageUiModel
+
+@Composable
+fun UserRoute(
+    userId: Long,
+    viewModel: UserViewModel = hiltViewModel(),
+    onNavigateClick: () -> Unit,
+    onUserClick: (Long) -> Unit,
+    onStorageClick: (StorageUiModel) -> Unit
+) {
+    val uiState: UserUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    viewModel.getUser(userId)
+
+    UserScreen(
+        uiState = uiState,
+        onNavigateClick = onNavigateClick,
+        onUserClick = onUserClick,
+        onStorageClick = onStorageClick,
+        updateSelectedTabIndex = viewModel::updateSelectedTabIndex,
+        updateIsFollow = viewModel::updateIsFollow
+    )
+
+
+}
 
 @Composable
 fun UserScreen(
-    navController: NavController,
-    viewModel: UserViewModel = hiltViewModel(),
-    user: UserUiModel
-) {
-
-    val uiState: UserUiState by viewModel.uiState.collectAsStateWithLifecycle()
-    viewModel.updateUser(user)
-
+    uiState: UserUiState,
+    onNavigateClick: () -> Unit,
+    onUserClick: (Long) -> Unit,
+    onStorageClick: (StorageUiModel) -> Unit,
+    updateSelectedTabIndex: (Int) -> Unit,
+    updateIsFollow: () -> Unit,
+    ) {
     Scaffold(
         topBar = {
             UserTopAppBar(
                 name = uiState.user.name,
-                navigateBack = { navController.popBackStack() },
+                navigateBack = onNavigateClick,
                 onMeatballClick = { /*TODO*/ })
         },
         content = {
             Column(modifier = Modifier.padding(it)) {
-                OtherUserInfo(user = user, isFollow = uiState.isFollow, onFollowClick = { viewModel.setIsFollow(!uiState.isFollow)}, onMapClick = {})
+                OtherUserInfo(
+                    user = uiState.user,
+                    isFollow = uiState.isFollow,
+                    onFollowClick = updateIsFollow,
+                    onMapClick = {})
                 CustomTab(
                     selectedTabIndex = uiState.selectedTabIndex,
-                    onClick = viewModel::setSelectedTabIndex,
+                    onClick = updateSelectedTabIndex,
                     tabs = MyPageTab.entries.map { it.title })
                 if (uiState.selectedTabIndex == 0) {
                     LazyColumn {
@@ -65,15 +88,7 @@ fun UserScreen(
                                 feed = it,
                                 isFollow = true,
                                 onProfileClick = { /*TODO*/ },
-                                onUserClick = {
-                                    navController.navigate(
-                                        NavItem.User.screenRoute + "?user=${
-                                            Gson().toJson(
-                                                it
-                                            )
-                                        }"
-                                    )
-                                },
+                                onUserClick = onUserClick,
                                 onImageClick = {},
                                 onLocationClick = { /*TODO*/ },
                                 onArchivingClick = {
@@ -90,15 +105,7 @@ fun UserScreen(
                         isOwnUser = false,
                         storages = uiState.storages,
                         onAddClick = { },
-                        onClick = {
-                            navController.navigate(
-                                NavItem.FeedCollection.screenRoute + "?storage=${
-                                    Gson().toJson(
-                                        it
-                                    )
-                                }"
-                            )
-                        }
+                        onClick = onStorageClick
                     )
                 }
             }

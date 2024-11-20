@@ -7,10 +7,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import com.grusie.sharingmap.R
 import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.GrayA8AAAB
 import com.grusie.sharingmap.designsystem.theme.Typography
@@ -22,6 +26,8 @@ fun LimitedText(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val context = LocalContext.current
 
     val displayText = if (text.length > 50) {
         if (isExpanded) text else text.substring(0, 50) + "..."
@@ -54,7 +60,11 @@ fun LimitedText(
         ).firstOrNull()?.let {
             onClick()
         }
-    }, style = Typography.bodyMedium, modifier = modifier)
+    }, style = Typography.bodyMedium, modifier = modifier.semantics {
+        contentDescription = context.getString(
+            R.string.mypage_limited_text_button
+        )
+    })
 
 }
 
