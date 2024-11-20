@@ -14,11 +14,10 @@ import com.grusie.sharingmap.ui.main.map.MapScreen
 import com.grusie.sharingmap.ui.main.map.SearchMapScreen
 import com.grusie.sharingmap.ui.main.mypage.MyPageRoute
 import com.grusie.sharingmap.ui.main.mypage.archivecollection.ArchiveCollectionScreen
-import com.grusie.sharingmap.ui.main.mypage.user.UserScreen
+import com.grusie.sharingmap.ui.main.mypage.user.UserRoute
 import com.grusie.sharingmap.ui.main.search.SearchRoute
 import com.grusie.sharingmap.ui.model.StorageUiModel
 import com.grusie.sharingmap.ui.model.TagUiModel
-import com.grusie.sharingmap.ui.model.UserUiModel
 
 @Composable
 fun MainBottomNavGraph(navController: NavHostController, onBackPressed: () -> Unit) {
@@ -37,7 +36,7 @@ fun MainBottomNavGraph(navController: NavHostController, onBackPressed: () -> Un
                 onNavigationClick = { navController.popBackStack() },
                 onUserItemClick = {
                     navController.navigate(
-                        NavItem.User.screenRoute + "?user=${
+                        NavItem.User.screenRoute + "?userId=${
                             Gson().toJson(
                                 it
                             )
@@ -88,12 +87,35 @@ fun MainBottomNavGraph(navController: NavHostController, onBackPressed: () -> Un
         }
 
         composable(
-            NavItem.User.screenRoute + "?user={user}",
-            arguments = listOf(navArgument("user") { type = NavType.StringType })
+            NavItem.User.screenRoute + "?userId={userId}",
+            arguments = listOf(navArgument("userId") { type = NavType.StringType })
         ) {
-            val userJsonString = it.arguments?.getString("user")
-            val user = Gson().fromJson(userJsonString, UserUiModel::class.java)
-            UserScreen(navController = navController, user = user)
+            val userId = it.arguments?.getString("userId")?.toLong()
+            if (userId != null) {
+                UserRoute(
+                    userId = userId,
+                    onNavigateClick = { navController.popBackStack() },
+                    onUserClick = {
+                        navController.navigate(
+                            NavItem.User.screenRoute + "?userId=${
+                                Gson().toJson(
+                                    it
+                                )
+                            }"
+                        )
+                    },
+                    onStorageClick = {
+                        navController.navigate(
+                            NavItem.FeedCollection.screenRoute + "?storage=${
+                                Gson().toJson(
+                                    it
+                                )
+                            }"
+                        )
+                    }
+                )
+            }
+            /*UserScreen(navController = navController, user = user)*/
         }
 
         composable(

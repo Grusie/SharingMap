@@ -45,7 +45,7 @@ import com.grusie.sharingmap.ui.navigation.main.NavItem
 fun SearchRoute(
     viewModel: SearchViewModel = hiltViewModel(),
     onNavigationClick: () -> Unit,
-    onUserItemClick: (UserUiModel) -> Unit,
+    onUserItemClick: (Long) -> Unit,
     onTagItemClick: (TagUiModel) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -85,7 +85,7 @@ fun SearchScreen(
     deleteAllUerSearchHistory: () -> Unit,
     deleteAllTagSearchHistory: () -> Unit,
     onNavigationClick: () -> Unit,
-    onUserItemClick: (UserUiModel) -> Unit,
+    onUserItemClick: (Long) -> Unit,
     onTagItemClick: (TagUiModel) -> Unit
 ) {
 
@@ -128,7 +128,7 @@ fun SearchScreen(
                         searchText = searchTextField,
                         onUserItemClick = {
                             insertUserSearchHistory(it)
-                            onUserItemClick(it)
+                            onUserItemClick(it.id)
                         },
                         onUserHistoryDelete = deleteAllUerSearchHistory,
                         onTagItemClick = {

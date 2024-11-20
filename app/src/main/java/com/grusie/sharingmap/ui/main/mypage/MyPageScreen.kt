@@ -52,7 +52,7 @@ import com.grusie.sharingmap.ui.model.UserUiModel
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun MyPageRoute(
-    onUserClick: (UserUiModel) -> Unit,
+    onUserClick: (Long) -> Unit,
     onStorageClick: (StorageUiModel) -> Unit,
     viewModel: MyPageViewModel = hiltViewModel()
 ) {
@@ -100,7 +100,7 @@ fun MyPageScreen(
     snackbarHostState: SnackbarHostState,
     updateSelectedTabIndex: (Int) -> Unit,
     updateIsStorageBottomSheetOpen: (Boolean) -> Unit,
-    onUserClick: (UserUiModel) -> Unit,
+    onUserClick: (Long) -> Unit,
     onStorageClick: (StorageUiModel) -> Unit,
 ) {
     val context = LocalContext.current
