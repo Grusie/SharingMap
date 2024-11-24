@@ -57,6 +57,7 @@
     <string name="edit_content_hint">내용 입력...</string>
     <string name="edit_toast_public">게시물을 모두에게 공개합니다.</string>
     <string name="edit_toast_private">게시물을 나만 볼 수 있습니다.</string>
+    <string name="edit_toast_attach_error_10">이미지는 최대 10개까지만 선택 가능합니다.</string>
 
     <!-- SearchMap -->
     <string name="search_map_title">장소검색</string>

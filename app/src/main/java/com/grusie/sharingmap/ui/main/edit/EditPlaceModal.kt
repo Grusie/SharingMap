@@ -81,8 +81,10 @@ fun EditPlaceBottomSheet(
     onDismiss: () -> Unit = {},
     onSaveClick: () -> Unit = {},
     onLockClick: (Boolean) -> Unit = {},
+    showToast: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
-    isToastShow: Boolean
+    isToastShow: Boolean,
+    toastMsgId: Int
 ) {
 
     ModalBottomSheet(
@@ -99,14 +101,15 @@ fun EditPlaceBottomSheet(
                 additionalArchiveModel = additionalArchiveModel,
                 onDismiss = onDismiss,
                 onSaveClick = onSaveClick,
-                onLockClick = onLockClick
+                onLockClick = onLockClick,
+                showToast = showToast
             )
             if (isToastShow) {
-                ToastUtil.ShowToast(
+                ToastUtil.ToastView(
                     toastViewModifier = Modifier
                         .align(Alignment.BottomCenter),
                     fontColor = White,
-                    messageTxt = stringResource(id = if (additionalArchiveModel.isPublic) R.string.edit_toast_public else R.string.edit_toast_private)
+                    messageTxt = stringResource(id = toastMsgId)
                 )
             }
         }
@@ -121,6 +124,7 @@ fun EditPlaceBottomSheetContent(
     onSaveClick: () -> Unit = {},
     additionalArchiveModel: AdditionalArchiveModel,
     onLockClick: (Boolean) -> Unit = {},
+    showToast: (Int) -> Unit = {}
 ) {
     val placeTextFieldState = rememberTextFieldState(additionalArchiveModel.placeName)
     val contentTextFieldState = rememberTextFieldState()
@@ -128,16 +132,30 @@ fun EditPlaceBottomSheetContent(
     val attachList by remember { mutableStateOf(ArrayList<AttachUiModel>()) }
 
     val pickMultipleMedia =
-        rememberLauncherForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uris ->
-            if (uris.isNotEmpty()) {
-                uris.forEach {
-                    attachList.add(
-                        AttachUiModel(
-                            id = attachList.size.toLong(),
-                            src = it.toString()
+        rememberLauncherForActivityResult(
+            if (attachList.size >= 9)
+                ActivityResultContracts.PickVisualMedia()
+            else ActivityResultContracts.PickMultipleVisualMedia(10 - attachList.size)
+        ) { uris ->
+
+            if (uris is List<*>) {
+                if (uris.isNotEmpty()) {
+                    uris.forEach {
+                        attachList.add(
+                            AttachUiModel(
+                                id = attachList.size.toLong(),
+                                src = it.toString()
+                            )
                         )
-                    )
+                    }
                 }
+            } else {
+                attachList.add(
+                    AttachUiModel(
+                        id = attachList.size.toLong(),
+                        src = uris.toString()
+                    )
+                )
             }
         }
 
@@ -252,7 +270,11 @@ fun EditPlaceBottomSheetContent(
                 IconButton(
                     modifier = Modifier.size(24.dp),
                     onClick = {
-                        pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        if (attachList.size < 10)
+                            pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        else {
+                            showToast(R.string.edit_toast_attach_error_10)
+                        }
                     }
                 ) {
                     Icon(
@@ -265,7 +287,9 @@ fun EditPlaceBottomSheetContent(
                 IconButton(
                     modifier = Modifier.size(24.dp),
                     onClick = {
-                        onLockClick(!additionalArchiveModel.isPublic)
+                        val isPublic = !additionalArchiveModel.isPublic
+                        onLockClick(isPublic)
+                        showToast(if (isPublic) R.string.edit_toast_public else R.string.edit_toast_private)
                     }
                 ) {
                     Icon(

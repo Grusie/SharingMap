@@ -16,10 +16,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.grusie.sharingmap.designsystem.theme.Black
 import com.grusie.sharingmap.designsystem.theme.White
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 object ToastUtil {
     @Composable
-    fun ShowToast(
+    fun ToastView(
         toastViewModifier: Modifier = Modifier,
         fontSize: TextUnit = 14.sp,
         fontColor: Color = White,
@@ -50,5 +54,23 @@ object ToastUtil {
                 color = fontColor
             )
         }
+    }
+
+    fun showToast(
+        setToastShown: (Boolean) -> Unit,
+        coroutineScope: CoroutineScope,
+        toastJob: Job?,
+        setToastJob: (Job) -> Unit
+    ) {
+        setToastShown(true)
+        toastJob?.cancel()
+
+        setToastJob(
+            coroutineScope.launch {
+                setToastShown(true)
+                delay(1500)
+                setToastShown(false)
+            }
+        )
     }
 }

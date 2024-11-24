@@ -23,6 +23,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -49,6 +50,7 @@ import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
 import com.grusie.sharingmap.designsystem.theme.GrayF1F4F7
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.designsystem.theme.WhiteFBFBFB
+import com.grusie.sharingmap.designsystem.util.ToastUtil
 import com.grusie.sharingmap.ui.common.roundToSixDecimals
 import com.grusie.sharingmap.ui.main.map.CustomLocationButtonView
 import com.grusie.sharingmap.ui.model.AdditionalArchiveModel
@@ -66,8 +68,6 @@ import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.util.MapConstants
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalNaverMapApi::class)
 @Composable
@@ -111,6 +111,7 @@ fun EditScreen(
             var isToastShow by remember { mutableStateOf(false) }
             val coroutineScope = rememberCoroutineScope()
             var toastJob by remember { mutableStateOf<Job?>(null) }
+            var toastMsgId by remember { mutableIntStateOf(R.string.edit_toast_private) }
 
             LaunchedEffect(cameraPositionState.isMoving) {
                 val roundedLatitude = roundToSixDecimals(currentPosition.target.latitude)
@@ -180,7 +181,6 @@ fun EditScreen(
 
                 Box() {
                     if (isShowEditPlaceBottomSheet) {
-
                         EditPlaceBottomSheet(
                             additionalArchiveModel = additionalArchiveModel,
                             sheetState = editPlaceBottomSheetState,
@@ -194,16 +194,19 @@ fun EditScreen(
                                         isPublic = isPublic
                                     )
                                 )
-
-                                toastJob?.cancel() // 이전 토스트 코루틴 취소
-
-                                toastJob = coroutineScope.launch {
-                                    isToastShow = true
-                                    delay(1500)
-                                    isToastShow = false
-                                }
                             },
-                            isToastShow = isToastShow
+                            showToast = {
+                                toastMsgId = it
+
+                                ToastUtil.showToast(
+                                    setToastShown = { isToastShow = it },
+                                    coroutineScope = coroutineScope,
+                                    toastJob = toastJob,
+                                    setToastJob = { toastJob = it },
+                                )
+                            },
+                            isToastShow = isToastShow,
+                            toastMsgId = toastMsgId
                         )
                     }
                 }
