@@ -53,7 +53,8 @@ import com.grusie.sharingmap.designsystem.theme.WhiteFBFBFB
 import com.grusie.sharingmap.designsystem.util.ToastUtil
 import com.grusie.sharingmap.ui.common.roundToSixDecimals
 import com.grusie.sharingmap.ui.main.map.CustomLocationButtonView
-import com.grusie.sharingmap.ui.model.AdditionalArchiveModel
+import com.grusie.sharingmap.ui.model.AdditionalArchiveUiModel
+import com.grusie.sharingmap.ui.model.AdditionalAttachUiModel
 import com.grusie.sharingmap.ui.model.SearchRegionUiModel
 import com.grusie.sharingmap.ui.navigation.main.NavItem
 import com.naver.maps.geometry.LatLng
@@ -107,7 +108,8 @@ fun EditScreen(
             val editPlaceBottomSheetState =
                 rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-            val additionalArchiveModel: AdditionalArchiveModel by viewModel.additionalArchiveModel.collectAsStateWithLifecycle()
+            val additionalArchiveModel: AdditionalArchiveUiModel by viewModel.additionalArchiveModel.collectAsStateWithLifecycle()
+            val attachList: List<AdditionalAttachUiModel> by viewModel.attachList.collectAsStateWithLifecycle()
             var isToastShow by remember { mutableStateOf(false) }
             val coroutineScope = rememberCoroutineScope()
             var toastJob by remember { mutableStateOf<Job?>(null) }
@@ -181,12 +183,18 @@ fun EditScreen(
 
                 Box() {
                     if (isShowEditPlaceBottomSheet) {
+                        isFollowMode = false
                         EditPlaceBottomSheet(
                             additionalArchiveModel = additionalArchiveModel,
                             sheetState = editPlaceBottomSheetState,
                             onDismiss = { isShowEditPlaceBottomSheet = false },
-                            onSaveClick = {
-
+                            onSaveClick = { content ->
+                                viewModel.setAdditionalArchiveModel(
+                                    additionalArchiveModel.copy(
+                                        content = content
+                                    )
+                                )
+                                viewModel.saveArchive()
                             },
                             onLockClick = { isPublic ->
                                 viewModel.setAdditionalArchiveModel(
@@ -206,7 +214,9 @@ fun EditScreen(
                                 )
                             },
                             isToastShow = isToastShow,
-                            toastMsgId = toastMsgId
+                            toastMsgId = toastMsgId,
+                            attachList = attachList,
+                            setAttachList = { viewModel.setAttachList(it) },
                         )
                     }
                 }

@@ -1,7 +1,9 @@
 package com.grusie.sharingmap.ui.mapper
 
+import com.gruise.domain.model.AdditionalArchiveModel
 import com.gruise.domain.model.Archive
 import com.gruise.domain.model.ArchiveAttach
+import com.grusie.sharingmap.ui.model.AdditionalArchiveUiModel
 import com.grusie.sharingmap.ui.model.ArchiveAttachUiModel
 import com.grusie.sharingmap.ui.model.ArchiveInfoUiModel
 import com.grusie.sharingmap.ui.model.ArchiveUiModel
@@ -22,4 +24,15 @@ fun Archive.toUiModel(): ArchiveUiModel {
 
 fun ArchiveAttach.toUiModel(): ArchiveAttachUiModel {
     return ArchiveAttachUiModel(name = name, path = path, width = width, height = height)
+}
+
+fun AdditionalArchiveUiModel.toDomainModel(): AdditionalArchiveModel {
+    return AdditionalArchiveModel(
+        latitude = this.latitude,
+        longitude = this.longitude,
+        address = this.address,
+        placeName = this.placeName,
+        content = this.content,
+        isPublic = this.isPublic
+    )
 }

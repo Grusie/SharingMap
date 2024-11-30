@@ -10,6 +10,7 @@ import com.gruise.domain.usecase.archive.ArchiveUseCase
 import com.gruise.domain.usecase.archive.GetArchivesByAuthorIdUseCase
 import com.gruise.domain.usecase.archive.GetArchivesByStorageIdUseCase
 import com.gruise.domain.usecase.archive.GetArchivesUseCase
+import com.gruise.domain.usecase.archive.SaveArchiveUseCase
 import com.gruise.domain.usecase.map.ClearSearchRegionHistoryUseCase
 import com.gruise.domain.usecase.map.GetAddressUseCase
 import com.gruise.domain.usecase.map.GetSearchRegionHistoryUseCase
@@ -65,7 +66,8 @@ object UseCaseModule {
         return ArchiveUseCase(
             getArchivesUseCase = GetArchivesUseCase(archiveRepository),
             getArchivesByAuthorIdUseCase = GetArchivesByAuthorIdUseCase(archiveRepository),
-            getArchivesByStorageIdUseCase = GetArchivesByStorageIdUseCase(archiveRepository)
+            getArchivesByStorageIdUseCase = GetArchivesByStorageIdUseCase(archiveRepository),
+            saveArchiveUseCase = SaveArchiveUseCase(archiveRepository)
         )
     }
 

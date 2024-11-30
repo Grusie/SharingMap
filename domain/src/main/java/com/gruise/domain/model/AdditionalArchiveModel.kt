@@ -1,4 +1,4 @@
-package com.grusie.sharingmap.ui.model
+package com.gruise.domain.model
 
 data class AdditionalArchiveModel(
     val latitude: Double? = null,

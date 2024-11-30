@@ -4,4 +4,5 @@ data class ArchiveUseCase(
     val getArchivesUseCase: GetArchivesUseCase,
     val getArchivesByAuthorIdUseCase: GetArchivesByAuthorIdUseCase,
     val getArchivesByStorageIdUseCase: GetArchivesByStorageIdUseCase,
+    val saveArchiveUseCase: SaveArchiveUseCase
 )

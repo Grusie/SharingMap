@@ -1,5 +1,6 @@
 package com.grusie.sharingmap.ui.main.edit
 
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -41,9 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,22 +68,24 @@ import com.grusie.sharingmap.designsystem.theme.GrayF1F4F7
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.designsystem.util.ToastUtil
-import com.grusie.sharingmap.ui.model.AdditionalArchiveModel
-import com.grusie.sharingmap.ui.model.AttachUiModel
+import com.grusie.sharingmap.ui.model.AdditionalArchiveUiModel
+import com.grusie.sharingmap.ui.model.AdditionalAttachUiModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditPlaceBottomSheet(
     sheetState: SheetState = rememberModalBottomSheetState(),
-    additionalArchiveModel: AdditionalArchiveModel = AdditionalArchiveModel(),
+    additionalArchiveModel: AdditionalArchiveUiModel = AdditionalArchiveUiModel(),
     onDismiss: () -> Unit = {},
-    onSaveClick: () -> Unit = {},
+    onSaveClick: (String) -> Unit = {},
     onLockClick: (Boolean) -> Unit = {},
     showToast: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
     isToastShow: Boolean,
-    toastMsgId: Int
+    toastMsgId: Int,
+    attachList: List<AdditionalAttachUiModel>,
+    setAttachList: (List<AdditionalAttachUiModel>) -> Unit
 ) {
 
     ModalBottomSheet(
@@ -102,7 +103,9 @@ fun EditPlaceBottomSheet(
                 onDismiss = onDismiss,
                 onSaveClick = onSaveClick,
                 onLockClick = onLockClick,
-                showToast = showToast
+                showToast = showToast,
+                setAttachList = setAttachList,
+                attachList = attachList
             )
             if (isToastShow) {
                 ToastUtil.ToastView(
@@ -121,15 +124,25 @@ fun EditPlaceBottomSheet(
 fun EditPlaceBottomSheetContent(
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit = {},
-    onSaveClick: () -> Unit = {},
-    additionalArchiveModel: AdditionalArchiveModel,
+    onSaveClick: (String) -> Unit = {},
+    additionalArchiveModel: AdditionalArchiveUiModel,
     onLockClick: (Boolean) -> Unit = {},
-    showToast: (Int) -> Unit = {}
+    showToast: (Int) -> Unit = {},
+    attachList: List<AdditionalAttachUiModel> = emptyList(),
+    setAttachList: (List<AdditionalAttachUiModel>) -> Unit = {}
 ) {
     val placeTextFieldState = rememberTextFieldState(additionalArchiveModel.placeName)
     val contentTextFieldState = rememberTextFieldState()
     val scrollState = rememberScrollState()
-    val attachList by remember { mutableStateOf(ArrayList<AttachUiModel>()) }
+
+    SideEffect {
+        Log.d(
+            "RecomposeDebug",
+            "Recomposition triggered with content: " +
+                    "onDismiss = ${onDismiss}, onSaveClick = ${onSaveClick}, additionalArchiveModel = ${additionalArchiveModel}, onLockClick = ${onLockClick}" +
+                    "showToast = ${showToast}, attachList = ${attachList}, setAttachList = ${setAttachList}"
+        )
+    }
 
     val pickMultipleMedia =
         rememberLauncherForActivityResult(
@@ -140,22 +153,26 @@ fun EditPlaceBottomSheetContent(
 
             if (uris is List<*>) {
                 if (uris.isNotEmpty()) {
-                    uris.forEach {
-                        attachList.add(
-                            AttachUiModel(
-                                id = attachList.size.toLong(),
-                                src = it.toString()
+                    setAttachList(ArrayList(attachList).apply {
+                        uris.forEach {
+                            add(
+                                AdditionalAttachUiModel(
+                                    id = attachList.size.toLong(),
+                                    src = it.toString()
+                                )
                             )
-                        )
-                    }
+                        }
+                    })
                 }
             } else {
-                attachList.add(
-                    AttachUiModel(
-                        id = attachList.size.toLong(),
-                        src = uris.toString()
+                setAttachList(ArrayList(attachList).apply {
+                    add(
+                        AdditionalAttachUiModel(
+                            id = attachList.size.toLong(),
+                            src = uris.toString()
+                        )
                     )
-                )
+                })
             }
         }
 
@@ -193,7 +210,7 @@ fun EditPlaceBottomSheetContent(
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(end = 20.dp)
-                    .clickable { onSaveClick() }
+                    .clickable { onSaveClick(contentTextFieldState.text.toString()) }
             )
         }
 
@@ -261,8 +278,10 @@ fun EditPlaceBottomSheetContent(
 
                 AttachListView(
                     attachList
-                ) {
-                    attachList.remove(it)
+                ) { attachUiModel ->
+                    setAttachList(ArrayList(attachList).apply {
+                        remove(attachUiModel)
+                    })
                 }
             }
 
@@ -340,8 +359,8 @@ fun CustomTextField(
 
 @Composable
 fun AttachListView(
-    attachList: List<AttachUiModel> = emptyList(),
-    removeAttachItem: (AttachUiModel) -> Unit
+    attachList: List<AdditionalAttachUiModel> = emptyList(),
+    removeAttachItem: (AdditionalAttachUiModel) -> Unit
 ) {
     if (attachList.isNotEmpty())
         LazyRow(
@@ -357,8 +376,8 @@ fun AttachListView(
 
 @Composable
 fun AttachView(
-    attachUiModel: AttachUiModel,
-    removeAttachItem: (AttachUiModel) -> Unit = {}
+    attachUiModel: AdditionalAttachUiModel,
+    removeAttachItem: (AdditionalAttachUiModel) -> Unit = {}
 ) {
     Row() {
         Box(
@@ -401,11 +420,11 @@ fun AttachView(
 @Composable
 @Preview(showBackground = true)
 fun EditPlaceBottomSheetPreview() {
-    EditPlaceBottomSheetContent(additionalArchiveModel = AdditionalArchiveModel(address = "서울특별시 서초구 효령로49길 52"))
+    EditPlaceBottomSheetContent(additionalArchiveModel = AdditionalArchiveUiModel(address = "서울특별시 서초구 효령로49길 52"))
 }
 
 @Composable
 @Preview(showBackground = true)
 fun AttachViewPreview() {
-    AttachView(AttachUiModel(id = 0, src = ""))
+    AttachView(AdditionalAttachUiModel(id = 0, src = ""))
 }

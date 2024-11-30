@@ -2,8 +2,10 @@ package com.gruise.data.repository
 
 import com.gruise.data.datasource.archive.ArchiveRemoteDataSource
 import com.gruise.data.mapper.toDomain
+import com.gruise.domain.model.AdditionalArchiveModel
 import com.gruise.domain.model.Archive
 import com.gruise.domain.repository.ArchiveRepository
+import java.io.File
 import javax.inject.Inject
 
 class DefaultArchiveRepository @Inject constructor(
@@ -50,5 +52,13 @@ class DefaultArchiveRepository @Inject constructor(
             return Result.failure(it)
         }
         return Result.failure(Exception("getArchivesByStorageId failed"))
+    }
+
+    override suspend fun saveArchive(
+        additionalArchive: AdditionalArchiveModel,
+        attachFileList: List<File?>
+    ): Result<Archive> {
+        return archiveRemoteDataSource.saveArchive(additionalArchive, attachFileList)
+            .map { it.toDomain() }
     }
 }
