@@ -14,7 +14,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
@@ -25,28 +24,16 @@ class EditPlaceViewModel @Inject constructor(
     private val mapUseCases: MapUseCases,
     private val archiveUseCase: ArchiveUseCase
 ) : ViewModel() {
-    private val _additionalArchiveModel = MutableStateFlow(
-        AdditionalArchiveUiModel(
-            latitude = null,
-            longitude = null,
-            address = "",
-            placeName = "",
-            content = ""
-        )
-    )
-    val additionalArchiveModel: StateFlow<AdditionalArchiveUiModel> =
-        _additionalArchiveModel.asStateFlow()
-
-    private val _attachList: MutableStateFlow<List<AdditionalAttachUiModel>> =
-        MutableStateFlow(emptyList())
-    val attachList: StateFlow<List<AdditionalAttachUiModel>> = _attachList
+    private val _editPlaceUiState: MutableStateFlow<EditPlaceUiState> =
+        MutableStateFlow(EditPlaceUiState())
+    val editPlaceUiState: StateFlow<EditPlaceUiState> = _editPlaceUiState
 
 
     fun getLocation(latitude: Double, longitude: Double) {
         viewModelScope.launch {
             mapUseCases.getAddressUseCase(latitude, longitude).onSuccess { address ->
                 setAdditionalArchiveModel(
-                    _additionalArchiveModel.value.copy(
+                    editPlaceUiState.value.additionalArchiveUiModel.copy(
                         latitude = latitude,
                         longitude = longitude,
                         address = address
@@ -58,31 +45,58 @@ class EditPlaceViewModel @Inject constructor(
 
     fun setAdditionalArchiveModel(additionalArchiveModel: AdditionalArchiveUiModel) {
         viewModelScope.launch {
-            _additionalArchiveModel.emit(additionalArchiveModel)
+            setEditPlaceUiState(
+                _editPlaceUiState.value.copy(
+                    additionalArchiveUiModel = additionalArchiveModel
+                )
+            )
         }
     }
 
     fun setAttachList(attachList: List<AdditionalAttachUiModel>) {
         viewModelScope.launch {
-            _attachList.emit(attachList)
+            setEditPlaceUiState(
+                _editPlaceUiState.value.copy(
+                    additionalAttachList = attachList
+                )
+            )
+        }
+    }
+
+    fun setToast(isToastShow: Boolean = false, toastMsgId: Int = 0) {
+        setEditPlaceUiState(
+            _editPlaceUiState.value.copy(
+                isToastShow = isToastShow,
+                toastMsgId = if (toastMsgId != 0) toastMsgId else _editPlaceUiState.value.toastMsgId
+            )
+        )
+    }
+
+    private fun setEditPlaceUiState(editPlaceUiState: EditPlaceUiState) {
+        viewModelScope.launch {
+            _editPlaceUiState.emit(editPlaceUiState)
         }
     }
 
     fun saveArchive() {
         viewModelScope.launch {
 
-            val attachFileList = attachList.value.map {
+            val attachFileList = _editPlaceUiState.value.additionalAttachList.map {
                 getFileFromUri(it.src.toUri())
             }
 
             archiveUseCase.saveArchiveUseCase(
-                additionalArchiveModel = _additionalArchiveModel.value.toDomainModel(),
+                additionalArchiveModel = _editPlaceUiState.value.additionalArchiveUiModel.toDomainModel(),
                 attachFileList = attachFileList
-            )
+            ).onSuccess {
+
+            }.onFailure {
+
+            }
         }
     }
 
-    fun getFileFromUri(uri: Uri): File? {
+    private fun getFileFromUri(uri: Uri): File? {
         // ContentResolver로 파일 읽기
         return try {
             val inputStream = context.contentResolver.openInputStream(uri)

@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,8 +52,6 @@ import com.grusie.sharingmap.designsystem.theme.WhiteFBFBFB
 import com.grusie.sharingmap.designsystem.util.ToastUtil
 import com.grusie.sharingmap.ui.common.roundToSixDecimals
 import com.grusie.sharingmap.ui.main.map.CustomLocationButtonView
-import com.grusie.sharingmap.ui.model.AdditionalArchiveUiModel
-import com.grusie.sharingmap.ui.model.AdditionalAttachUiModel
 import com.grusie.sharingmap.ui.model.SearchRegionUiModel
 import com.grusie.sharingmap.ui.navigation.main.NavItem
 import com.naver.maps.geometry.LatLng
@@ -83,7 +80,7 @@ fun EditScreen(
 
     searchRegion?.let {
         viewModel.setAdditionalArchiveModel(
-            viewModel.additionalArchiveModel.value.copy(
+            viewModel.editPlaceUiState.value.additionalArchiveUiModel.copy(
                 latitude = searchRegion.latitude,
                 longitude = searchRegion.longitude,
                 address = searchRegion.address ?: "",
@@ -107,21 +104,29 @@ fun EditScreen(
             var isShowEditPlaceBottomSheet by remember { mutableStateOf(false) }
             val editPlaceBottomSheetState =
                 rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            val editPlaceUiState: EditPlaceUiState by viewModel.editPlaceUiState.collectAsStateWithLifecycle()
 
-            val additionalArchiveModel: AdditionalArchiveUiModel by viewModel.additionalArchiveModel.collectAsStateWithLifecycle()
-            val attachList: List<AdditionalAttachUiModel> by viewModel.attachList.collectAsStateWithLifecycle()
-            var isToastShow by remember { mutableStateOf(false) }
             val coroutineScope = rememberCoroutineScope()
             var toastJob by remember { mutableStateOf<Job?>(null) }
-            var toastMsgId by remember { mutableIntStateOf(R.string.edit_toast_private) }
+
+            LaunchedEffect(editPlaceUiState.isToastShow) {
+                if (editPlaceUiState.isToastShow) {
+                    ToastUtil.showToast(
+                        setToastShown = { viewModel.setToast(isToastShow = it) },
+                        coroutineScope = coroutineScope,
+                        toastJob = toastJob,
+                        setToastJob = { toastJob = it },
+                    )
+                }
+            }
 
             LaunchedEffect(cameraPositionState.isMoving) {
                 val roundedLatitude = roundToSixDecimals(currentPosition.target.latitude)
                 val roundedLongitude = roundToSixDecimals(currentPosition.target.longitude)
 
                 val previousLatitude =
-                    additionalArchiveModel.latitude?.let { roundToSixDecimals(it) }
-                val previousLongitude = additionalArchiveModel.longitude?.let {
+                    editPlaceUiState.additionalArchiveUiModel.latitude?.let { roundToSixDecimals(it) }
+                val previousLongitude = editPlaceUiState.additionalArchiveUiModel.longitude?.let {
                     roundToSixDecimals(
                         it
                     )
@@ -177,7 +182,7 @@ fun EditScreen(
                     }
                 )
                 EditMapInfo(
-                    currentLocation = additionalArchiveModel.address,
+                    currentLocation = editPlaceUiState.additionalArchiveUiModel.address,
                     showEditPlaceBottomSheet = { isShowEditPlaceBottomSheet = true }
                 )
 
@@ -185,12 +190,12 @@ fun EditScreen(
                     if (isShowEditPlaceBottomSheet) {
                         isFollowMode = false
                         EditPlaceBottomSheet(
-                            additionalArchiveModel = additionalArchiveModel,
+                            editPlaceUiState = editPlaceUiState,
                             sheetState = editPlaceBottomSheetState,
                             onDismiss = { isShowEditPlaceBottomSheet = false },
                             onSaveClick = { content ->
                                 viewModel.setAdditionalArchiveModel(
-                                    additionalArchiveModel.copy(
+                                    editPlaceUiState.additionalArchiveUiModel.copy(
                                         content = content
                                     )
                                 )
@@ -198,24 +203,14 @@ fun EditScreen(
                             },
                             onLockClick = { isPublic ->
                                 viewModel.setAdditionalArchiveModel(
-                                    additionalArchiveModel.copy(
+                                    editPlaceUiState.additionalArchiveUiModel.copy(
                                         isPublic = isPublic
                                     )
                                 )
                             },
-                            showToast = {
-                                toastMsgId = it
-
-                                ToastUtil.showToast(
-                                    setToastShown = { isToastShow = it },
-                                    coroutineScope = coroutineScope,
-                                    toastJob = toastJob,
-                                    setToastJob = { toastJob = it },
-                                )
+                            showToast = { toastMsgId ->
+                                viewModel.setToast(true, toastMsgId)
                             },
-                            isToastShow = isToastShow,
-                            toastMsgId = toastMsgId,
-                            attachList = attachList,
                             setAttachList = { viewModel.setAttachList(it) },
                         )
                     }

@@ -1,6 +1,5 @@
 package com.grusie.sharingmap.ui.main.edit
 
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,7 +41,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -68,23 +66,19 @@ import com.grusie.sharingmap.designsystem.theme.GrayF1F4F7
 import com.grusie.sharingmap.designsystem.theme.Typography
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.designsystem.util.ToastUtil
-import com.grusie.sharingmap.ui.model.AdditionalArchiveUiModel
 import com.grusie.sharingmap.ui.model.AdditionalAttachUiModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditPlaceBottomSheet(
+    editPlaceUiState: EditPlaceUiState = EditPlaceUiState(),
     sheetState: SheetState = rememberModalBottomSheetState(),
-    additionalArchiveModel: AdditionalArchiveUiModel = AdditionalArchiveUiModel(),
     onDismiss: () -> Unit = {},
     onSaveClick: (String) -> Unit = {},
     onLockClick: (Boolean) -> Unit = {},
     showToast: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
-    isToastShow: Boolean,
-    toastMsgId: Int,
-    attachList: List<AdditionalAttachUiModel>,
     setAttachList: (List<AdditionalAttachUiModel>) -> Unit
 ) {
 
@@ -98,21 +92,20 @@ fun EditPlaceBottomSheet(
     ) {
         Box() {
             EditPlaceBottomSheetContent(
+                editPlaceUiState = editPlaceUiState,
                 modifier = modifier,
-                additionalArchiveModel = additionalArchiveModel,
                 onDismiss = onDismiss,
                 onSaveClick = onSaveClick,
                 onLockClick = onLockClick,
                 showToast = showToast,
                 setAttachList = setAttachList,
-                attachList = attachList
             )
-            if (isToastShow) {
+            if (editPlaceUiState.isToastShow) {
                 ToastUtil.ToastView(
                     toastViewModifier = Modifier
                         .align(Alignment.BottomCenter),
                     fontColor = White,
-                    messageTxt = stringResource(id = toastMsgId)
+                    messageTxt = stringResource(id = editPlaceUiState.toastMsgId)
                 )
             }
         }
@@ -122,42 +115,33 @@ fun EditPlaceBottomSheet(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EditPlaceBottomSheetContent(
+    editPlaceUiState: EditPlaceUiState = EditPlaceUiState(),
     modifier: Modifier = Modifier,
     onDismiss: () -> Unit = {},
     onSaveClick: (String) -> Unit = {},
-    additionalArchiveModel: AdditionalArchiveUiModel,
     onLockClick: (Boolean) -> Unit = {},
     showToast: (Int) -> Unit = {},
-    attachList: List<AdditionalAttachUiModel> = emptyList(),
     setAttachList: (List<AdditionalAttachUiModel>) -> Unit = {}
 ) {
-    val placeTextFieldState = rememberTextFieldState(additionalArchiveModel.placeName)
+    val placeTextFieldState =
+        rememberTextFieldState(editPlaceUiState.additionalArchiveUiModel.placeName)
     val contentTextFieldState = rememberTextFieldState()
     val scrollState = rememberScrollState()
 
-    SideEffect {
-        Log.d(
-            "RecomposeDebug",
-            "Recomposition triggered with content: " +
-                    "onDismiss = ${onDismiss}, onSaveClick = ${onSaveClick}, additionalArchiveModel = ${additionalArchiveModel}, onLockClick = ${onLockClick}" +
-                    "showToast = ${showToast}, attachList = ${attachList}, setAttachList = ${setAttachList}"
-        )
-    }
-
     val pickMultipleMedia =
         rememberLauncherForActivityResult(
-            if (attachList.size >= 9)
+            if (editPlaceUiState.additionalAttachList.size >= 9)
                 ActivityResultContracts.PickVisualMedia()
-            else ActivityResultContracts.PickMultipleVisualMedia(10 - attachList.size)
+            else ActivityResultContracts.PickMultipleVisualMedia(10 - editPlaceUiState.additionalAttachList.size)
         ) { uris ->
 
             if (uris is List<*>) {
                 if (uris.isNotEmpty()) {
-                    setAttachList(ArrayList(attachList).apply {
+                    setAttachList(ArrayList(editPlaceUiState.additionalAttachList).apply {
                         uris.forEach {
                             add(
                                 AdditionalAttachUiModel(
-                                    id = attachList.size.toLong(),
+                                    id = editPlaceUiState.additionalAttachList.size.toLong(),
                                     src = it.toString()
                                 )
                             )
@@ -165,10 +149,10 @@ fun EditPlaceBottomSheetContent(
                     })
                 }
             } else {
-                setAttachList(ArrayList(attachList).apply {
+                setAttachList(ArrayList(editPlaceUiState.additionalAttachList).apply {
                     add(
                         AdditionalAttachUiModel(
-                            id = attachList.size.toLong(),
+                            id = editPlaceUiState.additionalAttachList.size.toLong(),
                             src = uris.toString()
                         )
                     )
@@ -234,7 +218,7 @@ fun EditPlaceBottomSheetContent(
                     )
                     .padding(vertical = 17.dp, horizontal = 16.dp)
                     .fillMaxWidth(),
-                text = additionalArchiveModel.address,
+                text = editPlaceUiState.additionalArchiveUiModel.address,
                 fontWeight = FontWeight(400)
             )
 
@@ -277,9 +261,9 @@ fun EditPlaceBottomSheetContent(
                 )
 
                 AttachListView(
-                    attachList
+                    editPlaceUiState.additionalAttachList
                 ) { attachUiModel ->
-                    setAttachList(ArrayList(attachList).apply {
+                    setAttachList(ArrayList(editPlaceUiState.additionalAttachList).apply {
                         remove(attachUiModel)
                     })
                 }
@@ -289,7 +273,7 @@ fun EditPlaceBottomSheetContent(
                 IconButton(
                     modifier = Modifier.size(24.dp),
                     onClick = {
-                        if (attachList.size < 10)
+                        if (editPlaceUiState.additionalAttachList.size < 10)
                             pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                         else {
                             showToast(R.string.edit_toast_attach_error_10)
@@ -306,13 +290,13 @@ fun EditPlaceBottomSheetContent(
                 IconButton(
                     modifier = Modifier.size(24.dp),
                     onClick = {
-                        val isPublic = !additionalArchiveModel.isPublic
-                        onLockClick(isPublic)
+                        val isPublic = !editPlaceUiState.additionalArchiveUiModel.isPublic
                         showToast(if (isPublic) R.string.edit_toast_public else R.string.edit_toast_private)
+                        onLockClick(isPublic)
                     }
                 ) {
                     Icon(
-                        painter = painterResource(id = if (!additionalArchiveModel.isPublic) R.drawable.ic_lock_close else R.drawable.ic_lock_open),
+                        painter = painterResource(id = if (!editPlaceUiState.additionalArchiveUiModel.isPublic) R.drawable.ic_lock_close else R.drawable.ic_lock_open),
                         tint = Gray9A9C9F,
                         contentDescription = "edit_ic_gallery"
                     )
@@ -420,7 +404,7 @@ fun AttachView(
 @Composable
 @Preview(showBackground = true)
 fun EditPlaceBottomSheetPreview() {
-    EditPlaceBottomSheetContent(additionalArchiveModel = AdditionalArchiveUiModel(address = "서울특별시 서초구 효령로49길 52"))
+    EditPlaceBottomSheetContent()
 }
 
 @Composable
