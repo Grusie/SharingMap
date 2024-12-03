@@ -45,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -77,7 +78,7 @@ fun EditPlaceBottomSheet(
     onDismiss: () -> Unit = {},
     onSaveClick: (String) -> Unit = {},
     onLockClick: (Boolean) -> Unit = {},
-    showToast: (Int) -> Unit = {},
+    showToast: (String) -> Unit = {},
     modifier: Modifier = Modifier,
     setAttachList: (List<AdditionalAttachUiModel>) -> Unit
 ) {
@@ -105,7 +106,7 @@ fun EditPlaceBottomSheet(
                     toastViewModifier = Modifier
                         .align(Alignment.BottomCenter),
                     fontColor = White,
-                    messageTxt = stringResource(id = editPlaceUiState.toastMsgId)
+                    messageTxt = editPlaceUiState.toastMsg
                 )
             }
         }
@@ -120,13 +121,14 @@ fun EditPlaceBottomSheetContent(
     onDismiss: () -> Unit = {},
     onSaveClick: (String) -> Unit = {},
     onLockClick: (Boolean) -> Unit = {},
-    showToast: (Int) -> Unit = {},
+    showToast: (String) -> Unit = {},
     setAttachList: (List<AdditionalAttachUiModel>) -> Unit = {}
 ) {
     val placeTextFieldState =
         rememberTextFieldState(editPlaceUiState.additionalArchiveUiModel.placeName)
     val contentTextFieldState = rememberTextFieldState()
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
 
     val pickMultipleMedia =
         rememberLauncherForActivityResult(
@@ -276,7 +278,7 @@ fun EditPlaceBottomSheetContent(
                         if (editPlaceUiState.additionalAttachList.size < 10)
                             pickMultipleMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                         else {
-                            showToast(R.string.edit_toast_attach_error_10)
+                            showToast(context.getString(R.string.edit_toast_attach_error_10))
                         }
                     }
                 ) {
@@ -291,7 +293,7 @@ fun EditPlaceBottomSheetContent(
                     modifier = Modifier.size(24.dp),
                     onClick = {
                         val isPublic = !editPlaceUiState.additionalArchiveUiModel.isPublic
-                        showToast(if (isPublic) R.string.edit_toast_public else R.string.edit_toast_private)
+                        showToast(context.getString(if (isPublic) R.string.edit_toast_public else R.string.edit_toast_private))
                         onLockClick(isPublic)
                     }
                 ) {

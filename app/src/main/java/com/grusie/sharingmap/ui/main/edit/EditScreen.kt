@@ -25,7 +25,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,7 +48,6 @@ import com.grusie.sharingmap.designsystem.theme.Gray9A9C9F
 import com.grusie.sharingmap.designsystem.theme.GrayF1F4F7
 import com.grusie.sharingmap.designsystem.theme.White
 import com.grusie.sharingmap.designsystem.theme.WhiteFBFBFB
-import com.grusie.sharingmap.designsystem.util.ToastUtil
 import com.grusie.sharingmap.ui.common.roundToSixDecimals
 import com.grusie.sharingmap.ui.main.map.CustomLocationButtonView
 import com.grusie.sharingmap.ui.model.SearchRegionUiModel
@@ -65,7 +63,6 @@ import com.naver.maps.map.compose.NaverMap
 import com.naver.maps.map.compose.rememberCameraPositionState
 import com.naver.maps.map.compose.rememberFusedLocationSource
 import com.naver.maps.map.util.MapConstants
-import kotlinx.coroutines.Job
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalNaverMapApi::class)
 @Composable
@@ -105,20 +102,6 @@ fun EditScreen(
             val editPlaceBottomSheetState =
                 rememberModalBottomSheetState(skipPartiallyExpanded = true)
             val editPlaceUiState: EditPlaceUiState by viewModel.editPlaceUiState.collectAsStateWithLifecycle()
-
-            val coroutineScope = rememberCoroutineScope()
-            var toastJob by remember { mutableStateOf<Job?>(null) }
-
-            LaunchedEffect(editPlaceUiState.isToastShow) {
-                if (editPlaceUiState.isToastShow) {
-                    ToastUtil.showToast(
-                        setToastShown = { viewModel.setToast(isToastShow = it) },
-                        coroutineScope = coroutineScope,
-                        toastJob = toastJob,
-                        setToastJob = { toastJob = it },
-                    )
-                }
-            }
 
             LaunchedEffect(cameraPositionState.isMoving) {
                 val roundedLatitude = roundToSixDecimals(currentPosition.target.latitude)
@@ -208,8 +191,8 @@ fun EditScreen(
                                     )
                                 )
                             },
-                            showToast = { toastMsgId ->
-                                viewModel.setToast(true, toastMsgId)
+                            showToast = { toastMsg ->
+                                viewModel.showToast(toastMsg)
                             },
                             setAttachList = { viewModel.setAttachList(it) },
                         )

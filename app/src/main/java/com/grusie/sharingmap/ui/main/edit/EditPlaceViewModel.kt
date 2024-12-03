@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gruise.data.remote.RemoteError
 import com.gruise.domain.usecase.archive.ArchiveUseCase
 import com.gruise.domain.usecase.map.MapUseCases
 import com.grusie.sharingmap.ui.mapper.toDomainModel
@@ -12,6 +13,8 @@ import com.grusie.sharingmap.ui.model.AdditionalArchiveUiModel
 import com.grusie.sharingmap.ui.model.AdditionalAttachUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -27,6 +30,7 @@ class EditPlaceViewModel @Inject constructor(
     private val _editPlaceUiState: MutableStateFlow<EditPlaceUiState> =
         MutableStateFlow(EditPlaceUiState())
     val editPlaceUiState: StateFlow<EditPlaceUiState> = _editPlaceUiState
+    var toastJob: Job? = null
 
 
     fun getLocation(latitude: Double, longitude: Double) {
@@ -63,13 +67,21 @@ class EditPlaceViewModel @Inject constructor(
         }
     }
 
-    fun setToast(isToastShow: Boolean = false, toastMsgId: Int = 0) {
-        setEditPlaceUiState(
-            _editPlaceUiState.value.copy(
-                isToastShow = isToastShow,
-                toastMsgId = if (toastMsgId != 0) toastMsgId else _editPlaceUiState.value.toastMsgId
-            )
-        )
+    fun showToast(toastMsg: String = "") {
+        viewModelScope.launch {
+            toastJob?.cancel()
+
+            toastJob = viewModelScope.launch {
+                setEditPlaceUiState(
+                    _editPlaceUiState.value.copy(
+                        isToastShow = true,
+                        toastMsg = toastMsg.ifBlank { _editPlaceUiState.value.toastMsg }
+                    )
+                )
+                delay(1500)
+                setEditPlaceUiState(_editPlaceUiState.value.copy(isToastShow = false))
+            }
+        }
     }
 
     private fun setEditPlaceUiState(editPlaceUiState: EditPlaceUiState) {
@@ -80,7 +92,9 @@ class EditPlaceViewModel @Inject constructor(
 
     fun saveArchive() {
         viewModelScope.launch {
-
+            setEditPlaceUiState(
+                _editPlaceUiState.value.copy(isLoading = true)
+            )
             val attachFileList = _editPlaceUiState.value.additionalAttachList.map {
                 getFileFromUri(it.src.toUri())
             }
@@ -89,9 +103,16 @@ class EditPlaceViewModel @Inject constructor(
                 additionalArchiveModel = _editPlaceUiState.value.additionalArchiveUiModel.toDomainModel(),
                 attachFileList = attachFileList
             ).onSuccess {
-
+                setEditPlaceUiState(
+                    _editPlaceUiState.value.copy(isLoading = false)
+                )
             }.onFailure {
-
+                setEditPlaceUiState(
+                    _editPlaceUiState.value.copy(
+                        isLoading = false,
+                    )
+                )
+                showToast(toastMsg = (it as RemoteError).toStringForUser())
             }
         }
     }
