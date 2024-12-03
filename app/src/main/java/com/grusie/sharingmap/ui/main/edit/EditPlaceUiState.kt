@@ -8,5 +8,5 @@ data class EditPlaceUiState(
     val additionalAttachList: List<AdditionalAttachUiModel> = emptyList(),
     val additionalArchiveUiModel: AdditionalArchiveUiModel = AdditionalArchiveUiModel(),
     val isToastShow: Boolean = false,
-ø    val toastMsg: String = ""
+    val toastMsg: String = ""
 )
